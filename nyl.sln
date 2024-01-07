@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antares", "antares\antares.vcxproj", "{7891E149-FBD2-4445-8F34-348D22EFC87C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Nyl", "Nyl\core.vcxproj", "{42AE1D86-3B97-4E02-8535-6AFC6613B873}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Nyl", "Nyl\Nyl.vcxproj", "{42AE1D86-3B97-4E02-8535-6AFC6613B873}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
