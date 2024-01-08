@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -9,39 +9,33 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Dist|x64">
-      <Configuration>Dist</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B80E880B-2418-887C-AD93-9E7C199C937C}</ProjectGuid>
-    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{42ae1d86-3b97-4e02-8535-6afc6613b873}</ProjectGuid>
     <RootNamespace>Nyl</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Nyl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -49,107 +43,67 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\Nyl\</OutDir>
-    <IntDir>..\bin\Debug-windows-x86_64\Nyl\obj\</IntDir>
-    <TargetName>Nyl</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\intermediate</IntDir>
+    <IncludePath>$(SolutionDir)include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Release-windows-x86_64\Nyl\</OutDir>
-    <IntDir>..\bin\Release-windows-x86_64\Nyl\obj\</IntDir>
-    <TargetName>Nyl</TargetName>
-    <TargetExt>.dll</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Dist-windows-x86_64\Nyl\</OutDir>
-    <IntDir>..\bin\Dist-windows-x86_64\Nyl\obj\</IntDir>
-    <TargetName>Nyl</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)\intermediate</IntDir>
+    <IncludePath>$(SolutionDir)include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL;NYL_DEBUG;NYL_RELEASE;NYL_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>thirdparty\spdlog\include;header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Full</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\bin\Debug-windows-x86_64\Nyl\Nyl.lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/GLFW;$(SolutionDir)lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Nyl\Nyl.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Nyl\Nyl.dll ..\bin\Debug-windows-x86_64\Antares &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Nyl\Nyl.dll ..\bin\Debug-windows-x86_64\Antares &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>thirdparty\spdlog\include;header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <ImportLibrary>..\bin\Release-windows-x86_64\Nyl\Nyl.lib</ImportLibrary>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/GLFW;$(SolutionDir)lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\Nyl\Nyl.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Nyl\Nyl.dll ..\bin\Release-windows-x86_64\Antares &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Nyl\Nyl.dll ..\bin\Release-windows-x86_64\Antares &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>thirdparty\spdlog\include;header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <ImportLibrary>..\bin\Dist-windows-x86_64\Nyl\Nyl.lib</ImportLibrary>
-    </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Nyl\Nyl.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Nyl\Nyl.dll ..\bin\Dist-windows-x86_64\Antares &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Nyl\Nyl.dll ..\bin\Dist-windows-x86_64\Antares &gt; nul)</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="source\Log.cpp" />
+    <ClCompile Include="source\Application.cpp" />
+    <ClCompile Include="source\nyl_window.cpp" />
+  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Application.h" />
     <ClInclude Include="header\Core.h" />
     <ClInclude Include="header\EntryPoint.h" />
     <ClInclude Include="header\Log.h" />
+    <ClInclude Include="Nyl.h" />
     <ClInclude Include="header\nyl_window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="source\Application.cpp" />
-    <ClCompile Include="source\Log.cpp" />
-    <ClCompile Include="source\nyl_window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
