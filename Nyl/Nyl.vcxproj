@@ -63,7 +63,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -71,6 +71,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)lib/GLFW;$(SolutionDir)lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(TargetDir)Nyl.dll" "$(SolutionDir)bin\Antares\$(Configuration)\"
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -81,7 +85,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);NYL_PLATFORM_WINDOWS;NYL_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)thirdparty\spdlog\include;$(SolutionDir)Nyl\header;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,19 +95,28 @@
       <AdditionalLibraryDirectories>$(SolutionDir)lib/GLFW;$(SolutionDir)lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(TargetDir)Nyl.dll" "$(SolutionDir)bin\Antares\$(Configuration)\"
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\Application.cpp" />
-    <ClCompile Include="source\nyl_window.cpp" />
+    <ClCompile Include="source\Renderer.cpp" />
+    <ClCompile Include="source\Window.cpp" />
+    <ClCompile Include="thirdparty\glad.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Application.h" />
+    <ClInclude Include="header\Config.h" />
     <ClInclude Include="header\Core.h" />
     <ClInclude Include="header\EntryPoint.h" />
+    <ClInclude Include="header\linmath.h" />
     <ClInclude Include="header\Log.h" />
+    <ClInclude Include="header\Renderer.h" />
     <ClInclude Include="Nyl.h" />
-    <ClInclude Include="header\nyl_window.h" />
+    <ClInclude Include="header\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
