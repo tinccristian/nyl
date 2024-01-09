@@ -8,3 +8,6 @@
 
 //Entry point
 #include "header/EntryPoint.h"
+
+
+// Vertex Data[] -> Vertex Shader -> Shape Assembly -> Geometry Shader -> Rasterization (geometry to pixels) -> fragment shader (coloring of the pixels) -> blending, etc (fx)
