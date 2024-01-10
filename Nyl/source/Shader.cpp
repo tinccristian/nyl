@@ -42,7 +42,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	// Check Vertex Shader Compilation Status
 	GLint vertexCompiled;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexCompiled);
-	if (vertexCompiled != GL_TRUE)
+	if (vertexCompiled == GL_FALSE)
 	{
 		GLint logLength;
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
@@ -86,7 +86,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	glAttachShader(ID, fragmentShader);
 	glLinkProgram(ID);                                                                  // Wrap-up/Link all the shaders together into the Shader Program
 
-	// Check Shader Program Linking Status
+	#pragma region Check_Shader_Program_Linking_Status
 	GLint programLinked;
 	glGetProgramiv(ID, GL_LINK_STATUS, &programLinked);
 	if (programLinked != GL_TRUE)
@@ -108,6 +108,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 			NYL_CORE_ERROR("Shader program linking error: Unknown error occurred.");
 		}
 	}
+	#pragma endregion
 
 	// Delete the now useless Vertex and Fragment Shader objects
 	glDeleteShader(vertexShader);

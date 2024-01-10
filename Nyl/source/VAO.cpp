@@ -23,6 +23,7 @@ void VAO::Unbind()
 	glBindVertexArray(0);
 }
 
+
 // Deletes the VAO
 void VAO::Delete()
 {

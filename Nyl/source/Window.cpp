@@ -8,11 +8,9 @@
 
 namespace Nyl
 {
-    //Shader
-    Shader shader;
-    VAO vao;
-    VBO vbo;
-    EBO ebo;
+    Shader m_shader;
+    VAO m_vao;
+
 
     // Vertices coordinates
     GLfloat vertices[] =
@@ -39,10 +37,6 @@ namespace Nyl
 
     Window::~Window() 
     {
-        vao.Delete();
-        vbo.Delete();
-        ebo.Delete();
-        shader.Delete();
         glfwDestroyWindow(window);
         glfwTerminate();
 
@@ -88,51 +82,48 @@ namespace Nyl
         // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
         glViewport(0, 0, width, height);
 
-
         // Generates shaders
         Shader shader("D:/gitHub/nyl/Nyl/Shaders/default.vert", "D:/gitHub/nyl/Nyl/Shaders/default.frag");
-        if (shader.ID != 0) {
-            NYL_CORE_ERROR("Shader is not valid!");
-        }
+        //if (shader.ID != 0) {
+        //    NYL_CORE_ERROR("Shader is not valid!");
+        //}
 
         // Generates Vertex Array Object and binds it
+        VAO vao;
         vao.Bind();
 
-
-        // Take care of all the light related things
-        glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-        glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
-
         // Generates Vertex Buffer Object and links it to vertices
-        vbo = VBO(vertices, sizeof(vertices));
-        if (vbo.ID != 0) {
-            NYL_CORE_ERROR("VBO is not valid!");
-        }
+        VBO vbo(vertices, sizeof(vertices));
+        //if (vbo.ID != 0) {
+        //    NYL_CORE_ERROR("VBO is not valid!");
+        //}
         // Generates Element Buffer Object and links it to indices
-        ebo =EBO(indices, sizeof(indices));
-        if (ebo.ID != 0) {
-            NYL_CORE_ERROR("EBO is not valid!");
-        }
+        EBO ebo(indices, sizeof(indices));
+        //if (ebo.ID != 0) {
+        //    NYL_CORE_ERROR("EBO is not valid!");
+        //}
 
         // Links VBO to VAO
         vao.LinkVBO(vbo, 0);
-        if (vao.ID != 0) {
-            NYL_CORE_ERROR("VAO is not valid!");
-        }
+        //if (vao.ID != 0) {
+        //    NYL_CORE_ERROR("VAO is not valid!");
+        //}
         // Unbind all to prevent accidentally modifying them
         vao.Unbind();
         vbo.Unbind();
         ebo.Unbind();
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR) {
-            // Handle or log the error
-            NYL_CORE_ERROR("OpenGL error: {0}", error);
-        }
-        // Validate that VBO, EBO, and VAO setup is successful
-        if (vao.ID != 0 || vbo.ID != 0 || ebo.ID != 0) {
-            NYL_CORE_ERROR("VBO, EBO, or VAO setup failed!");
-            return false;
-        }
+        m_shader = shader;
+        m_vao = vao;
+        //GLenum error = glGetError();
+        //if (error != GL_NO_ERROR) {
+        //    // Handle or log the error
+        //    NYL_CORE_ERROR("OpenGL error: {0}", error);
+        //}
+        //// Validate that VBO, EBO, and VAO setup is successful
+        //if (vao.ID != 0 || vbo.ID != 0 || ebo.ID != 0) {
+        //    NYL_CORE_ERROR("VBO, EBO, or VAO setup failed!");
+        //    return false;
+        //}
         return true;
     }
 
@@ -145,9 +136,22 @@ namespace Nyl
         // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT);
         // Tell OpenGL which Shader Program we want to use
-        shader.Activate();
+        m_shader.Activate();
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR) {
+            // Handle or log the error
+            NYL_CORE_ERROR("OpenGL error1: {0}", error);
+            glGetError();
+        }
         // Bind the VAO so OpenGL knows to use it
-        vao.Bind();
+        m_vao.Bind();
+        GLenum error1 = glGetError();
+        if (error1 != GL_NO_ERROR) {
+            // Handle or log the error
+            NYL_CORE_ERROR("OpenGL error2: {0}", error1);
+            glGetError();
+
+        }
         // Draw primitives, number of indices, datatype of indices, index of indices
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
@@ -155,30 +159,18 @@ namespace Nyl
         // Take care of all GLFW events
         glfwPollEvents();
 
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR) {
+        GLenum error2 = glGetError();
+        if (error2 != GL_NO_ERROR) {
             // Handle or log the error
-            NYL_CORE_ERROR("OpenGL error: {0}", error);
+            NYL_CORE_ERROR("OpenGL error3: {0}", error2);
+            glGetError();
+
         }
     }
 
     bool Window::ShouldClose() const 
     {
         return glfwWindowShouldClose(window);
-    }
-
-    bool ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao) {
-        bool valid = true;
-
-
-
-
-
-
-
-
-
-        return valid;
     }
 
     //INPUT -> to be moved to separate header
