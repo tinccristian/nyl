@@ -101,23 +101,32 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\EBO.cpp" />
     <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\Application.cpp" />
-    <ClCompile Include="source\Renderer.cpp" />
+    <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Window.cpp" />
     <ClCompile Include="thirdparty\glad.c" />
+    <ClCompile Include="source\VAO.cpp" />
+    <ClCompile Include="source\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Application.h" />
     <ClInclude Include="header\Config.h" />
     <ClInclude Include="header\Core.h" />
+    <ClInclude Include="header\EBO.h" />
     <ClInclude Include="header\EntryPoint.h" />
     <ClInclude Include="header\linmath.h" />
     <ClInclude Include="header\Log.h" />
-    <ClInclude Include="header\Renderer.h" />
     <ClInclude Include="Nyl.h" />
     <ClInclude Include="header\Window.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="header\Shader.h" />
+    <ClInclude Include="header\VAO.h" />
+    <ClInclude Include="header\VBO.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\default.frag" />
+    <None Include="Shaders\default.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

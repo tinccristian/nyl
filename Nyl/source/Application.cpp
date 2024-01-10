@@ -15,7 +15,7 @@ namespace Nyl {
 	}
     void Application::Run() 
     {
-        Window window(1000, 500, "Antares");
+        Window window(800, 800, "Antares");
 
         if (!window.Init()) 
         {

@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,60 +27,15 @@ namespace Nyl
             : Title(title), Width(width), Height(height) {}
     };
 
-#pragma region vert/shad
-    static const struct
-    {
-        float x, y;
-        float r, g, b;
-    } vertices[3] =
-    {
-        { -0.6f, -0.4f, 1.f, 0.f, 0.f },
-        {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-        {   0.f,  0.6f, 0.f, 0.f, 1.f }
-    };
-
-    static const char* vertex_shader_text =
-        "#version 110\n"
-        "uniform mat4 MVP;\n"
-        "attribute vec3 vCol;\n"
-        "attribute vec2 vPos;\n"
-        "varying vec3 color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-        "    color = vCol;\n"
-        "}\n";
-
-    static const char* fragment_shader_text =
-        "#version 110\n"
-        "varying vec3 color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_FragColor = vec4(color, 1.0);\n"
-        "}\n";
-#pragma endregion
     class Window {
     public:
 
         WindowConfig m_Config;
 
-        GLuint vertex_buffer;
-        GLuint vertex_shader;
-        GLuint fragment_shader;
-        GLuint program;
-        GLint mvp_location;
-        GLint vpos_location;
-        GLint vcol_location;
-
-        mat4x4 m;
-        mat4x4 p;
-        mat4x4 mvp;
-
         Window(int width, int height, const std::string& title);
         ~Window();
 
         bool Init();
-        void SetShaders();
         void Update();
         bool ShouldClose() const;
 
