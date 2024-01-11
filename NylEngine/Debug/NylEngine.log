@@ -1,0 +1,4 @@
+﻿  NylEngine.cpp
+D:\gitHub\nyl\NylEngine\NylEngine.cpp(15,56): warning C4244: 'argument': conversion from 'const float' to 'unsigned int', possible loss of data
+D:\gitHub\nyl\NylEngine\NylEngine.cpp(15,43): warning C4244: 'argument': conversion from 'const float' to 'unsigned int', possible loss of data
+  NylEngine.vcxproj -> D:\gitHub\nyl\Debug\NylEngine.exe

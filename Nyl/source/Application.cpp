@@ -24,10 +24,10 @@ namespace Nyl {
         }
 
 
-        while (!window.ShouldClose()) 
-        {
-            window.Update();
-        }
+        //while (!window.ShouldClose()) 
+        //{
+        //    window.Update();
+        //}
 
     }
 }
