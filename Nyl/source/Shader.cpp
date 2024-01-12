@@ -9,6 +9,9 @@ using namespace Nyl;
 namespace Nyl
 {
     unsigned int ID;
+    // empty constructor
+    // ------------------------------------------------------------------------
+    Shader::Shader() { ID = 0; }
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
     Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -64,6 +67,34 @@ namespace Nyl
         // delete the shaders as they're linked into our program now and no longer necessary
         glDeleteShader(vertex);
         glDeleteShader(fragment);
+    }
+
+    void Shader::Delete()
+    {
+        glDeleteProgram(ID);
+    }
+    void Shader::checkCompileErrors(unsigned int shader, std::string type)
+    {
+        int success;
+        char infoLog[1024];
+        if (type != "PROGRAM")
+        {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
+        else
+        {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success)
+            {
+                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
     }
 
 }

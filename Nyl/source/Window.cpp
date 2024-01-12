@@ -6,43 +6,9 @@
 namespace Nyl
 {
 
-#pragma region variables
-    // Vertices coordinates
-    GLfloat vertices[] =
-    {
-        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower left corner
-        0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower right corner
-        0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f, // Upper corner
-        -0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // Inner left
-        0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // Inner right
-        0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f // Inner down
-    };
-
-    // Indices for vertices order
-    GLuint indices[] =
-    {
-        0, 3, 5, // Lower left triangle
-        3, 2, 4, // Lower right triangle
-        5, 4, 1 // Upper triangle
-    };
-
-    const char* vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-    const char* fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n\0";
-#pragma endregion
-
 #pragma region Window constructor
     Window::Window(int width, int height, const std::string& title)
-        : window(nullptr), width(width), height(height), title(title) 
+        : window(nullptr), width(width), height(height), title(title)
     {
         //Set the error callback to use our Log system
         glfwSetErrorCallback(error_callback);
@@ -53,11 +19,12 @@ namespace Nyl
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#pragma region AAPL
 
 #ifdef __APPLE__
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
+#pragma endregion
         // glfw window creation
         // --------------------
         window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
@@ -80,18 +47,11 @@ namespace Nyl
         // Set the window user pointer to the Window instance
         glfwSetKeyCallback(window, key_callback);
         glfwSetWindowUserPointer(window, this);
-
     }
 #pragma endregion
     Window::~Window() 
     {
-        vao->Delete();
-        vbo->Delete();
-        ebo->Delete();
-        //shader->Delete();
-        glfwDestroyWindow(window);
-        glfwTerminate();
-
+        Cleanup();
     }
 
     bool Window::Init()
@@ -110,20 +70,46 @@ namespace Nyl
             -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
              0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
         };
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-        glBindVertexArray(VAO);
+        GLuint indices[] =
+        {
+            0, 3, 5, // Lower left triangle
+            3, 2, 4, // Lower right triangle
+            5, 4, 1 // Upper triangle
+        };
+        vao = new VAO();
+        vao->Bind();
+        // Generates Vertex Buffer Object and links it to vertices
+        vbo =new VBO(vertices, sizeof(vertices));
+        // Generates Element Buffer Object and links it to indices
+        ebo = new EBO(indices, sizeof(indices));
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        // color attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+        // Links VBO attributes such as coordinates and colors to VAO
+        vao->LinkVBO(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+        vao->LinkVBO(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+
+        GLuint uniID = glGetUniformLocation(shader->ID, "scale");
+
+
+
+#pragma region comments
+
+        //vbo.Bind();
+        //glGenVertexArrays(1, &VAO);
+        //glGenBuffers(1, &VBO);
+        //// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+        //glBindVertexArray(VAO);
+
+        //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        //// position attribute
+        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        //glEnableVertexAttribArray(0);
+        //// color attribute
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        //glEnableVertexAttribArray(1);
 
         // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
         // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
@@ -133,7 +119,7 @@ namespace Nyl
 
         // uncomment this call to draw in wireframe polygons.
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+#pragma endregion
 
 
         return true;
@@ -146,8 +132,7 @@ namespace Nyl
         while (!glfwWindowShouldClose(window))
         {
             // input
-            // -----
-            processInput(window);
+            // ------>            processInput(window);
 
             // render
             // ------
@@ -156,7 +141,7 @@ namespace Nyl
 
             // render the triangle
             shader->use();
-            glBindVertexArray(VAO);
+            glBindVertexArray(vao->ID);
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -169,11 +154,16 @@ namespace Nyl
     void Window::Cleanup()
     {
         // optional: de-allocate all resources once they've outlived their purpose:
-// ------------------------------------------------------------------------
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
+        // ------------------------------------------------------------------------
+        //glDeleteVertexArrays(1, vao.getID());
+        //glDeleteBuffers(1, vao.getID();
         //glDeleteProgram(shader);
-
+        vao->Delete();
+        vbo->Delete();
+        ebo->Delete();
+        shader->Delete();
+        // Delete window before ending the program
+        glfwDestroyWindow(window);
         // glfw: terminate, clearing all previously allocated GLFW resources.
         // ------------------------------------------------------------------
         glfwTerminate();

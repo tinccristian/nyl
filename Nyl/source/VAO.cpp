@@ -1,11 +1,19 @@
 #include"VAO.h"
 
-
-// Links a VBO to the VAO using a certain layout
-void VAO::LinkVBO(VBO& VBO, GLuint layout)
+unsigned int ID;
+// empty constructor
+// ------------------------------------------------------------------------
+VAO::VAO(int a) { ID = a; }
+// Constructor that generates a VAO ID
+VAO::VAO()
+{
+	glGenVertexArrays(1, &ID);
+}
+// Links a VBO Attribute such as a position or color to the VAO
+void VAO::LinkVBO(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset)
 {
 	VBO.Bind();
-	glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
 	glEnableVertexAttribArray(layout);
 	VBO.Unbind();
 }
@@ -13,7 +21,6 @@ void VAO::LinkVBO(VBO& VBO, GLuint layout)
 // Binds the VAO
 void VAO::Bind()
 {
-	glGenVertexArrays(1, &ID);
 	glBindVertexArray(ID);
 }
 

@@ -72,7 +72,6 @@ namespace Nyl
         VAO* vao;
         VBO* vbo;
         EBO* ebo;
-        unsigned int VBO, VAO;
     };
 
 }
