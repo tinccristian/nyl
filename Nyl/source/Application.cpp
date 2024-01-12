@@ -4,7 +4,6 @@
 
 namespace Nyl {
 
-
 	Application::Application()
 	{
 
@@ -15,19 +14,14 @@ namespace Nyl {
 	}
     void Application::Run() 
     {
-        Window window(800, 800, "Antares");
+        Window window(800, 600, "Antares");
 
         if (!window.Init()) 
         {
             NYL_CORE_ERROR("Failed to initialize a window!");
             return;
         }
-
-
-        while (!window.ShouldClose()) 
-        {
-            window.Update();
-        }
+        window.Update();
 
     }
 }

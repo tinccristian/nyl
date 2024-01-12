@@ -11,52 +11,68 @@
 
 #include "linmath.h"
 #include "Log.h"
+#include "Shader.h"
+#include "VAO.h"
+#include "VBO.h"
+#include "EBO.h"
 
 
 namespace Nyl
 {
-    struct WindowConfig
-    {
-        std::string Title;
-        int Width;
-        int Height;
-
-        WindowConfig(const std::string& title = "Nyl Engine",
-                    int width = 1280,
-                    int height = 720)
-            : Title(title), Width(width), Height(height) {}
-    };
 
     class Window {
     public:
 
-        WindowConfig m_Config;
 
         Window(int width, int height, const std::string& title);
         ~Window();
 
         bool Init();
         void Update();
+        void Cleanup();
         bool ShouldClose() const;
 
+        void processInput(GLFWwindow* window);
+        bool getWireframeMode() { return isWireframeMode; }
+
+        static void togglePolygonMode()
+        {
+            GLint polygonMode[2];
+            glGetIntegerv(GL_POLYGON_MODE, polygonMode);
+
+            if (polygonMode[0] == GL_LINE)
+            {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
+            NYL_CORE_TRACE("Wireframe mode set.");
+            }
+            else if (polygonMode[1] == GL_FILL)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//
+                NYL_CORE_TRACE("Line mode set.");
+            }
+        }
+
+#pragma region callbacks
+
+        static void framebuffer_size_callback(GLFWwindow*, int width, int height);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void error_callback(int error, const char* description);
 
-        //static const struct
-        //{
-        //    float x, y;
-        //    float r, g, b;
-        //} vertices[];
+#pragma endregion
 
-        //static const char* vertex_shader_text;
 
-        //static const char* fragment_shader_text;
     private:
         GLFWwindow* window;
+        bool isWireframeMode=false;
         int width;
         int height;
         std::string title;
-        WindowConfig config;
+        //Shader
+        Shader* shader;
+        VAO* vao;
+        VBO* vbo;
+        EBO* ebo;
+        unsigned int VBO, VAO;
     };
 
 }
