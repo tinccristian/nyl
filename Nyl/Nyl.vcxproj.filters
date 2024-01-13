@@ -39,6 +39,9 @@
     <ClCompile Include="source\EBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\stb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Window.h">

@@ -72,6 +72,7 @@ namespace Nyl
         VAO* vao;
         VBO* vbo;
         EBO* ebo;
+        GLuint uniID;
     };
 
 }

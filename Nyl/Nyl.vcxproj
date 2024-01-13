@@ -105,6 +105,7 @@
     <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\stb.cpp" />
     <ClCompile Include="source\Window.cpp" />
     <ClCompile Include="thirdparty\glad.c" />
     <ClCompile Include="source\VAO.cpp" />
