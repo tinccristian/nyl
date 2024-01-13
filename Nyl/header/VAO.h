@@ -15,7 +15,7 @@ public:
 	VAO();
 
 	// Links a VBO Attribute such as a position or color to the VAO
-	void LinkVBO(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
+	void LinkVBO(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
 	// Get the ID
 	const GLuint getID() { return ID; }
 	// Binds the VAO

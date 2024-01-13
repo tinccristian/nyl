@@ -63,7 +63,7 @@ namespace Nyl
         shader = new Shader("D:/gitHub/nyl/Nyl/Shaders/default.vert", "D:/gitHub/nyl/Nyl/Shaders/default.frag");
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
-// ------------------------------------------------------------------
+        // ------------------------------------------------------------------
         float vertices[] = {
             // positions         // colors
              0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
