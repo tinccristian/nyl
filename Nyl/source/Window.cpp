@@ -1,8 +1,9 @@
 #include "Window.h"
-
-
+#include<stb/stb_image.h>
+//#include "Texture.h"
 #include "glm/glm.hpp"
-
+#include<filesystem>
+namespace fs = std::filesystem;
 namespace Nyl
 {
 
@@ -64,35 +65,80 @@ namespace Nyl
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
-        float vertices[] = {
-            // positions         // colors
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,     // Lower left corner
-        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     // Upper left corner
-         0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,     // Upper right corner
-         0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	  // Lower right corner
-        };
-        GLuint indices[] =
+        float vertices[] = 
         {
-            0, 2, 1, // Lower left triangle
-            0, 3, 2, // Lower right triangle          
+            // positions         // colors
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,     0.0f, 0.0f,// lower left corner
+        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     0.0f, 1.0f,// upper left corner
+         0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,     1.0f, 1.0f,// upper right corner
+         0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	  1.0f, 0.0f // lower right corner
+        };
+        GLuint indices[]=
+        {
+            0, 2, 1,                                  // lower left triangle
+            0, 3, 2,                                  // lower right triangle          
         };
         vao = new VAO();
         vao->Bind();
-        // Generates Vertex Buffer Object and links it to vertices
+        // generates Vertex Buffer Object and links it to vertices
         vbo =new VBO(vertices, sizeof(vertices));
         // Generates Element Buffer Object and links it to indices
         ebo = new EBO(indices, sizeof(indices));
 
 
-        // Links VBO attributes such as coordinates and colors to VAO
-        vao->LinkVBO(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-        vao->LinkVBO(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        // links VBO attributes such as coordinates and colors to VAO
+        vao->LinkVBO(*vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+        vao->LinkVBO(*vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        vao->LinkVBO(*vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        // unbind all to prevent accidentaly modifying them
+        vao->Unbind();
+        vbo->Unbind();
+        ebo->Unbind();
+
+        // gets id of uniform called scale
+        scaleID = glGetUniformLocation(shader->ID, "scale");
+
+        ////Texture
+        //int widthImg, heightImg, numColCh;
+        //stbi_set_flip_vertically_on_load(true);
+        ////unsigned char* bytes = stbi_load("../resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
+        //unsigned char* bytes = stbi_load("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
+
+        std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+        std::string texPath = "\\resources\\";
+        auto result = (parentDir + texPath + "chikboy_idle_0.png");
+        NYL_CORE_INFO("LOADING {0}", result);
+        m_texture = new Texture("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        m_texture->texUnit(*shader, "tex0", 0);
 
 
-        uniID = glGetUniformLocation(shader->ID, "scale");
+#pragma region old-code
+        //glGenTextures(1, &texture);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, texture);
 
+
+
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg,0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
+        //stbi_image_free(bytes);
+        //glBindTexture(GL_TEXTURE_2D, 0);
+
+        //GLuint tex0Uni = glGetUniformLocation(shader->ID,"tex0");
+        //shader->use();
+        //glUniform1i(tex0Uni, 0);
+#pragma endregion
         return true;
     }
+
+
     // render loop
     // -----------
     void Window::Update()
@@ -107,7 +153,11 @@ namespace Nyl
             // Tell OpenGL which Shader Program we want to use
             shader->use();
             // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
-            glUniform1f(uniID, 0.5f);
+            glUniform1f(scaleID, 0.5f);
+            // bind texture
+            glBindTexture(GL_TEXTURE_2D, texture);
+            // Binds texture so that is appears in rendering
+            m_texture->Bind();
             // Bind the VAO so OpenGL knows to use it
             vao->Bind();
             // Draw primitives, number of indices, datatype of indices, index of indices
@@ -121,14 +171,11 @@ namespace Nyl
     }
     void Window::Cleanup()
     {
-        // optional: de-allocate all resources once they've outlived their purpose:
-        // ------------------------------------------------------------------------
-        //glDeleteVertexArrays(1, vao.getID());
-        //glDeleteBuffers(1, vao.getID();
-        //glDeleteProgram(shader);
+        // delete all objects we created
         vao->Delete();
         vbo->Delete();
         ebo->Delete();
+        glDeleteTextures(1, &texture);
         shader->Delete();
         // Delete window before ending the program
         glfwDestroyWindow(window);
@@ -175,117 +222,4 @@ namespace Nyl
              glfwSetWindowShouldClose(window, true);
      }
 #pragma endregion
-#pragma region comments
-            //// input
-            //// -----
-            //processInput(window);
-
-            //// render
-            //// ------
-            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            //glClear(GL_COLOR_BUFFER_BIT);
-
-            //glUseProgram(shaderProgram);
-            //// draw first triangle using the data from the first VAO
-            //glBindVertexArray(VAOs[0]);
-            //glDrawArrays(GL_TRIANGLES, 0, 3);
-            //// then we draw the second triangle using the data from the second VAO
-            //glBindVertexArray(VAOs[1]);
-            //glDrawArrays(GL_TRIANGLES, 0, 3);
-
-            //// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-            //// -------------------------------------------------------------------------------
-            //glfwSwapBuffers(window);
-            //glfwPollEvents();
-
-        // optional: de-allocate all resources once they've outlived their purpose:
-        // ------------------------------------------------------------------------
-        //glDeleteVertexArrays(2, VAOs);
-        //glDeleteBuffers(2, VBOs);
-        //glDeleteProgram(shaderProgram);
-
-        // glfw: terminate, clearing all previously allocated GLFW resources.
-        // ------------------------------------------------------------------
-        // Generates Shader object using shaders defualt.vert and default.frag
-        //Shader shaderProgram("D:/gitHub/nyl/Nyl/Shaders/default.vert", "D:/gitHub/nyl/Nyl/Shaders/default.frag");
-
-
-
-        //// Generates Vertex Array Object and binds it
-        //VAO VAO1;
-        //VAO1.Bind();
-
-        //// Generates Vertex Buffer Object and links it to vertices
-        //VBO VBO1(vertices, sizeof(vertices));
-        //// Generates Element Buffer Object and links it to indices
-        //EBO EBO1(indices, sizeof(indices));
-
-        //// Links VBO to VAO
-        //VAO1.LinkVBO(VBO1, 0);
-        //// Unbind all to prevent accidentally modifying them
-        //VAO1.Unbind();
-        //VBO1.Unbind();
-        //EBO1.Unbind();
-
-
-
-        //// Main while loop
-        //while (!glfwWindowShouldClose(window))
-        //{
-        //    // Specify the color of the background
-        //    glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        //    // Clean the back buffer and assign the new color to it
-        //    glClear(GL_COLOR_BUFFER_BIT);
-        //    // Tell OpenGL which Shader Program we want to use
-        //    shaderProgram.Activate();
-        //    // Bind the VAO so OpenGL knows to use it
-        //    VAO1.Bind();
-        //    // Draw primitives, number of indices, datatype of indices, index of indices
-        //    glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
-        //    // Swap the back buffer with the front buffer
-        //    glfwSwapBuffers(window);
-        //    // Take care of all GLFW events
-        //    glfwPollEvents();
-        //}
-
-
-
-        //// Delete all the objects we've created
-        //VAO1.Delete();
-        //VBO1.Delete();
-        //EBO1.Delete();
-        //shaderProgram.Delete();
-        //// Delete window before ending the program
-        //glfwDestroyWindow(window);
-        //// Terminate GLFW before ending the program
-        //glfwTerminate();
-        //return 0;
-    //void Window::Update() 
-    //{
-    //    //Clear previous error
-    //    glGetError();
-    //    // Specify the color of the background
-    //    glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-    //    // Clean the back buffer and assign the new color to it
-    //    glClear(GL_COLOR_BUFFER_BIT);
-    //    // Tell OpenGL which Shader Program we want to use
-    //    shader->Activate();
-    //    // Bind the VAO so OpenGL knows to use it
-    //    vao->Bind();
-    //    // Draw primitives, number of indices, datatype of indices, index of indices
-    //    glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
-    //    // Swap the back buffer with the front buffer
-    //    glfwSwapBuffers(window);
-    //    // Take care of all GLFW events
-    //    glfwPollEvents();
-
-    //    GLenum error = glGetError();
-    //    if (error != GL_NO_ERROR) {
-    //        // Handle or log the error
-    //        NYL_CORE_ERROR("OpenGL error: {0}", error);
-    //    }
-    //}
-#pragma endregion
-    // glfw: whenever the window size changed (by OS or user resize) this callback function executes
-    // ---------------------------------------------------------------------------------------------
 }

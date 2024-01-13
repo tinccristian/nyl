@@ -15,7 +15,7 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
-
+#include "Texture.h"
 
 namespace Nyl
 {
@@ -72,7 +72,9 @@ namespace Nyl
         VAO* vao;
         VBO* vbo;
         EBO* ebo;
-        GLuint uniID;
+        Texture* m_texture;
+        GLuint texture;
+        GLuint scaleID;
     };
 
 }

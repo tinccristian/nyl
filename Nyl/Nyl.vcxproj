@@ -107,6 +107,7 @@
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\stb.cpp" />
     <ClCompile Include="source\Window.cpp" />
+    <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="thirdparty\glad.c" />
     <ClCompile Include="source\VAO.cpp" />
     <ClCompile Include="source\VBO.cpp" />
@@ -124,10 +125,23 @@
     <ClInclude Include="header\Shader.h" />
     <ClInclude Include="header\VAO.h" />
     <ClInclude Include="header\VBO.h" />
+    <ClInclude Include="header\Texture.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\chikboy.aseprite" />
     <None Include="Shaders\default.frag" />
     <None Include="Shaders\default.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\chikboy_idle.png" />
+    <Image Include="resources\chikboy_idle_0.png">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </Image>
+    <Image Include="resources\chikboy_run.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Nyl.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
