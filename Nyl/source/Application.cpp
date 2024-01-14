@@ -1,7 +1,8 @@
 #include "Application.h"
+#include "Window.h"
+#include "Log.h"
 
 namespace Nyl {
-
 
 	Application::Application()
 	{
@@ -11,8 +12,16 @@ namespace Nyl {
 	{
 
 	}
-	void Application::Run()
-	{
-		while (true);
-	}
+    void Application::Run() 
+    {
+        Window window(800, 600, "Antares");
+
+        if (!window.Init()) 
+        {
+            NYL_CORE_ERROR("Failed to initialize a window!");
+            return;
+        }
+        window.Update();
+
+    }
 }
