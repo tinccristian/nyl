@@ -118,8 +118,10 @@
     <ClInclude Include="header\Core.h" />
     <ClInclude Include="header\EBO.h" />
     <ClInclude Include="header\EntryPoint.h" />
+    <ClInclude Include="header\Input.h" />
     <ClInclude Include="header\linmath.h" />
     <ClInclude Include="header\Log.h" />
+    <ClInclude Include="header\Utils.h" />
     <ClInclude Include="Nyl.h" />
     <ClInclude Include="header\Window.h" />
     <ClInclude Include="header\Shader.h" />
@@ -142,6 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Nyl.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="thirdparty\gamecontrollerdb.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,7 @@
 #include "Window.h"
 #include<stb/stb_image.h>
 //#include "Texture.h"
+#include"Utils.h"
 #include "glm/glm.hpp"
 #include<filesystem>
 namespace fs = std::filesystem;
@@ -28,7 +29,7 @@ namespace Nyl
 #pragma endregion
         // glfw window creation
         // --------------------
-        window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+        window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);    //fullscreen    GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
         if (window == NULL)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -48,6 +49,16 @@ namespace Nyl
         // Set the window user pointer to the Window instance
         glfwSetKeyCallback(window, key_callback);
         glfwSetWindowUserPointer(window, this);
+
+
+        // glfw: Compile version
+        NYL_CORE_INFO("Compiled against: {0} {1} {2}", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_MINOR);
+        // glfw: Runtime version
+        int major, minor, revision;
+        glfwGetVersion(&major, &minor, &revision);
+        NYL_CORE_INFO("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
+
+
     }
 #pragma endregion
     Window::~Window() 
@@ -104,37 +115,35 @@ namespace Nyl
         ////unsigned char* bytes = stbi_load("../resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
         //unsigned char* bytes = stbi_load("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
 
+        // texture
+        // -------
         std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
         std::string texPath = "\\resources\\";
         auto result = (parentDir + texPath + "chikboy_idle_0.png");
-        NYL_CORE_INFO("LOADING {0}", result);
         m_texture = new Texture("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        NYL_CORE_INFO("Loading: {0}", result);//"D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png"
         m_texture->texUnit(*shader, "tex0", 0);
 
+        // input
+        // -----
+        
+        //set the mappings
+        joystick = glfwJoystickPresent(GLFW_JOYSTICK_1);
+        std::string mappings = load_file_contents("D:/gitHub/nyl/Nyl/thirdparty/gamecontrollerdb.txt");
+        glfwUpdateGamepadMappings(mappings.c_str());
 
-#pragma region old-code
-        //glGenTextures(1, &texture);
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, texture);
+        //axes ~ //should be 6 for regular controller: leftAnalog axis x,y, rightAnalog axis x,y, left/right triggers (LT) 1 axis each
+        int axesCount;
+        const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+        NYL_CORE_INFO("#axes available: {0}", axesCount);
 
+        // buttons
+        int buttonCount;
+        buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 
+        //info
+        NYL_CORE_INFO("{0} is connected, it has {1} axes available, {2} buttons", glfwGetJoystickName(GLFW_JOYSTICK_1), axesCount,buttonCount);
 
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg,0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        //stbi_image_free(bytes);
-        //glBindTexture(GL_TEXTURE_2D, 0);
-
-        //GLuint tex0Uni = glGetUniformLocation(shader->ID,"tex0");
-        //shader->use();
-        //glUniform1i(tex0Uni, 0);
-#pragma endregion
         return true;
     }
 
@@ -148,13 +157,8 @@ namespace Nyl
         {
 
             //joystick
-            int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-            if (1 == present)
+            if (1 == joystick)
             {
-                NYL_CORE_TRACE("{0} is connected", glfwGetJoystickName(GLFW_JOYSTICK_1));
-                int axesCount;
-                //const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-                //NYL_CORE_INFO("#axes available: {0}", axesCount);//should be 5 for regular controller: leftAnalog axis x,y, rightAnalog axis x,y, left/right triggers (LT) 1 axis each
                 //NYL_CORE_TRACE("\n\n\n\n\n\n\n\n\n\n\n\n\n\nLeft stick X Axis: {0}", axes[0]);
                 //NYL_CORE_TRACE("Left stick Y Axis: {0}", axes[1]);
                 //NYL_CORE_TRACE("Right stick X Axis: {0}", axes[2]);
@@ -162,23 +166,22 @@ namespace Nyl
                 //NYL_CORE_TRACE("Left Trigger/L2: {0}", axes[4]);
                 //NYL_CORE_TRACE("Right Trigger/R2: {0}", axes[3]);
 
-                //int buttonCount;
-                //const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-                //if (GLFW_PRESS == buttons[1])
-                //{
-                //    NYL_CORE_TRACE("X button pressed");
-                //}
+
+                if (GLFW_PRESS == buttons[1])
+                {
+                    NYL_CORE_TRACE("X button pressed");
+                }
                 //else if (GLFW_RELEASE == buttons[1])
                 //{
                 //    NYL_CORE_TRACE("X button released");
                 //}
-                //if (GLFW_PRESS == buttons[1])
+                if (GLFW_PRESS == buttons[2])
+                {
+                    NYL_CORE_TRACE("Triangle button pressed");
+                }
+                //else if (GLFW_RELEASE == buttons[1])
                 //{
-                //    NYL_CORE_TRACE("X button pressed");
-                //}
-                //if (GLFW_PRESS == buttons[1])
-                //{
-                //    NYL_CORE_TRACE("X button pressed");
+                //    NYL_CORE_TRACE("X button released");
                 //}
                 //std::cout << axes[0];
             }
@@ -204,8 +207,11 @@ namespace Nyl
             glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
             // Swap the back buffer with the front buffer
             glfwSwapBuffers(window);
-            // Take care of all GLFW events
-            glfwPollEvents();
+            // Process pending events: https://www.glfw.org/docs/3.3/input_guide.html#gamepad_mapping
+            glfwPollEvents();               //processes only those events that have already been received and then returns immediately.
+            //glfwWaitEvents();               //If you only need to update the contents of the window when you receive new input, glfwWaitEvents is a better choice.It puts the thread to sleep until at least one event has been received and then processes all received events. This saves a great deal of CPU cycles and is useful for, for example, editing tools.
+            //glfwWaitEventsTimeout(0.7);     //If you want to wait for events but have UI elements or other tasks that need periodic updates, glfwWaitEventsTimeout lets you specify a timeout.It puts the thread to sleep until at least one event has been received, or until the specified number of seconds have elapsed. It then processes any received events.
+            //glfwPostEmptyEvent();           //If the main thread is sleeping in glfwWaitEvents, you can wake it from another thread by posting an empty event to the event queue with glfwPostEmptyEvent.
         }
         Cleanup();
     }
@@ -223,26 +229,28 @@ namespace Nyl
         // ------------------------------------------------------------------
         glfwTerminate();
     }
-#pragma region utils
+    bool Window::ShouldClose() const
+    {
+        return glfwWindowShouldClose(window);
+    }
+    bool Window::ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao) {
+        bool valid = true;
+
+        return valid;
+    }
     void Window::framebuffer_size_callback(GLFWwindow*, int width, int height)
     {
         // make sure the viewport matches the new window dimensions; note that width and 
         // height will be significantly larger than specified on retina displays.
         glViewport(0, 0, width, height);
     }
-    bool Window::ShouldClose() const 
+    void Window::processInput(GLFWwindow* window)//press and hold events ~~ not used for now
     {
-        return glfwWindowShouldClose(window);
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
     }
-
-    bool ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao) {
-        bool valid = true;
-
-        return valid;
-    }
-
     //INPUT -> to be moved to separate header
-     void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
+    void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -250,16 +258,11 @@ namespace Nyl
             togglePolygonMode();
 
     }
-     void Window::error_callback(int error, const char* description)
+    void Window::error_callback(int error, const char* description)
     {
-         NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+        NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
-     // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-     // ---------------------------------------------------------------------------------------------------------
-     void Window::processInput(GLFWwindow* window)                          //press and hold events
-     {
-         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-             glfwSetWindowShouldClose(window, true);
-     }
-#pragma endregion
+    // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+    // ---------------------------------------------------------------------------------------------------------
+
 }

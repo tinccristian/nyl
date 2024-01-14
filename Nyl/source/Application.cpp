@@ -25,3 +25,5 @@ namespace Nyl {
 
     }
 }
+
+//GLFW will never free any pointer you provide to it, and you must never free any pointer it provides to you.

@@ -34,7 +34,7 @@ namespace Nyl
 
         void processInput(GLFWwindow* window);
         bool getWireframeMode() { return isWireframeMode; }
-
+        bool ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao);
         static void togglePolygonMode()
         {
             GLint polygonMode[2];
@@ -62,19 +62,24 @@ namespace Nyl
 
 
     private:
+        // window
         GLFWwindow* window;
         bool isWireframeMode=false;
         int width;
         int height;
         std::string title;
-        //Shader
+        // shader
         Shader* shader;
         VAO* vao;
         VBO* vbo;
         EBO* ebo;
+        // texture
         Texture* m_texture;
         GLuint texture;
         GLuint scaleID;
+        // input
+        int joystick;
+        const unsigned char* buttons;
     };
 
 }
