@@ -43,12 +43,12 @@ namespace Nyl
             if (polygonMode[0] == GL_LINE)
             {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
-            NYL_CORE_TRACE("Wireframe mode set.");
+            NYL_CORE_INFO("Wireframe mode set.");
             }
             else if (polygonMode[1] == GL_FILL)
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//
-                NYL_CORE_TRACE("Line mode set.");
+                NYL_CORE_INFO("Line mode set.");
             }
         }
 

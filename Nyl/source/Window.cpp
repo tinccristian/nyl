@@ -146,6 +146,46 @@ namespace Nyl
 
         while (!glfwWindowShouldClose(window))
         {
+
+            //joystick
+            int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+            if (1 == present)
+            {
+                NYL_CORE_TRACE("{0} is connected", glfwGetJoystickName(GLFW_JOYSTICK_1));
+                int axesCount;
+                //const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+                //NYL_CORE_INFO("#axes available: {0}", axesCount);//should be 5 for regular controller: leftAnalog axis x,y, rightAnalog axis x,y, left/right triggers (LT) 1 axis each
+                //NYL_CORE_TRACE("\n\n\n\n\n\n\n\n\n\n\n\n\n\nLeft stick X Axis: {0}", axes[0]);
+                //NYL_CORE_TRACE("Left stick Y Axis: {0}", axes[1]);
+                //NYL_CORE_TRACE("Right stick X Axis: {0}", axes[2]);
+                //NYL_CORE_TRACE("Right stick Y Axis: {0}", axes[5]);
+                //NYL_CORE_TRACE("Left Trigger/L2: {0}", axes[4]);
+                //NYL_CORE_TRACE("Right Trigger/R2: {0}", axes[3]);
+
+                //int buttonCount;
+                //const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+                //if (GLFW_PRESS == buttons[1])
+                //{
+                //    NYL_CORE_TRACE("X button pressed");
+                //}
+                //else if (GLFW_RELEASE == buttons[1])
+                //{
+                //    NYL_CORE_TRACE("X button released");
+                //}
+                //if (GLFW_PRESS == buttons[1])
+                //{
+                //    NYL_CORE_TRACE("X button pressed");
+                //}
+                //if (GLFW_PRESS == buttons[1])
+                //{
+                //    NYL_CORE_TRACE("X button pressed");
+                //}
+                //std::cout << axes[0];
+            }
+            else
+            {
+                NYL_CORE_WARN("no controller detected");
+            }
             // Specify the color of the background
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
             // Clean the back buffer and assign the new color to it
