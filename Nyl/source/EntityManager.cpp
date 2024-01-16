@@ -3,13 +3,13 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-
+#include "Log.h"
 #include <stb/stb_image.h>
 namespace Nyl {
 
 // <><><><><>          instantiate static variables          <><><><><>
-std::map<std::string, Texture>      EntityManager::Textures;
-std::map<std::string, Shader>       EntityManager::Shaders;
+std::map<std::string, Texture >      EntityManager::Textures;
+std::map<std::string, Shader  >       EntityManager::Shaders;
 
 
 Shader EntityManager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name)
@@ -100,6 +100,7 @@ Texture EntityManager::loadTextureFromFile(const char* file, bool alpha)
     // load image
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
+    NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
     // now generate texture
     texture.Generate(width, height, data);
     // and finally free image data

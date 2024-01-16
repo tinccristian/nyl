@@ -11,8 +11,6 @@ namespace Nyl {
 	{
 		NASSERT(!m_instance);
 		m_instance = this;
-		NYL_CORE_ERROR("Application already exists!");
-
 
         NYL_CORE_INFO("Nyl application constructor");
 	}
@@ -24,12 +22,24 @@ namespace Nyl {
 	{
 		return m_instance; 
 	}
-    void Application::Run() 
+    void Application::run() 
     {
 		Game game(m_width, m_height, m_title);
 		game.init();
-		game.update();
+		Init();
+		while (!game.ShouldClose())
+		{
+			game.update();
+			Update();
+
+
+		}
+		Quit();
     }
+	void Application::quit()
+	{
+		NYL_CORE_TRACE("NYL Application quit()");
+	}
 }
 
 //GLFW will never free any pointer you provide to it, and you must never free any pointer it provides to you.

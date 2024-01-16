@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
 	auto app = Nyl::CreateApplication();
 	try {
-		app->Run();
+		app->run();
 	}
 	catch (const std::exception& e) 
 	{

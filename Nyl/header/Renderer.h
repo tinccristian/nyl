@@ -5,8 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "texture.h"
-#include "shader.h"
+#include "Texture.h"
+#include "Shader.h"
 
 namespace Nyl
 {
@@ -15,7 +15,7 @@ namespace Nyl
     {
     public:
         // Constructor (inits shaders/shapes)
-        SpriteRenderer(Shader& shader);
+        SpriteRenderer(Shader &shader);
         // Destructor
         ~SpriteRenderer();
         // Renders a defined quad textured with given sprite

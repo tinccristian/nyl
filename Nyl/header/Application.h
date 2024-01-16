@@ -11,7 +11,12 @@ namespace Nyl
 	public:
 			      Application(int& width, int& height, const std::string& title);
 		virtual   ~Application();
-		void      Run();
+		void      run();
+		void      quit();
+
+		virtual void Init() {}
+		virtual void Quit() {}
+		virtual void Update() {}
 
 	public:
 		static Application* get();

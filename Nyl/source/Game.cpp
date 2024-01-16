@@ -1,8 +1,11 @@
-#include "Game.h"
-#include<stb/stb_image.h>
-//#include "Texture.h"
-#include"Utils.h"
 #include "glm/glm.hpp"
+
+#include "Game.h"
+#include "EntityManager.h"
+#include"Utils.h"
+#include "Renderer.h"
+
+#include<stb/stb_image.h>
 #include<filesystem>
 
 namespace fs = std::filesystem;
@@ -13,8 +16,11 @@ namespace Nyl
     {
         return Nyl::Game::window;
     }
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+    SpriteRenderer* Renderer;
 
-#pragma region Game constructor
+#pragma region Constructor
     Game::Game(int width, int height, std::string& title)
         : window(nullptr), width(width), height(height), title(title)
     {
@@ -67,31 +73,47 @@ namespace Nyl
         NYL_CORE_INFO("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
         //init();//declared by Antares
     }
-#pragma endregion
 
     Game::~Game()
     {
         //Cleanup();
     }
+#pragma endregion
+
     int Game::init()
     {
         NYL_CORE_INFO("init");
-        //other init stuff
-        //Init();
-        
-        //ApplicationInit(); ~function declared in antares.cpp
+        // load shaders
+        EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag",nullptr,"sprite");
+        EntityManager::LoadTexture("D:/gitHub/nyl/Assets/backgrounds/background.png", false, "background");
+
+        // configure shaders
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);
+        EntityManager::GetShader("sprite").use().setInt("sprite", 0);
+        EntityManager::GetShader("sprite").SetMatrix4("projection", projection);
+
+        //
+        Shader spriteShader = EntityManager::GetShader("sprite");
+        Renderer = new SpriteRenderer(spriteShader);
         return 1;
     }
     void Game::update()
     {
-        NYL_CORE_INFO("update");
+        //NYL_CORE_TRACE("update");
+        // get delta time
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        glfwPollEvents();
+        processInput();
 
-        //while (!ShouldClose)
-        //{
-        //    //Update();
-        //    //update some stuff;
-        //    //ApplicationUpdate(); ~function declared in antares.cpp
-        //}
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        // Antares update
+        auto bkg = EntityManager::GetTexture("background");
+        Renderer->DrawSprite(bkg, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
+        // game update
+        glfwSwapBuffers(window);
     }
     void Game::cleanup()
     {
@@ -295,7 +317,7 @@ bool Game::ShouldClose() const
         // height will be significantly larger than specified on retina displays.
         glViewport(0, 0, width, height);
     }
-    void Game::processInput(GLFWwindow* window)//press and hold events ~~ not used for now
+    void Game::processInput()//press and hold events ~~ not used for now
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
