@@ -101,12 +101,15 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\GameObject.cpp" />
+    <ClCompile Include="source\Renderer.cpp" />
     <ClCompile Include="source\EBO.cpp" />
+    <ClCompile Include="source\EntityManager.cpp" />
     <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\stb.cpp" />
-    <ClCompile Include="source\Window.cpp" />
+    <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="thirdparty\glad.c" />
     <ClCompile Include="source\VAO.cpp" />
@@ -118,16 +121,20 @@
     <ClInclude Include="header\Core.h" />
     <ClInclude Include="header\EBO.h" />
     <ClInclude Include="header\EntryPoint.h" />
+    <ClInclude Include="header\GameObject.h" />
+    <ClInclude Include="header\IGAME.h" />
     <ClInclude Include="header\Input.h" />
     <ClInclude Include="header\linmath.h" />
     <ClInclude Include="header\Log.h" />
+    <ClInclude Include="header\EntityManager.h" />
     <ClInclude Include="header\Utils.h" />
     <ClInclude Include="Nyl.h" />
-    <ClInclude Include="header\Window.h" />
+    <ClInclude Include="header\Game.h" />
     <ClInclude Include="header\Shader.h" />
     <ClInclude Include="header\VAO.h" />
     <ClInclude Include="header\VBO.h" />
     <ClInclude Include="header\Texture.h" />
+    <ClInclude Include="header\Renderer.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

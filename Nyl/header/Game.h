@@ -1,5 +1,7 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
+#include "IGAME.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -20,37 +22,22 @@
 namespace Nyl
 {
 
-    class Window {
+    class Game{
     public:
 
 
-        Window(int width, int height, const std::string& title);
-        ~Window();
-
-        bool Init();
-        void Update();
-        void Cleanup();
+        Game(int width, int height, std::string& title);
+        ~Game();
+        int init() ;
+        void update() ;
+        void cleanup() ;
         bool ShouldClose() const;
 
+        GLFWwindow* getWindow();
         void processInput(GLFWwindow* window);
         bool getWireframeMode() { return isWireframeMode; }
         bool ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao);
-        static void togglePolygonMode()
-        {
-            GLint polygonMode[2];
-            glGetIntegerv(GL_POLYGON_MODE, polygonMode);
-
-            if (polygonMode[0] == GL_LINE)
-            {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
-            NYL_CORE_INFO("Wireframe mode set.");
-            }
-            else if (polygonMode[1] == GL_FILL)
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//
-                NYL_CORE_INFO("Line mode set.");
-            }
-        }
+        static void togglePolygonMode();
 
 #pragma region callbacks
 
@@ -61,7 +48,7 @@ namespace Nyl
 #pragma endregion
 
 
-    private:
+    protected:
         // window
         GLFWwindow* window;
         bool isWireframeMode=false;
@@ -83,3 +70,4 @@ namespace Nyl
     };
 
 }
+#endif

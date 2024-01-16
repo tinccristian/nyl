@@ -91,7 +91,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\SandboxApp.cpp" />
+    <ClCompile Include="source\Antares.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nyl\Nyl.vcxproj">

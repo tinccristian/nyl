@@ -10,10 +10,8 @@ extern Nyl::Application* Nyl::CreateApplication();
 int main(int argc, char** argv)
 {
 	Nyl::Log::Init();
-	NYL_CORE_WARN("Initialized Log!");
-	
-	int a = 5;
-	NYL_INFO("Initialized Log! Var= {0}",a);
+	NYL_CORE_WARN("<><><><><><><><><><>  NYL  <><><><><><><><><><>");
+
 	auto app = Nyl::CreateApplication();
 	try {
 		app->Run();

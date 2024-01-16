@@ -1,28 +1,34 @@
 #include "Application.h"
-#include "Window.h"
+#include "Game.h"
 #include "Log.h"
 
 namespace Nyl {
 
-	Application::Application()
-	{
+	Application* Application::m_instance = nullptr;
 
+	Application::Application(int& width, int& height, const std::string& title)
+		:m_height(height),m_width(width),m_title(title)
+	{
+		NASSERT(!m_instance);
+		m_instance = this;
+		NYL_CORE_ERROR("Application already exists!");
+
+
+        NYL_CORE_INFO("Nyl application constructor");
 	}
 	Application::~Application()
 	{
-
+		NYL_CORE_INFO("Nyl application destructor");
+	}
+	Application* Application::get() 
+	{
+		return m_instance; 
 	}
     void Application::Run() 
     {
-        Window window(800, 600, "Antares");
-
-        if (!window.Init()) 
-        {
-            NYL_CORE_ERROR("Failed to initialize a window!");
-            return;
-        }
-        window.Update();
-
+		Game game(m_width, m_height, m_title);
+		game.init();
+		game.update();
     }
 }
 
