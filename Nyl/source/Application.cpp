@@ -25,8 +25,8 @@ namespace Nyl {
     void Application::run() 
     {
 		Game game(m_width, m_height, m_title);
-		game.init();
 		Init();
+		game.init();
 		while (!game.ShouldClose())
 		{
 			game.update();

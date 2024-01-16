@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "IGAME.h"
+//#include "IGAME.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -25,7 +25,7 @@ namespace Nyl
 
         Game(int width, int height, std::string& title);
         ~Game();
-        int init() ;
+        void init() ;
         void update() ;
         void cleanup() ;
         bool ShouldClose() const;
@@ -34,7 +34,6 @@ namespace Nyl
         void processInput();
         bool getWireframeMode() { return isWireframeMode; }
         static void togglePolygonMode();
-
 #pragma region callbacks
 
         static void framebuffer_size_callback(GLFWwindow*, int width, int height);
@@ -43,23 +42,24 @@ namespace Nyl
 
 #pragma endregion
 
-
     protected:
         // window
         GLFWwindow* window;
         bool isWireframeMode=false;
-        int width;
-        int height;
+        int  width;
+        int  height;
         std::string title;
         // shader
-        Shader* shader;
+        Shader*  shader;
         // texture
         Texture* m_texture;
-        GLuint texture;
-        GLuint scaleID;
+        GLuint   texture;
+        GLuint   scaleID;
         // input
         int joystick;
         const unsigned char* buttons;
+    private:
+
     };
 
 }

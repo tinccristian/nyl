@@ -71,7 +71,6 @@ namespace Nyl
         int major, minor, revision;
         glfwGetVersion(&major, &minor, &revision);
         NYL_CORE_INFO("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
-        //init();//declared by Antares
     }
 
     Game::~Game()
@@ -80,7 +79,7 @@ namespace Nyl
     }
 #pragma endregion
 
-    int Game::init()
+    void Game::init()
     {
         NYL_CORE_INFO("init");
         // load shaders
@@ -91,11 +90,9 @@ namespace Nyl
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);
         EntityManager::GetShader("sprite").use().setInt("sprite", 0);
         EntityManager::GetShader("sprite").SetMatrix4("projection", projection);
-
         //
         Shader spriteShader = EntityManager::GetShader("sprite");
         Renderer = new SpriteRenderer(spriteShader);
-        return 1;
     }
     void Game::update()
     {
@@ -105,7 +102,7 @@ namespace Nyl
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         glfwPollEvents();
-        processInput();
+        processInput();// to be moved to antares as separate foo
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

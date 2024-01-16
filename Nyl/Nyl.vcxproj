@@ -117,7 +117,6 @@
     <ClInclude Include="header\Core.h" />
     <ClInclude Include="header\EntryPoint.h" />
     <ClInclude Include="header\GameObject.h" />
-    <ClInclude Include="header\IGAME.h" />
     <ClInclude Include="header\Input.h" />
     <ClInclude Include="header\linmath.h" />
     <ClInclude Include="header\Log.h" />

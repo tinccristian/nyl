@@ -4,6 +4,7 @@
 
 namespace Antares
 {
+    using namespace Nyl;
 
     Antares::Antares(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
@@ -19,7 +20,6 @@ namespace Antares
     void Antares::Init()
     {
         NYL_TRACE("ANTARES init");
-
     }
 
     void Antares::Update()
