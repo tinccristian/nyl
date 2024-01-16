@@ -101,9 +101,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\GameObject.cpp" />
     <ClCompile Include="source\Renderer.cpp" />
-    <ClCompile Include="source\EBO.cpp" />
     <ClCompile Include="source\EntityManager.cpp" />
     <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\Application.cpp" />
@@ -112,14 +110,11 @@
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="thirdparty\glad.c" />
-    <ClCompile Include="source\VAO.cpp" />
-    <ClCompile Include="source\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Application.h" />
     <ClInclude Include="header\Config.h" />
     <ClInclude Include="header\Core.h" />
-    <ClInclude Include="header\EBO.h" />
     <ClInclude Include="header\EntryPoint.h" />
     <ClInclude Include="header\GameObject.h" />
     <ClInclude Include="header\IGAME.h" />
@@ -131,8 +126,6 @@
     <ClInclude Include="Nyl.h" />
     <ClInclude Include="header\Game.h" />
     <ClInclude Include="header\Shader.h" />
-    <ClInclude Include="header\VAO.h" />
-    <ClInclude Include="header\VBO.h" />
     <ClInclude Include="header\Texture.h" />
     <ClInclude Include="header\Renderer.h" />
     <ClInclude Include="resource.h" />

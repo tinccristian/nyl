@@ -31,8 +31,6 @@ namespace Nyl {
 		{
 			game.update();
 			Update();
-
-
 		}
 		Quit();
     }

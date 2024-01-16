@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "EntityManager.h"
-#include"Utils.h"
+#include "Utils.h"
 #include "Renderer.h"
 
 #include<stb/stb_image.h>
@@ -85,7 +85,7 @@ namespace Nyl
         NYL_CORE_INFO("init");
         // load shaders
         EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag",nullptr,"sprite");
-        EntityManager::LoadTexture("D:/gitHub/nyl/Assets/backgrounds/background.png", false, "background");
+        EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/backgrounds/background.png", false, "background");
 
         // configure shaders
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);
@@ -305,11 +305,6 @@ namespace Nyl
 bool Game::ShouldClose() const
     {
         return glfwWindowShouldClose(window);
-    }
-    bool Game::ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao) {
-        bool valid = true;
-
-        return valid;
     }
     void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
     {

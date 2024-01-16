@@ -36,5 +36,5 @@ namespace Antares
 Nyl::Application* Nyl::CreateApplication()
 {
     NYL_TRACE("Create Antares");
-    return new Antares::Antares(800, 400, "Antares");
+    return new Antares::Antares(1280, 720, "Antares");
 }

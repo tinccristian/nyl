@@ -14,9 +14,6 @@
 #include "linmath.h"
 #include "Log.h"
 #include "Shader.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "EBO.h"
 #include "Texture.h"
 
 namespace Nyl
@@ -36,7 +33,6 @@ namespace Nyl
         GLFWwindow* getWindow();
         void processInput();
         bool getWireframeMode() { return isWireframeMode; }
-        bool ValidateOpenGLObjects(const Shader& shader, const VBO& vbo, const EBO& ebo, const VAO& vao);
         static void togglePolygonMode();
 
 #pragma region callbacks
@@ -57,9 +53,6 @@ namespace Nyl
         std::string title;
         // shader
         Shader* shader;
-        VAO* vao;
-        VBO* vbo;
-        EBO* ebo;
         // texture
         Texture* m_texture;
         GLuint texture;
