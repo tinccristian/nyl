@@ -6,8 +6,6 @@
 #include "Renderer.h"
 
 
-#include "GameObject.h"
-
 namespace Nyl
 {
     GLFWwindow* Game::getWindow()
@@ -16,8 +14,7 @@ namespace Nyl
     }
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
-    SpriteRenderer* Renderer;
-    GameObject* Player;
+
     const glm::vec2 PLAYER_SIZE(300.0f, 300.0f);
 
 #pragma region Constructor
@@ -103,25 +100,7 @@ namespace Nyl
         EntityManager::GetShader("sprite").use().setInt("sprite", 0);
         EntityManager::GetShader("sprite").SetMatrix4("projection", projection);
         // load textures
-        Nyl::EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/chikboy/chikboy.png", true, "chikboy");
-        Nyl::EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/backgrounds/background.png", false, "background");
-        Init();
-
-        // set render specific controls
-        Shader spriteShader = EntityManager::GetShader("sprite");
-        Renderer = new SpriteRenderer(spriteShader);
-
-        // configure game objects
-        float sizeY = 64.0f;
-        float sizeX = 64.0f;
-        //float posX = width / 2.0f - sizeX;
-        //float posY = height / 2.0f - sizeY;
-        float posX = width/2.0f  - sizeX;
-        float posY = height/2.0f - sizeY;
-        NYL_CORE_WARN("Rendering chikboy at x = {0}, y = {1}", posX,posY);
-        Player = new GameObject(posX,posY, sizeY, sizeX, EntityManager::GetTexture("chikboy"));
-        //glm::vec2 playerPos = glm::vec2(this->width / 2.0f - PLAYER_SIZE.x / 2.0f, this->height - PLAYER_SIZE.y); //constructor above is easier to use
-        //Player = new GameObject(playerPos, PLAYER_SIZE, EntityManager::GetTexture("chikboy")); 
+        Init(); //make user init his textures
     }
     void Game::update(float dt)
     {
@@ -136,10 +115,8 @@ namespace Nyl
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        // Antares update
-        //auto bkg = EntityManager::GetTexture("background");
-        Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
-        Player->Draw(*Renderer);
+
+        Update();
         // game update
         glfwSwapBuffers(window);
     }

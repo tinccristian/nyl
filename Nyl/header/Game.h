@@ -36,6 +36,10 @@ namespace Nyl
         static void toggle_polygon_mode();
 #pragma region callbacks
 
+        typedef struct point {
+            float x = 60.0f;
+            float y = 280.0f;
+        };
         static void framebuffer_size_callback(GLFWwindow*, int width, int height);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void error_callback(int error, const char* description);

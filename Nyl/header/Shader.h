@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Core.h"
 #include <glad/glad.h>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -9,7 +9,7 @@
 
 namespace Nyl
 {
-    class Shader
+    class NYL_API Shader
     {
     public:
 

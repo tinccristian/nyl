@@ -1,6 +1,5 @@
-#ifndef RENDERER_H
-#define RENDERER_H
-
+#pragma once
+#include "Core.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,7 +10,7 @@
 namespace Nyl
 {
 
-    class SpriteRenderer
+    class NYL_API SpriteRenderer
     {
     public:
         // Constructor (inits shaders/shapes)
@@ -28,5 +27,3 @@ namespace Nyl
         void initRenderData();
     };
 }
-
-#endif

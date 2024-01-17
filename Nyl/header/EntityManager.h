@@ -7,12 +7,12 @@
 
 #include "Texture.h"
 #include "Shader.h"
-
+#include "Core.h"
 
 namespace Nyl
 {
 
-class EntityManager
+class NYL_API EntityManager
 {
     public:
         // resource storage
