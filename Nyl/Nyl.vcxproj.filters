@@ -69,6 +69,9 @@
     <ClCompile Include="source\Game.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="source\GameObject.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Application.h">
@@ -124,10 +127,10 @@
     <None Include="resources\chikboy.aseprite">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Shaders\sprite.frag">
+    <None Include="Shaders\sprite.vert">
       <Filter>Source Files\Resources</Filter>
     </None>
-    <None Include="Shaders\sprite.vert">
+    <None Include="Shaders\sprite.frag">
       <Filter>Source Files\Resources</Filter>
     </None>
   </ItemGroup>

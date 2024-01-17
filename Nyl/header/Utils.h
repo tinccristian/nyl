@@ -2,11 +2,11 @@
 
 #include "Log.h"
 
-//          std         //
+// std
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <filesystem>   //C++17
+#include <filesystem> //C++17
 
 namespace fs = std::filesystem;
 

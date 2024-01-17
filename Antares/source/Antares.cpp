@@ -1,6 +1,4 @@
-// antares.cpp
 #include "../../Antares/Antares.h"
-#include <header/EntityManager.h>
 
 namespace Antares
 {

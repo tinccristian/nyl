@@ -5,10 +5,8 @@
 #include "Utils.h"
 #include "Renderer.h"
 
-#include<stb/stb_image.h>
-#include<filesystem>
 
-namespace fs = std::filesystem;
+#include "GameObject.h"
 
 namespace Nyl
 {
@@ -19,15 +17,25 @@ namespace Nyl
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     SpriteRenderer* Renderer;
+    GameObject* Player;
+    const glm::vec2 PLAYER_SIZE(300.0f, 300.0f);
 
 #pragma region Constructor
-    Game::Game(int width, int height, std::string& title)
+    Game::Game(int width, int height, const std::string& title)
         : window(nullptr), width(width), height(height), title(title)
     {
+        initialize_glfw_window();
+    }
 
-
+    Game::~Game()
+    {
+        EntityManager::Clear();
+        glfwTerminate();
+    }
+    void Game::initialize_glfw_window()
+    {
         // glfw: initialize and configure
-        // ------------------------------
+// ------------------------------
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -51,7 +59,8 @@ namespace Nyl
             return;
         }
         glfwMakeContextCurrent(window);
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+
 
         // glad: load all OpenGL function pointers
         // ---------------------------------------
@@ -61,6 +70,7 @@ namespace Nyl
             return;
         }
         // Set the window user pointer to the Window instance
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetKeyCallback(window, key_callback);
         glfwSetWindowUserPointer(window, this);
 
@@ -72,29 +82,48 @@ namespace Nyl
         glfwGetVersion(&major, &minor, &revision);
         NYL_CORE_INFO("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
     }
-
-    Game::~Game()
-    {
-        //Cleanup();
-    }
 #pragma endregion
+
 
     void Game::init()
     {
         NYL_CORE_INFO("init");
+
+
+        // OpenGL configuration
+        glViewport(0, 0, width, height);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // load shaders
-        EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag",nullptr,"sprite");
-        EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/backgrounds/background.png", false, "background");
+        EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag", nullptr, "sprite");
 
         // configure shaders
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);
         EntityManager::GetShader("sprite").use().setInt("sprite", 0);
         EntityManager::GetShader("sprite").SetMatrix4("projection", projection);
-        //
+        // load textures
+        Nyl::EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/chikboy/chikboy.png", true, "chikboy");
+        Nyl::EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/backgrounds/background.png", false, "background");
+        Init();
+
+        // set render specific controls
         Shader spriteShader = EntityManager::GetShader("sprite");
         Renderer = new SpriteRenderer(spriteShader);
+
+        // configure game objects
+        float sizeY = 64.0f;
+        float sizeX = 64.0f;
+        //float posX = width / 2.0f - sizeX;
+        //float posY = height / 2.0f - sizeY;
+        float posX = width/2.0f  - sizeX;
+        float posY = height/2.0f - sizeY;
+        NYL_CORE_WARN("Rendering chikboy at x = {0}, y = {1}", posX,posY);
+        Player = new GameObject(posX,posY, sizeY, sizeX, EntityManager::GetTexture("chikboy"));
+        //glm::vec2 playerPos = glm::vec2(this->width / 2.0f - PLAYER_SIZE.x / 2.0f, this->height - PLAYER_SIZE.y); //constructor above is easier to use
+        //Player = new GameObject(playerPos, PLAYER_SIZE, EntityManager::GetTexture("chikboy")); 
     }
-    void Game::update()
+    void Game::update(float dt)
     {
         //NYL_CORE_TRACE("update");
         // get delta time
@@ -102,15 +131,26 @@ namespace Nyl
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         glfwPollEvents();
-        processInput();// to be moved to antares as separate foo
+
+        process_input();// to be moved to antares as separate foo
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         // Antares update
-        auto bkg = EntityManager::GetTexture("background");
-        Renderer->DrawSprite(bkg, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
+        //auto bkg = EntityManager::GetTexture("background");
+        Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
+        Player->Draw(*Renderer);
         // game update
         glfwSwapBuffers(window);
+    }
+    void Game::run()
+    {
+        init();
+        while (!should_close())
+        {
+            update(0);
+            Update();
+        }
     }
     void Game::cleanup()
     {
@@ -283,7 +323,7 @@ namespace Nyl
     //}
 #pragma endregion
 
- void Game::togglePolygonMode()
+ void Game::toggle_polygon_mode()
 {
         GLint polygonMode[2];
         glGetIntegerv(GL_POLYGON_MODE, polygonMode);
@@ -299,35 +339,34 @@ namespace Nyl
             NYL_CORE_INFO("Line mode set.");
         }
 }
-bool Game::ShouldClose() const
+bool Game::should_close() const
     {
         return glfwWindowShouldClose(window);
     }
-    void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
-    {
-        // make sure the viewport matches the new window dimensions; note that width and 
-        // height will be significantly larger than specified on retina displays.
-        glViewport(0, 0, width, height);
-    }
-    void Game::processInput()//press and hold events ~~ not used for now
-    {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
-    }
-    //INPUT -> to be moved to separate header
-    void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
-    {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-        if (key == GLFW_KEY_C && action == GLFW_PRESS)
-            togglePolygonMode();
+void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions
+    glViewport(0, 0, width, height);
+}
+void Game::process_input()//press and hold events ~~ not used for now
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+//INPUT -> to be moved to separate header
+void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        toggle_polygon_mode();
 
-    }
-    void Game::error_callback(int error, const char* description)
-    {
-        NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-    }
-    // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-    // ---------------------------------------------------------------------------------------------------------
+}
+void Game::error_callback(int error, const char* description)
+{
+    NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+}
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
 
 }

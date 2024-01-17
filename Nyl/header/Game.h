@@ -1,7 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
-//#include "IGAME.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -19,21 +17,23 @@
 namespace Nyl
 {
 
-    class Game{
+    class NYL_API Game{
     public:
 
 
-        Game(int width, int height, std::string& title);
+        Game(int width, int height, const std::string& title);
         ~Game();
         void init() ;
-        void update() ;
+        void update(float dt) ;
         void cleanup() ;
-        bool ShouldClose() const;
-
+        bool should_close() const;
+        virtual void Init()=0;
+        virtual void Update()=0;
+        virtual void Quit()=0;
+        void run();
         GLFWwindow* getWindow();
-        void processInput();
-        bool getWireframeMode() { return isWireframeMode; }
-        static void togglePolygonMode();
+        void process_input();
+        static void toggle_polygon_mode();
 #pragma region callbacks
 
         static void framebuffer_size_callback(GLFWwindow*, int width, int height);
@@ -45,7 +45,6 @@ namespace Nyl
     protected:
         // window
         GLFWwindow* window;
-        bool isWireframeMode=false;
         int  width;
         int  height;
         std::string title;
@@ -59,8 +58,7 @@ namespace Nyl
         int joystick;
         const unsigned char* buttons;
     private:
-
+        void initialize_glfw_window();
     };
 
 }
-#endif

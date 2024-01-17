@@ -77,7 +77,7 @@ Shader EntityManager::loadShaderFromFile(const char* vShaderFile, const char* fS
     }
     catch (std::exception e)
     {
-        std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
+        NYL_CORE_ERROR("SHADER: Failed to read shader files : {0}",e.what());
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();

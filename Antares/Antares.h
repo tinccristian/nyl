@@ -1,5 +1,4 @@
-#ifndef ANTARES_H
-#define ANTARES_H
+#pragma once
 
 #include <Nyl.h>
 
@@ -17,5 +16,3 @@ namespace Antares
 
 	};
 }
-
-#endif // !ANTARES_H

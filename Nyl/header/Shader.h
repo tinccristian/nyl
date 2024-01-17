@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <glad/glad.h>
 #include <glm/ext/matrix_float4x4.hpp>
@@ -39,6 +38,3 @@ namespace Nyl
         static void checkCompileErrors(unsigned int shader, std::string type);
     };
 }
-
-#endif
-

@@ -101,6 +101,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\GameObject.cpp" />
     <ClCompile Include="source\Renderer.cpp" />
     <ClCompile Include="source\EntityManager.cpp" />
     <ClCompile Include="source\Log.cpp" />

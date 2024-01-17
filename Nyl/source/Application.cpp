@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "Game.h"
 #include "Log.h"
 
 namespace Nyl {
@@ -7,16 +6,15 @@ namespace Nyl {
 	Application* Application::m_instance = nullptr;
 
 	Application::Application(int& width, int& height, const std::string& title)
-		:m_height(height),m_width(width),m_title(title)
-	{
+		: Game(width, height, title), m_height(height), m_width(width), m_title(title) {
 		NASSERT(!m_instance);
 		m_instance = this;
 
-        NYL_CORE_INFO("Nyl application constructor");
+		NYL_CORE_TRACE("Nyl application constructor");
 	}
 	Application::~Application()
 	{
-		NYL_CORE_INFO("Nyl application destructor");
+		NYL_CORE_TRACE("Nyl application destructor");
 	}
 	Application* Application::get() 
 	{
@@ -24,15 +22,7 @@ namespace Nyl {
 	}
     void Application::run() 
     {
-		Game game(m_width, m_height, m_title);
-		Init();
-		game.init();
-		while (!game.ShouldClose())
-		{
-			game.update();
-			Update();
-		}
-		Quit();
+		Game::run();
     }
 	void Application::quit()
 	{
