@@ -26,12 +26,10 @@ namespace Antares
         // configure game objects
         float sizeY = 64.0f;
         float sizeX = 64.0f;
-        //float posX = width / 2.0f - sizeX;
-        //float posY = height / 2.0f - sizeY;
         float posX = width / 2.0f - sizeX;
         float posY = height / 2.0f - sizeY;
         point startPoint;
-        NYL_CORE_WARN("Rendering chikboy at x = {0}, y = {1}", startPoint.x, startPoint.y);
+        NYL_WARN("Rendering chikboy at x = {0}, y = {1}", startPoint.x, startPoint.y);
 
         Player = new GameObject(
                  startPoint.x,
@@ -43,7 +41,6 @@ namespace Antares
         // set render specific controls
         Shader spriteShader = EntityManager::GetShader("sprite");
         Renderer = new SpriteRenderer(spriteShader);
-
     }
 
     void Antares::Update()
@@ -57,10 +54,11 @@ namespace Antares
     void Antares::Quit()
     {
         NYL_TRACE("ANTARES quit");
+        delete Renderer;
+        delete Player;
     }
-
 }
-Nyl::Application* Nyl::CreateApplication()
+Application * Nyl::CreateApplication()
 {
     NYL_TRACE("Create Antares");
     return new Antares::Antares(1280, 720, "Antares");

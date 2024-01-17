@@ -8,3 +8,8 @@ docs/
 #Files
 
 .user
+
+#compileScore
+*.scor
+*.gbl
+*.t0000

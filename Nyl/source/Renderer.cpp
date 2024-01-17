@@ -1,8 +1,10 @@
 #include "Renderer.h"
+#include "EntityManager.h"
+#include "Shader.h"
 
 using namespace Nyl;
 
-SpriteRenderer::SpriteRenderer(Shader &shader)
+SpriteRenderer::SpriteRenderer(Nyl::Shader &shader)
 {
 	this->shader = shader;
 	this->initRenderData();
@@ -21,14 +23,14 @@ void SpriteRenderer::DrawSprite(const Texture& texture, glm::vec2 position, glm:
 
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
 
-    //model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // move origin back
+    // model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // move origin back
 
     model = glm::scale(model, glm::vec3(size, 1.0f)); // scale
 
-    this->shader.SetMatrix4("model", model);
+    this->shader.set_mat4("model", model);
 
     // render textured quad
-    this->shader.SetVector3f("spriteColor", color);
+    this->shader.set_vec3f("spriteColor", color);
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();

@@ -2,8 +2,6 @@
 
 #include "Game.h"
 #include "EntityManager.h"
-#include "Utils.h"
-#include "Renderer.h"
 
 
 namespace Nyl
@@ -15,9 +13,6 @@ namespace Nyl
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
-    const glm::vec2 PLAYER_SIZE(300.0f, 300.0f);
-
-#pragma region Constructor
     Game::Game(int width, int height, const std::string& title)
         : window(nullptr), width(width), height(height), title(title)
     {
@@ -31,8 +26,7 @@ namespace Nyl
     }
     void Game::initialize_glfw_window()
     {
-        // glfw: initialize and configure
-// ------------------------------
+        // glfw initialize and configure
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -60,27 +54,27 @@ namespace Nyl
 
 
         // glad: load all OpenGL function pointers
-        // ---------------------------------------
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             NYL_CORE_ERROR("Failed to initialize GLAD");
             return;
         }
-        // Set the window user pointer to the Window instance
+
+        // set the callback functions, should come from the APP, but for now engine specific 
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetKeyCallback(window, key_callback);
+        glfwSetCursorPosCallback(window, cursor_position_callback);
+
+        // set the window user pointer to the Window instance
         glfwSetWindowUserPointer(window, this);
 
-
-        // glfw: Compile version
-        NYL_CORE_INFO("Compiled against: {0} {1} {2}", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_MINOR);
-        // glfw: Runtime version
+        // glfw compile version
+        NYL_CORE_TRACE("Compiled against: {0} {1} {2}", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_MINOR);
+        // glfw runtime version
         int major, minor, revision;
         glfwGetVersion(&major, &minor, &revision);
-        NYL_CORE_INFO("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
+        NYL_CORE_TRACE("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
     }
-#pragma endregion
-
 
     void Game::init()
     {
@@ -96,9 +90,9 @@ namespace Nyl
         EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag", nullptr, "sprite");
 
         // configure shaders
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);
-        EntityManager::GetShader("sprite").use().setInt("sprite", 0);
-        EntityManager::GetShader("sprite").SetMatrix4("projection", projection);
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
+        EntityManager::GetShader("sprite").use().set_int("sprite", 0);
+        EntityManager::GetShader("sprite").set_mat4("projection", projection);
         // load textures
         Init(); //make user init his textures
     }
@@ -305,15 +299,15 @@ namespace Nyl
         GLint polygonMode[2];
         glGetIntegerv(GL_POLYGON_MODE, polygonMode);
 
-        if (polygonMode[0] == GL_LINE)
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
-            NYL_CORE_INFO("Wireframe mode set.");
-        }
-        else if (polygonMode[1] == GL_FILL)
+        if (polygonMode[0] == GL_FILL)
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//
-            NYL_CORE_INFO("Line mode set.");
+            NYL_CORE_TRACE("Wireframe mode set.");
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
+            NYL_CORE_TRACE("Line mode set.");
         }
 }
 bool Game::should_close() const
@@ -337,8 +331,20 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
         toggle_polygon_mode();
-
+    if (key == GLFW_KEY_W && action == GLFW_PRESS)
+        NYL_CORE_WARN("going up");
+    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+        NYL_CORE_WARN("going left");
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+        NYL_CORE_WARN("going down");
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        NYL_CORE_WARN("going right");
 }
+ void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+     NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+}
+
 void Game::error_callback(int error, const char* description)
 {
     NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);

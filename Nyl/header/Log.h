@@ -24,14 +24,14 @@ namespace Nyl
 
 }
 
-//Core log macros
+// core log macros
 #define NYL_CORE_TRACE(...)    ::Nyl::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define NYL_CORE_INFO(...)     ::Nyl::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define NYL_CORE_WARN(...)     ::Nyl::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define NYL_CORE_ERROR(...)    ::Nyl::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define NYL_CORE_FATAL(...)    ::Nyl::Log::GetCoreLogger()->fatal(__VA_ARGS__)
 
-//Client log macros
+// client log macros
 #define NYL_TRACE(...)	       ::Nyl::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define NYL_INFO(...)	       ::Nyl::Log::GetClientLogger()->info(__VA_ARGS__)
 #define NYL_WARN(...)	       ::Nyl::Log::GetClientLogger()->warn(__VA_ARGS__)
