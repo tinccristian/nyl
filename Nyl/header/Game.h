@@ -53,7 +53,7 @@ namespace Nyl {
 
     protected:
         // struct for a point
-        typedef struct point {
+        struct point {
             float x = 60.0f;
             float y = 280.0f;
         };

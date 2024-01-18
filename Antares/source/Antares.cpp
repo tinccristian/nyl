@@ -1,4 +1,4 @@
-#include "../../Antares/Antares.h"
+#include "Antares.h"
 
 namespace Antares
 {

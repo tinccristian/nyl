@@ -131,66 +131,7 @@ namespace Nyl
     {
         NYL_CORE_INFO("cleanup");
     }
-#pragma region old
-
-    //bool Window::Init()
-    //{
-
-    //    // build and compile our shader program
-    //    // ------------------------------------
-    //    // vertex shader
-    //    shader = new Shader("D:/gitHub/nyl/Nyl/Shaders/default.vert", "D:/gitHub/nyl/Nyl/Shaders/default.frag");
-
-    //    // set up vertex data (and buffer(s)) and configure vertex attributes
-    //    // ------------------------------------------------------------------
-    //    float vertices[] = 
-    //    {
-    //        // positions         // colors
-    //    -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,     0.0f, 0.0f,// lower left corner
-    //    -0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     0.0f, 1.0f,// upper left corner
-    //     0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,     1.0f, 1.0f,// upper right corner
-    //     0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	  1.0f, 0.0f // lower right corner
-    //    };
-    //    GLuint indices[]=
-    //    {
-    //        0, 2, 1,                                  // lower left triangle
-    //        0, 3, 2,                                  // lower right triangle          
-    //    };
-    //    vao = new VAO();
-    //    vao->Bind();
-    //    // generates Vertex Buffer Object and links it to vertices
-    //    vbo =new VBO(vertices, sizeof(vertices));
-    //    // Generates Element Buffer Object and links it to indices
-    //    ebo = new EBO(indices, sizeof(indices));
-
-
-    //    // links VBO attributes such as coordinates and colors to VAO
-    //    vao->LinkVBO(*vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-    //    vao->LinkVBO(*vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    //    vao->LinkVBO(*vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    //    // unbind all to prevent accidentaly modifying them
-    //    vao->Unbind();
-    //    vbo->Unbind();
-    //    ebo->Unbind();
-
-    //    // gets id of uniform called scale
-    //    scaleID = glGetUniformLocation(shader->ID, "scale");
-
-    //    ////Texture
-    //    //int widthImg, heightImg, numColCh;
-    //    //stbi_set_flip_vertically_on_load(true);
-    //    ////unsigned char* bytes = stbi_load("../resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
-    //    //unsigned char* bytes = stbi_load("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", &widthImg, &heightImg, &numColCh, 0);
-
-    //    // texture
-    //    // -------
-    //    std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
-    //    std::string texPath = "\\resources\\";
-    //    auto result = (parentDir + texPath + "chikboy_idle_0.png");
-    //    m_texture = new Texture("D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-    //    NYL_CORE_INFO("Loading: {0}", result);//"D:/gitHub/nyl/Nyl/resources/chikboy_idle_0.png"
-    //    m_texture->texUnit(*shader, "tex0", 0);
-
+#pragma region oldcode
     //    // input
     //    // -----
     //    
@@ -211,17 +152,6 @@ namespace Nyl
     //    //info
     //    NYL_CORE_INFO("{0} is connected, it has {1} axes available, {2} buttons", glfwGetJoystickName(GLFW_JOYSTICK_1), axesCount,buttonCount);
 
-    //    return true;
-    //}
-
-
-    //// render loop
-    //// -----------
-    //void Window::Update()
-    //{
-
-    //    while (!glfwWindowShouldClose(window))
-    //    {
 
     //        //joystick
     //        if (1 == joystick)
@@ -238,65 +168,14 @@ namespace Nyl
     //            {
     //                NYL_CORE_TRACE("X button pressed");
     //            }
-    //            //else if (GLFW_RELEASE == buttons[1])
-    //            //{
-    //            //    NYL_CORE_TRACE("X button released");
-    //            //}
-    //            if (GLFW_PRESS == buttons[2])
-    //            {
-    //                NYL_CORE_TRACE("Triangle button pressed");
-    //            }
-    //            //else if (GLFW_RELEASE == buttons[1])
-    //            //{
-    //            //    NYL_CORE_TRACE("X button released");
-    //            //}
-    //            //std::cout << axes[0];
-    //        }
-    //        else
-    //        {
-    //            NYL_CORE_WARN("no controller detected");
-    //        }
-    //        // Specify the color of the background
-    //        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-    //        // Clean the back buffer and assign the new color to it
-    //        glClear(GL_COLOR_BUFFER_BIT);
-    //        // Tell OpenGL which Shader Program we want to use
-    //        shader->use();
-    //        // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
-    //        glUniform1f(scaleID, 0.5f);
-    //        // bind texture
-    //        glBindTexture(GL_TEXTURE_2D, texture);
-    //        // Binds texture so that is appears in rendering
-    //        m_texture->Bind();
-    //        // Bind the VAO so OpenGL knows to use it
-    //        vao->Bind();
-    //        // Draw primitives, number of indices, datatype of indices, index of indices
-    //        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
-    //        // Swap the back buffer with the front buffer
-    //        glfwSwapBuffers(window);
-    //        // Process pending events: https://www.glfw.org/docs/3.3/input_guide.html#gamepad_mapping
-    //        glfwPollEvents();               //processes only those events that have already been received and then returns immediately.
-    //        //glfwWaitEvents();               //If you only need to update the contents of the window when you receive new input, glfwWaitEvents is a better choice.It puts the thread to sleep until at least one event has been received and then processes all received events. This saves a great deal of CPU cycles and is useful for, for example, editing tools.
-    //        //glfwWaitEventsTimeout(0.7);     //If you want to wait for events but have UI elements or other tasks that need periodic updates, glfwWaitEventsTimeout lets you specify a timeout.It puts the thread to sleep until at least one event has been received, or until the specified number of seconds have elapsed. It then processes any received events.
-    //        //glfwPostEmptyEvent();           //If the main thread is sleeping in glfwWaitEvents, you can wake it from another thread by posting an empty event to the event queue with glfwPostEmptyEvent.
-    //    }
-    //    Cleanup();
-    //}
-    //void Window::Cleanup()
-    //{
-    //    // delete all objects we created
-    //    vao->Delete();
-    //    vbo->Delete();
-    //    ebo->Delete();
-    //    glDeleteTextures(1, &texture);
-    //    shader->Delete();
-    //    // Delete window before ending the program
-    //    glfwDestroyWindow(window);
-    //    // glfw: terminate, clearing all previously allocated GLFW resources.
-    //    // ------------------------------------------------------------------
-    //    glfwTerminate();
-    //}
 #pragma endregion
+    // function to check if the joystick is connected
+    int is_joystick_connected()
+	{
+		return glfwJoystickPresent(GLFW_JOYSTICK_1);
+	}
+
+	}
 
  void Game::toggle_polygon_mode()
 {
@@ -353,8 +232,4 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 void Game::error_callback(int error, const char* description)
 {
     NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-}
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-
 }

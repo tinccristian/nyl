@@ -1,8 +1,6 @@
 #pragma once
 
-// #############################################################################
-//                           Input Structs
-// #############################################################################
+// Input Structs
 enum KeyCodeID
 {
 	KEY_MOUSE_LEFT,
@@ -76,11 +74,12 @@ enum KeyCodeID
 
 struct Key
 {
-	char isDown;
-	char justPressed;
-	char justReleased;
-	unsigned char halfTransitionCount;
+	bool isDown; // indicates if the key is currently pressed
+	bool justPressed; // indicates if the key was just pressed
+	bool justReleased; // indicates if the key was just released
+	unsigned char halfTransitionCount; // counts the number of half transitions (press and release) of the key
 };
+
 struct IVec2
 {
 	int x;
@@ -110,46 +109,57 @@ struct IVec2
 		return { x / scalar, y / scalar };
 	}
 };
+
 struct Input
 {
-	IVec2 screenSize;
+	IVec2 screenSize; // size of the screen
 
-	// Screen
-	IVec2 prevMousePos;
-	IVec2 mousePos;
-	IVec2 relMouse;
+	// screen
+	IVec2 prevMousePos; // previous mouse position on the screen
+	IVec2 mousePos; // current mouse position on the screen
+	IVec2 relMouse; // relative mouse movement
 
-	// World
-	IVec2 prevMousePosWorld;
-	IVec2 mousePosWorld;
-	IVec2 relMouseWorld;
+	// world
+	IVec2 prevMousePosWorld; // previous mouse position in the world
+	IVec2 mousePosWorld; // current mouse position in the world
+	IVec2 relMouseWorld; // relative mouse movement in the world
 
-	Key keys[KEY_COUNT];
+	Key keys[KEY_COUNT]; // array of keys
 };
 
-// #############################################################################
-//                           Input Globals
-// #############################################################################
-static Input* input;
+// input Globals
+static Input* input; // global input object
 
-// #############################################################################
-//                           Input Functions
-// #############################################################################
-bool key_pressed_this_frame(KeyCodeID keyCode)
+// input Functions
+
+// check if a key is currently pressed
+bool isKeyPressed(KeyCodeID keyCode)
 {
 	Key key = input->keys[keyCode];
-	bool result = key.isDown && key.halfTransitionCount == 1 || key.halfTransitionCount > 1;
+	bool result = key.isDown && (key.halfTransitionCount == 1 || key.halfTransitionCount > 1);
 	return result;
 }
 
-bool key_released_this_frame(KeyCodeID keyCode)
+// check if a key was just released
+bool isKeyReleased(KeyCodeID keyCode)
 {
 	Key key = input->keys[keyCode];
-	bool result = !key.isDown && key.halfTransitionCount == 1 || key.halfTransitionCount > 1;
+	bool result = !key.isDown && (key.halfTransitionCount == 1 || key.halfTransitionCount > 1);
 	return result;
 }
 
-bool key_is_down(KeyCodeID keyCode)
+// check if a key is currently down
+bool isKeyDown(KeyCodeID keyCode)
 {
 	return input->keys[keyCode].isDown;
 }
+
+struct Joystick
+{
+    float xAxis; // x-axis value of the joystick
+    float yAxis; // y-axis value of the joystick
+    bool button1; // state of button 1
+    bool button2; // state of button 2
+    bool button3; // state of button 3
+    bool button4; // state of button 4
+};

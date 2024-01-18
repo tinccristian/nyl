@@ -3,17 +3,17 @@
 #include <memory>
 
 #include "Core.h"
-#include "spdlog/spdlog.h"
+#include "spdlog/spdlog.h" 
 
 namespace Nyl 
 {
 
-	class NYL_API Log
+	class NYL_API Log // /write a function to initialize the logger
 	{
 	public:
 		static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; } // inline is used to avoid multiple definitions of the same function in different translation units
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
 	private:
