@@ -11,6 +11,7 @@
 #include "Log.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "GameObject.h"
 
 namespace Nyl {
 
@@ -37,8 +38,7 @@ namespace Nyl {
 
         // accessors
         GLFWwindow* getWindow();
-        bool should_close() const;
-
+        GameObject* getPlayer();
         // input processing
         void process_input();
 
@@ -58,6 +58,8 @@ namespace Nyl {
             float y = 280.0f;
         };
 
+        // player ptr
+        GameObject* Player;
         // window properties
         GLFWwindow* window;
         int width;
@@ -75,6 +77,8 @@ namespace Nyl {
     private:
         // private helper hunction for GLFW window initialization
         void initialize_glfw_window();
+        // private GLFW window util function
+        bool should_close() const;
     };
 
 }  // namespace Nyl

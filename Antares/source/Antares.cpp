@@ -3,7 +3,6 @@
 namespace Antares
 {
     using namespace Nyl;
-    GameObject* Player;
     SpriteRenderer* Renderer;
 
     Antares::Antares(int width, int height, const std::string& title)
@@ -48,6 +47,7 @@ namespace Antares
         //auto bkg = EntityManager::GetTexture("background");
         Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
         Player->Draw(*Renderer);
+        Player->Position.x += .005;
         //NYL_TRACE("ANTARES update");
     }
 

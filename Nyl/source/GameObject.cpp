@@ -7,8 +7,11 @@
 //GameObject::GameObject(glm::vec2 pos, glm::vec2 size, Texture sprite, glm::vec3 color, glm::vec2 velocity)
 //    : Position(pos), Size(size), Velocity(velocity), Color(color), Rotation(0.0f), Sprite(sprite), IsSolid(false), Destroyed(false) { }
 
-GameObject::GameObject(float x, float y, float sizeX, float sizeY, Texture sprite, glm::vec3 color, glm::vec2 velocity)
-    : Position(x, y), Size(sizeX, sizeY), Velocity(velocity), Color(color),
+GameObject::GameObject(
+    float x, float y, float sizeX, float sizeY,
+    Texture sprite, glm::vec3 color, glm::vec2 velocity)
+    : Position(x, y), Size(sizeX, sizeY),
+    Velocity(velocity), Color(color),
     Rotation(0.0f), Sprite(sprite), IsSolid(false), Destroyed(false) {}
 void GameObject::Draw(SpriteRenderer& renderer)
 {

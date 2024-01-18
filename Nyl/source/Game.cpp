@@ -10,6 +10,10 @@ namespace Nyl
     {
         return Nyl::Game::window;
     }
+    GameObject* Game::getPlayer()
+    {
+        return Nyl::Game::Player;
+    }
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
@@ -340,6 +344,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
         NYL_CORE_WARN("going right");
 }
+
  void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
      NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
