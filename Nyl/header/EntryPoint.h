@@ -2,13 +2,14 @@
 // entry point for Nyl applications on Windows
 
 #pragma once
-
-#ifdef NYL_PLATFORM_WINDOWS
+#include "Application.h"
+//#ifdef NYL_PLATFORM_WINDOWS
 
 #include <stdexcept>
 #include "Log.h"
 
 // declare the application creation function defined by the user
+
 extern Nyl::Application* Nyl::CreateApplication();
 
 int main(int argc, char** argv)
@@ -33,4 +34,4 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
-#endif
+//#endif

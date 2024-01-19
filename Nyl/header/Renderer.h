@@ -10,6 +10,9 @@
 // std
 #include <map>
 
+#include "Shader.h"
+#include "Texture.h"
+
 namespace Nyl
 {
 

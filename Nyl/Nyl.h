@@ -1,12 +1,12 @@
 //For use by Nyl applications
 
-#include "header/Application.h"
+//#include "header/Application.h"
 #include "header/Game.h"
 #include "header/Log.h"
 #include "header/GameObject.h"
 #include "header/Texture.h"
 #include "header/EntityManager.h"
-#include "header/Input.h"
+#include "header/Renderer.h"
 //Entry point
 #include "header/EntryPoint.h"
 

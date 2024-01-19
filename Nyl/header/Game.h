@@ -12,10 +12,13 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "GameObject.h"
+#include "Input.h"
 
-namespace Nyl {
+namespace Nyl 
+{
 
-    class NYL_API Game {
+    class NYL_API Game 
+    {
     public:
         // constructors and destructor
         Game(int width, int height, const std::string& title);
@@ -26,8 +29,8 @@ namespace Nyl {
         virtual void Init() = 0;
 
         // update
-        void update(float dt);
-        virtual void Update() = 0;
+        void update();
+        virtual void Update(float deltaTime) = 0;
 
         // cleanup
         void cleanup();
@@ -40,11 +43,12 @@ namespace Nyl {
         GLFWwindow* getWindow();
         GameObject* getPlayer();
         // input processing
-        void process_input();
+        virtual void ProcessInput(float deltaTime) = 0;
 
         // static function for toggling polygon mode
         static void toggle_polygon_mode();
-
+        // input pointer
+        // Input* input;
         // static callback functions
         static void framebuffer_size_callback(GLFWwindow*, int width, int height);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

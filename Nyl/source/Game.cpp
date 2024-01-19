@@ -100,7 +100,7 @@ namespace Nyl
         // load textures
         Init(); //make user init his textures
     }
-    void Game::update(float dt)
+    void Game::update()
     {
         //NYL_CORE_TRACE("update");
         // get delta time
@@ -109,12 +109,12 @@ namespace Nyl
         lastFrame = currentFrame;
         glfwPollEvents();
 
-        process_input();// to be moved to antares as separate foo
+        ProcessInput(0);// to be moved to antares as separate foo
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Update();
+        Update(0);
         // game update
         glfwSwapBuffers(window);
     }
@@ -123,8 +123,7 @@ namespace Nyl
         init();
         while (!should_close())
         {
-            update(0);
-            Update();
+            update();
         }
     }
     void Game::cleanup()
@@ -202,11 +201,11 @@ void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
     // make sure the viewport matches the new window dimensions
     glViewport(0, 0, width, height);
 }
-void Game::process_input()//press and hold events ~~ not used for now
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
+// void Game::process_input()//press and hold events ~~ not used for now
+// {
+//     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+//         glfwSetWindowShouldClose(window, true);
+// }
 //INPUT -> to be moved to separate header
 void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
 {

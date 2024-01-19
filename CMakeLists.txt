@@ -81,6 +81,7 @@ target_include_directories(Antares PRIVATE
     ${PROJECT_SOURCE_DIR}/Antares
     ${PROJECT_SOURCE_DIR}/Nyl
     ${PROJECT_SOURCE_DIR}/Antares/header
+    ${PROJECT_SOURCE_DIR}/Nyl/header
 )
 
 # set preprocessor definitions

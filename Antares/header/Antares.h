@@ -10,9 +10,11 @@ namespace Antares
 		Antares(int width, int height, const std::string& title);
 		~Antares();
 
-		virtual void Init() override;
-		virtual void Update() override;
-		virtual void Quit() override;
+		 virtual void Init() override;
+		 virtual void Update(float deltaTime) override;
+		 virtual void Quit() override;
+		 virtual void ProcessInput(float deltaTime) override;
+		 void JustAFoo();
 
 	};
 }

@@ -1,7 +1,6 @@
-#pragma once
-#include <stdlib.h>
+#include <cstdlib> // Add the missing include directive for the <cstdlib> header file
 
-#ifdef NYL_PLATFORM_WINDOWS
+//#ifdef NYL_PLATFORM_WINDOWS
 #ifdef NYL_BUILD_DLL
 #define NASSERT(x) \
     { \
@@ -11,6 +10,6 @@
 #else
 #define NYL_API __declspec(dllimport)             // define NYL_API as __declspec(dllimport) when using the DLL to import functions
 #endif
-#else
-#error Nyl only works for windows!  // Display an error if Nyl is used on a platform other than Windows
-#endif
+//#else
+//#error Nyl only works for windows!  // Display an error if Nyl is used on a platform other than Windows
+//#endif
