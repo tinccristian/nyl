@@ -1,2 +1,0 @@
-# Nyl
- OpenGL game engine
