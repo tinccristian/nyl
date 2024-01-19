@@ -67,22 +67,29 @@ namespace Nyl
         // window properties
         GLFWwindow* window;
         int width;
-        int height;
-        std::string title;
+            int height;
+            std::string title;
 
-        // shader and texture
-        Shader* shader;
-        Texture* m_texture;
+            // shader and texture
+            Shader* shader;
+            Texture* m_texture;
 
-        // input
-        int joystick;
-        const unsigned char* buttons;
+            // input
+            struct Joystick{
+                int joystickID;
+                unsigned char* buttons;
+                float axisLSx;
+                float axisLSy;
+                float axisRSx;
+                float axisRSy;
+                int buttonCount;
+            };
 
-    private:
-        // private helper hunction for GLFW window initialization
-        void initialize_glfw_window();
-        // private GLFW window util function
-        bool should_close() const;
+        private:
+            // private helper hunction for GLFW window initialization
+            void initialize_glfw_window();
+            // private GLFW window util function
+            bool should_close() const;
     };
 
 }  // namespace Nyl

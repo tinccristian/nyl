@@ -1,5 +1,5 @@
 #include "Antares.h"
-
+#include "Input.h"
 namespace Antares
 {
     SpriteRenderer* Renderer;
@@ -44,48 +44,44 @@ namespace Antares
 
     void Antares::Update(float deltaTime)
     {
-        // Draw background
-        Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
+    // Draw background
+    Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
 
-        // Draw player
-        Player->Draw(*Renderer);
+    // Draw player
+    Player->Draw(*Renderer);
 
-        // Update player position
-        Player->Position.x += .005;
+    // Update player position
+    Player->Position.x += .005;
 
-        // Process input
-        ProcessInput(deltaTime);
+    // Process input
+    ProcessInput(deltaTime);
     }
 
     void Antares::Quit()
     {
-        NYL_TRACE("ANTARES quit");
-        delete Renderer;
-        delete Player;
+    NYL_TRACE("ANTARES quit");
+    delete Renderer;
+    delete Player;
     }
 
     void Antares::ProcessInput(float deltaTime)
     {
-        // // Check if a joystick is connected
-        // if (JoystickInput::IsJoystickConnected())
-        // {
-        //     // Get the axes values of the joystick
-        //     std::vector<float> axes = JoystickInput::GetJoystickAxes();
-
-        //     // Move the player based on joystick inputs
-        //     float moveX = axes[JoystickAxisID::AXIS_1];
-        //     float moveY = axes[JoystickAxisID::AXIS_2];
-
-        //     // Update player position
-        //     Player->Position.x += moveX;
-        //     Player->Position.y += moveY;
-
-        //     NYL_TRACE("Joystick input detected. MoveX: {0}, MoveY: {1}", moveX, moveY);
-        // }
-    }
-    void Antares::JustAFoo()
+    // Check if a joystick is connected
+    if (JoystickManager::IsJoystickPresent(1))
     {
-        NYL_TRACE("Just a foo");
+        // Get the axes values of the joystick
+        std::vector<float> axes = JoystickManager::GetJoystickAxes(1);
+
+        // Move the player based on joystick inputs
+        float moveX = axes[JoystickAxisID::AXIS_1];
+        float moveY = axes[JoystickAxisID::AXIS_2];
+
+        // Update player position
+        Player->Position.x += moveX;
+        Player->Position.y += moveY;
+
+        NYL_TRACE("Joystick input detected. MoveX: {0}, MoveY: {1}", moveX, moveY);
+    }
     }
     
 }
@@ -95,35 +91,3 @@ Nyl::Application* Nyl::CreateApplication()
     return new Antares::Antares(1280, 720, "Antares");
 }
 
-    // void Antares::Update(float deltaTime)
-    // {
-    //     //auto bkg = EntityManager::GetTexture("background");
-    //     Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
-    //     Player->Draw(*Renderer);
-    //     Player->Position.x += .005;
-    //     //NYL_TRACE("ANTARES update");
-    //     ProcessInput(deltaTime);
-    // }
-
-    // void Antares::Quit()
-    // {
-    //     NYL_TRACE("ANTARES quit");
-    //     delete Renderer;
-    //     delete Player;
-    // }
-    // void Antares::ProcessInput(float deltaTime)
-    // {
-    //     // Check if a joystick is connected
-	// 	if (JoystickInput::IsJoystickConnected())
-	// 	{
-	// 		// Get the axes values of the joystick
-	// 		std::vector<float> axes = JoystickInput::GetJoystickAxes();
-
-	// 		// Move the player based on joystick inputs
-	// 		float moveX = axes[JoystickAxisID::AXIS_1];
-	// 		float moveY = axes[JoystickAxisID::AXIS_2];
-
-	// 		playerX += moveX;
-	// 		playerY += moveY;
-	// 	}
-    // }

@@ -14,7 +14,6 @@ namespace Antares
 		 virtual void Update(float deltaTime) override;
 		 virtual void Quit() override;
 		 virtual void ProcessInput(float deltaTime) override;
-		 void JustAFoo();
 
 	};
 }

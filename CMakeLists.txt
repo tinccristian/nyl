@@ -7,10 +7,33 @@ project(Antares)
 ############################### NYL ########################################
 
 # gather all source files from Nyl/source
-file(GLOB NYL_SOURCES "Nyl/source/*.cpp")
-
+set(NYL_SOURCES 
+    "Nyl/source/Application.cpp"
+    "Nyl/source/EntityManager.cpp"
+    "Nyl/source/Game.cpp"
+    "Nyl/source/GameObject.cpp"
+    "Nyl/source/Log.cpp"
+    "Nyl/source/Renderer.cpp"
+    "Nyl/source/Shader.cpp"
+    "Nyl/source/Texture.cpp"
+    "Nyl/source/stb.cpp"
+)
 # gather all header files from Nyl/headers
-file(GLOB NYL_HEADERS "Nyl/headers/*.h")
+set(NYL_HEADERS 
+    "Nyl/header/Application.h"
+    "Nyl/header/Config.h"
+    "Nyl/header/Core.h"
+    "Nyl/header/EntityManager.h"
+    "Nyl/header/EntryPoint.h"
+    "Nyl/header/Game.h"
+    "Nyl/header/GameObject.h"
+    "Nyl/header/Input.h"
+    "Nyl/header/Log.h"
+    "Nyl/header/Renderer.h"
+    "Nyl/header/Shader.h"
+    "Nyl/header/Texture.h"
+    "Nyl/Nyl.h"
+)
 
 add_library(glad include/glad/glad.h include/glad/glad.c)
 target_include_directories(glad PUBLIC include/)

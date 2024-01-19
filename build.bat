@@ -34,7 +34,7 @@ for /f "tokens=1-4 delims=:.," %%a in ("%time%") do (
     set /a "start=(((%%a*60)+1%%b %% 100)*60+1%%c %% 100)*100+1%%d %% 100"
 )
 
-ninja -d stats
+ninja -j 0 -d stats
 
 for /f "tokens=1-4 delims=:.," %%a in ("%time%") do (
     set /a "end=(((%%a*60)+1%%b %% 100)*60+1%%c %% 100)*100+1%%d %% 100"
