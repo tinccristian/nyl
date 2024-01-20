@@ -7,6 +7,7 @@ namespace Antares
 	class Antares : public Nyl::Application
 	{
 	public:
+
 		Antares(int width, int height, const std::string& title);
 		~Antares();
 

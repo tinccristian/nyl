@@ -7,6 +7,7 @@
 #include "header/Texture.h"
 #include "header/EntityManager.h"
 #include "header/Renderer.h"
+#include "header/Input.h"
 //Entry point
 #include "header/EntryPoint.h"
 

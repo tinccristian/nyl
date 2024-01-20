@@ -3,10 +3,12 @@
 namespace Antares
 {
     SpriteRenderer* Renderer;
+    Joystick* joystick;
 
     Antares::Antares(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
     {
+        //joystick = new Nyl::Joystick(0); // Initialize joystick with id 0
         NYL_TRACE("ANTARES constructor");
     }
 
@@ -40,6 +42,7 @@ namespace Antares
         // Set render specific controls
         Shader spriteShader = EntityManager::GetShader("sprite");
         Renderer = new SpriteRenderer(spriteShader);
+        joystick = new Joystick(0);
     }
 
     void Antares::Update(float deltaTime)
@@ -55,6 +58,13 @@ namespace Antares
 
     // Process input
     ProcessInput(deltaTime);
+
+    //joystick recognition
+    
+    joystick->update();
+    if (joystick->isPresent()) {
+        NYL_TRACE("Joystick {0} is present", joystick->getName());
+    }
     }
 
     void Antares::Quit()
@@ -64,25 +74,31 @@ namespace Antares
     delete Player;
     }
 
-    void Antares::ProcessInput(float deltaTime)
-    {
-    // Check if a joystick is connected
-    if (JoystickManager::IsJoystickPresent(1))
-    {
-        // Get the axes values of the joystick
-        std::vector<float> axes = JoystickManager::GetJoystickAxes(1);
+void Antares::ProcessInput(float deltaTime)
+{
 
-        // Move the player based on joystick inputs
-        float moveX = axes[JoystickAxisID::AXIS_1];
-        float moveY = axes[JoystickAxisID::AXIS_2];
 
-        // Update player position
-        Player->Position.x += moveX;
-        Player->Position.y += moveY;
 
-        NYL_TRACE("Joystick input detected. MoveX: {0}, MoveY: {1}", moveX, moveY);
-    }
-    }
+    // // Check if a joystick is connected
+    // if (JoystickManager::isPresent(JoystickManager::JoystickId::JOYSTICK_1))
+    // {
+    //     NYL_TRACE("GAME Joystick 1 is present");
+
+    //     // Get the axes values of the joystick
+    //     int count;
+    //     const float* axes = JoystickManager::getAxes(JoystickManager::JOYSTICK_1, &count);
+
+    //     // Move the player based on joystick inputs
+    //     float moveX = axes[0];
+    //     float moveY = axes[1];
+
+    //     // Update player position
+    //     Player->Position.x += moveX;
+    //     Player->Position.y += moveY;
+
+    //     NYL_TRACE("Joystick input detected. MoveX: {0}, MoveY: {1}", moveX, moveY);
+    // }
+}
     
 }
 Nyl::Application* Nyl::CreateApplication()

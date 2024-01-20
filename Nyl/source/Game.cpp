@@ -100,11 +100,6 @@ namespace Nyl
         // load textures
         Init(); //make user init his textures
     }
-    void bindJoystick()
-    {
-        
-
-    }
     void Game::update()
     {
         //NYL_CORE_TRACE("update");
@@ -112,47 +107,13 @@ namespace Nyl
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        glfwPollEvents();
-        ////////////////////////////////////
-    //     joystick = glfwJoystickPresent(GLFW_JOYSTICK_1);
-
-    //    //axes ~ should be 6 for regular controller: leftAnalog axis x,y, rightAnalog axis x,y, left/right triggers (LT) 1 axis each
-    //    int axesCount;
-    //    const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-    //    NYL_CORE_INFO("#axes available: {0}", axesCount);
-
-    //    // buttons
-    //     const unsigned char* buttons;
-    //    int buttonCount;
-    //    buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-
-    //    //info
-    //    NYL_CORE_INFO("{0} is connected, it has {1} axes available, {2} buttons", glfwGetJoystickName(GLFW_JOYSTICK_1), axesCount,buttonCount);
-
-
-    //        //joystick
-    //        if (1 == joystick1)
-    //        {
-    //            NYL_CORE_TRACE("\n\n\n\n\n\n\n\n\n\n\n\n\n\nLeft stick X Axis: {0}", axes[0]);
-    //            NYL_CORE_TRACE("Left stick Y Axis: {0}", axes[1]);
-    //            NYL_CORE_TRACE("Right stick X Axis: {0}", axes[2]);
-    //            NYL_CORE_TRACE("Right stick Y Axis: {0}", axes[5]);
-    //            NYL_CORE_TRACE("Left Trigger/L2: {0}", axes[4]);
-    //            NYL_CORE_TRACE("Right Trigger/R2: {0}", axes[3]);
-
-
-    //            if (GLFW_PRESS == buttons[1])
-    //            {
-    //                NYL_CORE_TRACE("X button pressed");
-    //            }
-	//         }
-        ///////////////////////////////
         ProcessInput(0);// Antares foo
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         Update(0);
+        glfwPollEvents();
         // game update
         glfwSwapBuffers(window);
     }
@@ -168,51 +129,8 @@ namespace Nyl
     {
         NYL_CORE_INFO("cleanup");
     }
-#pragma region oldcode
-    //    // input
-    //    // -----
-    //    
-    //    //set the mappings
-    //    joystick = glfwJoystickPresent(GLFW_JOYSTICK_1);
-    //    std::string mappings = load_file_contents("D:/gitHub/nyl/Nyl/thirdparty/gamecontrollerdb.txt");
-    //    glfwUpdateGamepadMappings(mappings.c_str());
-
-    //    //axes ~ //should be 6 for regular controller: leftAnalog axis x,y, rightAnalog axis x,y, left/right triggers (LT) 1 axis each
-    //    int axesCount;
-    //    const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-    //    NYL_CORE_INFO("#axes available: {0}", axesCount);
-
-    //    // buttons
-    //    int buttonCount;
-    //    buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-
-    //    //info
-    //    NYL_CORE_INFO("{0} is connected, it has {1} axes available, {2} buttons", glfwGetJoystickName(GLFW_JOYSTICK_1), axesCount,buttonCount);
 
 
-    //        //joystick
-    //        if (1 == joystick)
-    //        {
-    //            //NYL_CORE_TRACE("\n\n\n\n\n\n\n\n\n\n\n\n\n\nLeft stick X Axis: {0}", axes[0]);
-    //            //NYL_CORE_TRACE("Left stick Y Axis: {0}", axes[1]);
-    //            //NYL_CORE_TRACE("Right stick X Axis: {0}", axes[2]);
-    //            //NYL_CORE_TRACE("Right stick Y Axis: {0}", axes[5]);
-    //            //NYL_CORE_TRACE("Left Trigger/L2: {0}", axes[4]);
-    //            //NYL_CORE_TRACE("Right Trigger/R2: {0}", axes[3]);
-
-
-    //            if (GLFW_PRESS == buttons[1])
-    //            {
-    //                NYL_CORE_TRACE("X button pressed");
-    //            }
-#pragma endregion
-    // function to check if the joystick is connected
-    int is_joystick_connected()
-	{
-		return glfwJoystickPresent(GLFW_JOYSTICK_1);
-	}
-
-	}
 
  void Game::toggle_polygon_mode()
 {
@@ -234,6 +152,7 @@ bool Game::should_close() const
     {
         return glfwWindowShouldClose(window);
     }
+#pragma region callbacks
 void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
 {
     // make sure the viewport matches the new window dimensions
@@ -270,3 +189,6 @@ void Game::error_callback(int error, const char* description)
 {
     NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 }
+#pragma endregion
+
+} // namespace Nyl
