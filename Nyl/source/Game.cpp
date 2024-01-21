@@ -100,6 +100,9 @@ namespace Nyl
         // load textures
         Init(); //make user init his textures
     }
+    #include <chrono>
+    #include <thread>
+
     void Game::update()
     {
         //NYL_CORE_TRACE("update");
@@ -109,22 +112,57 @@ namespace Nyl
         lastFrame = currentFrame;
         ProcessInput(0);// Antares foo
 
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Update(0);
+        Update(deltaTime);
         glfwPollEvents();
         // game update
         glfwSwapBuffers(window);
+
+        // // Limit framerate to 60fps
+        // int targetFPS = 60;
+        // std::chrono::milliseconds frameDelay(static_cast<int>(1000.0f / targetFPS));
+        // std::this_thread::sleep_for(frameDelay);
     }
-    void Game::run()
+void Game::run()
+{
+    init();
+    const int targetFPS = 400; // Change this to 400
+    const float targetFrameTime = 1.0f / targetFPS;
+    int frameCount = 0;
+    float totalTime = 0.0f;
+
+    while (!should_close())
     {
-        init();
-        while (!should_close())
+        float startFrame = glfwGetTime();
+
+        update();
+
+        float endFrame = glfwGetTime();
+        float frameTime = endFrame - startFrame; // time taken for this frame
+
+        if (frameTime < targetFrameTime)
         {
-            update();
+            float sleepTime = targetFrameTime - frameTime;
+            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
+        }
+
+        frameCount++;
+        totalTime += frameTime;
+
+        if (totalTime >= 1.0f) // if a second has passed
+        {
+            float averageFPS = frameCount / totalTime;
+            NYL_CORE_INFO("Avg FPS: {0}", (int)averageFPS);
+
+            // reset frameCount and totalTime
+            frameCount = 0;
+            totalTime = 0.0f;
         }
     }
+}
     void Game::cleanup()
     {
         NYL_CORE_INFO("cleanup");
