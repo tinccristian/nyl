@@ -10,10 +10,10 @@ namespace Nyl
     {
         return Nyl::Game::window;
     }
-    GameObject* Game::getPlayer()
-    {
-        return Nyl::Game::Player;
-    }
+    // GameObject* Game::getPlayer()
+    // {
+    //     return Nyl::Game::Player;
+    // }
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
@@ -92,11 +92,15 @@ namespace Nyl
 
         // load shaders
         EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag", nullptr, "sprite");
+        EntityManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/debug.vert", "D:/gitHub/nyl/Nyl/Shaders/debug.frag", nullptr, "debug");
 
         // configure shaders
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
         EntityManager::GetShader("sprite").use().set_int("sprite", 0);
         EntityManager::GetShader("sprite").set_mat4("projection", projection);
+
+        EntityManager::GetShader("debug").use().set_int("debug", 0);
+        EntityManager::GetShader("debug").set_mat4("projection", projection);
         // load textures
         Init(); //make user init his textures
     }
@@ -220,7 +224,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 
  void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-     NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+     //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
 
 void Game::error_callback(int error, const char* description)

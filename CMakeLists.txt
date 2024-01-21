@@ -18,6 +18,8 @@ set(NYL_SOURCES
     "Nyl/source/Shader.cpp"
     "Nyl/source/Texture.cpp"
     "Nyl/source/stb.cpp"
+    "Nyl/source/Physics.cpp"
+    "Nyl/source/Collider.cpp"
 )
 # gather all header files from Nyl/headers
 set(NYL_HEADERS 
@@ -33,6 +35,8 @@ set(NYL_HEADERS
     "Nyl/header/Input.h"
     "Nyl/header/Shader.h"
     "Nyl/header/Texture.h"
+    "Nyl/header/Physics.h"
+    "Nyl/header/Collider.h"
     "Nyl/Nyl.h"
 )
 

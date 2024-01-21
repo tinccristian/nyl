@@ -8,6 +8,8 @@
 #include "header/EntityManager.h"
 #include "header/Renderer.h"
 #include "header/Input.h"
+#include "header/Physics.h"
+#include "header/Collider.h"
 //Entry point
 #include "header/EntryPoint.h"
 

@@ -44,7 +44,7 @@ namespace Nyl
 
         // accessors
         GLFWwindow* getWindow();
-        GameObject* getPlayer();
+        // GameObject* getPlayer();
 
 
         // static function for toggling polygon mode
@@ -64,7 +64,7 @@ namespace Nyl
         };
 
     // player ptr
-    GameObject* Player;
+    //GameObject* Player;
     // window properties
     GLFWwindow* window;
     int width;
