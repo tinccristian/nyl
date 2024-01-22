@@ -124,11 +124,6 @@ namespace Nyl
         glfwPollEvents();
         // game update
         glfwSwapBuffers(window);
-
-        // // Limit framerate to 60fps
-        // int targetFPS = 60;
-        // std::chrono::milliseconds frameDelay(static_cast<int>(1000.0f / targetFPS));
-        // std::this_thread::sleep_for(frameDelay);
     }
 void Game::run()
 {
@@ -147,11 +142,11 @@ void Game::run()
         float endFrame = glfwGetTime();
         float frameTime = endFrame - startFrame; // time taken for this frame
 
-        if (frameTime < targetFrameTime)
-        {
-            float sleepTime = targetFrameTime - frameTime;
-            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
-        }
+        // if (frameTime < targetFrameTime)
+        // {
+        //     float sleepTime = targetFrameTime - frameTime;
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
+        // }
 
         frameCount++;
         totalTime += frameTime;

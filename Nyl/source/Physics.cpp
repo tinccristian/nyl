@@ -1,27 +1,31 @@
 #include "Physics.h"
-
+#include "Log.h"
 using namespace Nyl;
 
 const float Physics::GRAVITY = 9.8f*60.0f;
 
-void Physics::UpdatePosition(GameObject* object, float deltaTime, float width) {
+void Physics::UpdatePosition(GameObject* object, float deltaTime, float screenWidth) {
     // Calculate the new position based on the object's velocity and deltaTime
     glm::vec2 velocity = object->Velocity;
     glm::vec2 position = object->Position;
+    glm::vec2 size = object->Size;
     position += velocity * deltaTime;
 
     // Check if the object has reached the boundaries of the screen
-    if (position.x < 0) {
-        position.x = 0;
-        velocity.x = -velocity.x; // Reverse the x velocity
-    } else if (position.x > width) {
-        position.x = width;
-        velocity.x = -velocity.x; // Reverse the x velocity
+    //float objectWidth = 128.0f; // Assuming the object has a width property
+    if (position.x < size.x / 2) {
+        position.x = size.x / 2;
+        velocity.x = 0; // Stop the object's horizontal movement
+        NYL_CORE_INFO("COLLISION LEFT");
+    } else if (position.x > screenWidth - size.x / 2) {
+        position.x = screenWidth - size.x / 2;
+        velocity.x = 0; // Stop the object's horizontal movement
+        NYL_CORE_INFO("COLLISION RIGHT Screen Width {0} -  size.x {1}, Position.x {2}", screenWidth, size.x, position.x);
     }
 
     // Update the object's position and velocity
-    object->Position=position;
-    object->Velocity=velocity;
+    object->Position = position;
+    object->Velocity = velocity;
 }
 
 void Physics::ApplyGravity(GameObject* object, float deltaTime) {

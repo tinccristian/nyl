@@ -11,6 +11,7 @@ namespace Antares
     Collider* collider_platform;
     Collider* collider_platform_1;
     Collider* collider_platform_2;
+    Collider* groundCollider;
 
 
     Antares::Antares(int width, int height, const std::string& title)
@@ -60,7 +61,7 @@ namespace Antares
         collider_platform = new Collider(platformPosX, platformPosY, platformWidth, platformHeight);
         collider_platform_1 = new Collider(platformPosX+100, platformPosY-100, platformWidth, platformHeight);
         collider_platform_2 = new Collider(platformPosX+500, platformPosY+200, platformWidth, platformHeight);
-        
+        groundCollider = new Collider(0, height - 5.0f, width, 10.0f);
         Player = new GameObject(
             startPoint.x,
             startPoint.y,
@@ -86,17 +87,11 @@ namespace Antares
         Renderer->DrawSprite(EntityManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f);
 
         // Process input
+        ProcessInput(deltaTime);
 
-        // Draw player
-
-        // Debug draw
+        // Update collider
         collider->Update(Player->Position);
-        debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
-        Player->Draw(*Renderer);
 
-        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
 
         if(collider_platform->IsColliding(*collider))
         {
@@ -119,12 +114,24 @@ namespace Antares
             Player->canJump = true; // Reset jump state
             //NYL_TRACE("Player is colliding with platform");
         }
-        else 
+        else if (groundCollider->IsColliding(*collider))
         {
+            Player->Position.y = groundCollider->Position.y - Player->Size.y;
+            Player->Velocity.y = 0; // Stop the player's downward velocity
+            Player->canJump = true; // Reset jump state
             //NYL_TRACE("Player is not colliding with platform");
         }
-        ProcessInput(deltaTime);
+                // Apply gravity
+        // Draw player
+        Player->Draw(*Renderer);
 
+        // Debug draw
+        debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
+        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
+        debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
+        debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
+
+        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
     }
 
 
@@ -151,48 +158,32 @@ namespace Antares
         // Process horizontal movement
         if (std::abs(moveX) > 0.1)
         {
-            glm::vec2 newPosition = Player->Position + glm::vec2(moveX * deltaTime * speed, 0.0f);
-            if (newPosition.x >= 0 && newPosition.x <= width - Player->Size.x)
-            {
-                Player->Position = newPosition;
-                physics->UpdatePosition(Player, deltaTime, width);
-            }
-            //else{NYL_WARN("Player is out of bounds");}
+            Player->Velocity.x = moveX * speed;
         }
+        else{ Player->Velocity.x = 0.0f;}
 
-        // Apply gravity
-        physics->ApplyGravity(Player, deltaTime);
+
 
         // Process jumping
         float groundLevel = height - Player->Size.y;
         float tolerance = 10.0f;
-        if (jumpButton && ((Player->Position.y >= groundLevel - tolerance) || Player->canJump))
+        if (jumpButton && ( Player->canJump))
         {
             physics->Jump(Player, jumpSpeed, deltaTime);
-            physics->UpdatePosition(Player, deltaTime, height);
+            //physics->UpdatePosition(Player, deltaTime, height);
             Player->canJump = false; // Reset jump state
+            NYL_ERROR("foo2");
+
         }
 
-        // Process vertical movement
-        glm::vec2 newPosition = Player->Position + Player->Velocity * deltaTime;
-        if (newPosition.y >= 0 && newPosition.y <= height - Player->Size.y)
-        {
-            Player->Position = newPosition;
-            physics->UpdatePosition(Player, deltaTime, height);
-        }
-        else
-        {
-            // Handle collision with top and bottom of screen
-            Player->Position.y = (newPosition.y < 0) ? 0 : height - Player->Size.y;
-            Player->Velocity.y = 0; // Stop the player's downward velocity
-            physics->UpdatePosition(Player, deltaTime, height);
-        }
+        Physics::ApplyGravity(Player, deltaTime);
+        Physics::UpdatePosition(Player, deltaTime, width);
     }
     void Antares::Quit()
     {
         NYL_TRACE("ANTARES quit");
-        delete Renderer;
-        delete Player;
+        // delete Renderer;
+        // delete Player;
     }
 }
 Nyl::Application* Nyl::CreateApplication()
