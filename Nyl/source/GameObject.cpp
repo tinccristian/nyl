@@ -7,9 +7,10 @@ GameObject::GameObject(
     Physics* physics, Collider* collider)
     : Position(x, y), Size(sizeX, sizeY),
     Velocity(velocity), Color(color),
-    Rotation(0.0f), Sprite(sprite), IsSolid(false), Destroyed(false),
+    Rotation(0.0f),Direction(1.0f), Sprite(sprite), IsSolid(false), Destroyed(false),
     physicsComponent(physics), colliderComponent(collider) {}
 void GameObject::Draw(SpriteRenderer& renderer)
 {
-    renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Color);
+    this->Direction = this->Velocity.x >= 0 ? 1.0f : -1.0f;
+    renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Color, this->Direction);
 }

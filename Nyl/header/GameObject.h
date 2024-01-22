@@ -25,6 +25,7 @@ public:
     glm::vec2   Position, Size, Velocity; /**< The position, size, and velocity of the game object. */
     glm::vec3   Color; /**< The color of the game object. */
     float       Rotation; /**< The rotation angle of the game object. */
+    float      Direction=1.0f; /**< The direction of the game object. */
     bool        IsSolid; /**< Indicates whether the game object is solid or not. */
     bool        Destroyed; /**< Indicates whether the game object is destroyed or not. */
     bool       canJump; /**< Indicates whether the game object can jump or not. */

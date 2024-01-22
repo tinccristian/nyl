@@ -219,7 +219,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 
  void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-     //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+     NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
 
 void Game::error_callback(int error, const char* description)

@@ -16,11 +16,11 @@ void Physics::UpdatePosition(GameObject* object, float deltaTime, float screenWi
     if (position.x < size.x / 2) {
         position.x = size.x / 2;
         velocity.x = 0; // Stop the object's horizontal movement
-        NYL_CORE_INFO("COLLISION LEFT");
+        //NYL_CORE_INFO("COLLISION LEFT");
     } else if (position.x > screenWidth - size.x / 2) {
         position.x = screenWidth - size.x / 2;
         velocity.x = 0; // Stop the object's horizontal movement
-        NYL_CORE_INFO("COLLISION RIGHT Screen Width {0} -  size.x {1}, Position.x {2}", screenWidth, size.x, position.x);
+        //NYL_CORE_INFO("COLLISION RIGHT Screen Width {0} -  size.x {1}, Position.x {2}", screenWidth, size.x, position.x);
     }
 
     // Update the object's position and velocity

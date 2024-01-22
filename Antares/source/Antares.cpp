@@ -58,8 +58,8 @@ namespace Antares
         float platformPosX = startPoint.x;
         float platformPosY = startPoint.y + sizeY + 100.0f; // 50 pixels below the player
         
-        collider_platform = new Collider(platformPosX, platformPosY, platformWidth, platformHeight);
-        collider_platform_1 = new Collider(platformPosX+100, platformPosY-100, platformWidth, platformHeight);
+        collider_platform = new Collider(0, 350, 190, 90);
+        collider_platform_1 = new Collider(319, 205, 511-319, 20);
         collider_platform_2 = new Collider(platformPosX+500, platformPosY+200, platformWidth, platformHeight);
         groundCollider = new Collider(0, height - 5.0f, width, 10.0f);
         Player = new GameObject(
@@ -121,17 +121,18 @@ namespace Antares
             Player->canJump = true; // Reset jump state
             //NYL_TRACE("Player is not colliding with platform");
         }
-                // Apply gravity
+        // Apply gravity
+
         // Draw player
         Player->Draw(*Renderer);
 
         // Debug draw
         debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
+        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
         debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
         debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
         debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
 
-        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
     }
 
 
@@ -139,7 +140,7 @@ namespace Antares
     void Antares::ProcessInput(float deltaTime)
     {
         // Define movement and jump speeds
-        float speed = 150.0f;
+        float speed = 250.0f;
         float jumpSpeed = 400.f;
 
         // Update joystick state
