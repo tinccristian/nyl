@@ -1,28 +1,26 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
 #include<glad/glad.h>
-#include<stb/stb_image.h>
-
-#include"Shader.h"
 
 namespace Nyl
 {
 	class Texture
 	{
 	public:
-		GLuint ID;
-		GLenum type;
-		Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
+		unsigned int ID;
+		unsigned int width,height;
+		unsigned int object_format;
+		unsigned int image_format;
+		unsigned int wrap_s;
+		unsigned int wrap_t;
+		unsigned int filter_min;
+		unsigned int filter_max;
 
-		// Assigns a texture unit to a texture
-		void texUnit(Shader& shader, const char* uniform, GLuint unit);
+		Texture();
+
+		void Generate(unsigned int width, unsigned int height, unsigned char* data);
 		// Binds a texture
-		void Bind();
-		// Unbinds a texture
-		void Unbind();
-		// Deletes a texture
-		void Delete();
+		void Bind() const;
+
 	};
 }
-#endif
