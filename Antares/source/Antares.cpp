@@ -38,12 +38,12 @@ namespace Antares
         NYL_TRACE("ANTARES init");
 
         // Load textures
-        EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/chikboy/chikboy.png", true, "chikboy");
+        EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/chikboy/chikboy_trim.png", true, "chikboy");
         EntityManager::LoadTexture("D:/gitHub/nyl/Nyl/resources/backgrounds/02.png", true, "background");
 
         // Configure game objects
         float sizeY = 64.0f;
-        float sizeX = 64.0f;
+        float sizeX = 36.0f;
         // float posX = width / 2.0f - sizeX;
         // float posY = height / 2.0f - sizeY;
         point startPoint={60.0f, 280.0f};
@@ -160,6 +160,7 @@ namespace Antares
         if (std::abs(moveX) > 0.1)
         {
             Player->Velocity.x = moveX * speed;
+            Player->Direction = moveX >= 0 ? 1.0f : -1.0f; // flip the sprite based on the direction
         }
         else{ Player->Velocity.x = 0.0f;}
 

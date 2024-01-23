@@ -11,6 +11,6 @@ GameObject::GameObject(
     physicsComponent(physics), colliderComponent(collider) {}
 void GameObject::Draw(SpriteRenderer& renderer)
 {
-    this->Direction = this->Velocity.x >= 0 ? 1.0f : -1.0f;
-    renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Color, this->Direction);
+    //this->Direction = this->Velocity.x >= 0 ? 1.0f : -1.0f;
+    renderer.DrawObject(this->Sprite, this->Position, this->Size, this->Rotation, this->Color, this->Direction);
 }

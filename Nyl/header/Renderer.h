@@ -36,7 +36,8 @@ namespace Nyl
         // destructor
         ~SpriteRenderer();
         // renders a defined quad textured with given sprite
-        void DrawSprite(const Texture& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
+        void DrawSprite(const Texture& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+        void DrawObject(const Texture& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
         void DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
     private:
         // render state

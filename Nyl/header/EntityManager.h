@@ -12,6 +12,14 @@
 namespace Nyl
 {
 
+/**
+ * @class EntityManager
+ * @brief A static class responsible for managing resources such as shaders and textures.
+ *
+ * The EntityManager class provides static functions to load, retrieve, and clear resources.
+ * It stores shaders and textures in maps for easy access.
+ * The class follows the singleton pattern, as it has a private constructor and its members and functions are publicly available (static).
+ */
 class NYL_API EntityManager
 {
     public:

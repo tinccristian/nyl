@@ -12,15 +12,12 @@ void Physics::UpdatePosition(GameObject* object, float deltaTime, float screenWi
     position += velocity * deltaTime;
 
     // Check if the object has reached the boundaries of the screen
-    //float objectWidth = 128.0f; // Assuming the object has a width property
-    if (position.x < size.x / 2) {
-        position.x = size.x / 2;
+    if (position.x < 0) {
+        position.x = 0;
         velocity.x = 0; // Stop the object's horizontal movement
-        //NYL_CORE_INFO("COLLISION LEFT");
-    } else if (position.x > screenWidth - size.x / 2) {
-        position.x = screenWidth - size.x / 2;
+    } else if (position.x > screenWidth - size.x) {
+        position.x = screenWidth - size.x;
         velocity.x = 0; // Stop the object's horizontal movement
-        //NYL_CORE_INFO("COLLISION RIGHT Screen Width {0} -  size.x {1}, Position.x {2}", screenWidth, size.x, position.x);
     }
 
     // Update the object's position and velocity
