@@ -4,61 +4,85 @@ cmake_minimum_required(VERSION 3.20)
 # set the project name
 project(Antares)
 
+# set the NINJA_STATUS environment variable
+set(ENV{NINJA_STATUS} "[\\033[1;34m%u/%t\\033[0m (\\033[1;32m%f\\033[0m)] ")
 ############################### NYL ########################################
 
-# gather all source files from Nyl/source
+# gather all source files from nyl
 set(NYL_SOURCES 
-    "Nyl/source/Application.cpp"
-    "Nyl/source/EntityManager.cpp"
-    "Nyl/source/Game.cpp"
-    "Nyl/source/GameObject.cpp"
-    "Nyl/source/Log.cpp"
-    "Nyl/source/Renderer.cpp"
-    "Nyl/source/Input.cpp"
-    "Nyl/source/Shader.cpp"
-    "Nyl/source/Texture.cpp"
-    "Nyl/source/stb.cpp"
-    "Nyl/source/Physics.cpp"
-    "Nyl/source/Collider.cpp"
+    #core
+    "nyl/engine/_core/core_application.cpp"
+    "nyl/engine/_core/resource_manager.cpp"
+    "nyl/engine/_core/core_game.cpp"
+    "nyl/engine/_core/core_input.cpp"
+    "nyl/engine/_core/core_log.cpp"
+    #entity
+    "nyl/engine/entity/entity.cpp"
+    #component
+    "nyl/engine/component/component_shader.cpp"
+    "nyl/engine/component/component_texture.cpp"
+    #system
+    "nyl/engine/system/system_collider.cpp"
+    "nyl/engine/system/system_physics.cpp"
+    "nyl/engine/system/system_renderer.cpp"
+    "nyl/engine/system/system_shader.cpp"
+    #thirdparty
+    "nyl/engine/stb.cpp"
 )
-# gather all header files from Nyl/headers
+# gather all header files from nyl
 set(NYL_HEADERS 
-    "Nyl/header/Application.h"
-    "Nyl/header/Config.h"
-    "Nyl/header/Core.h"
-    "Nyl/header/EntityManager.h"
-    "Nyl/header/EntryPoint.h"
-    "Nyl/header/Game.h"
-    "Nyl/header/GameObject.h"
-    "Nyl/header/Log.h"
-    "Nyl/header/Renderer.h"
-    "Nyl/header/Input.h"
-    "Nyl/header/Shader.h"
-    "Nyl/header/Texture.h"
-    "Nyl/header/Physics.h"
-    "Nyl/header/Collider.h"
-    "Nyl/Nyl.h"
+    #core
+    "nyl/engine/_core/core.h"
+    "nyl/engine/_core/core_application.h"
+    "nyl/engine/_core/core_game.h"
+    "nyl/engine/_core/core_input.h"
+    "nyl/engine/_core/core_log.h"
+    "nyl/engine/_core/core_main.h"
+    "nyl/engine/_core/resource_manager.h"
+    "nyl/engine/_core/nyl.h"
+    #entity
+    "nyl/engine/entity/entity.h"
+    "nyl/engine/entity/entity_manager.h"
+    #component
+    "nyl/engine/component/component.h"
+    "nyl/engine/component/component_collider.h"
+    "nyl/engine/component/component_physics.h"
+    "nyl/engine/component/component_render.h"
+    "nyl/engine/component/component_shader.h"
+    "nyl/engine/component/component_texture.h"
+    "nyl/engine/component/component_transform.h"
+    #system
+    "nyl/engine/system/system.h"
+    "nyl/engine/system/system_collider.h"
+    "nyl/engine/system/system_physics.h"
+    "nyl/engine/system/system_renderer.h"
+    #thirdparty
+    "nyl/engine/linmath.h"
 )
 
 add_library(glad include/glad/glad.h include/glad/glad.c)
 target_include_directories(glad PUBLIC include/)
 # add the source files for the DLL
-add_library(Nyl SHARED ${NYL_SOURCES} ${NYL_HEADERS})
-set_target_properties(Nyl PROPERTIES OUTPUT_NAME "__nylengine" PREFIX "")
-target_include_directories(Nyl PRIVATE 
+add_library(nyl SHARED ${NYL_SOURCES} ${NYL_HEADERS})
+set_target_properties(nyl PROPERTIES OUTPUT_NAME "__nylengine" PREFIX "")
+target_include_directories(nyl PRIVATE 
     ${PROJECT_SOURCE_DIR}/include/glad/
     ${PROJECT_SOURCE_DIR}/include/GLFW/
     ${PROJECT_SOURCE_DIR}/include/glm/
     ${PROJECT_SOURCE_DIR}/include/stb/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/component
 )
-target_include_directories(Nyl PRIVATE 
+target_include_directories(nyl PRIVATE 
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/Nyl
-    ${PROJECT_SOURCE_DIR}/Nyl/header
-    ${PROJECT_SOURCE_DIR}/Nyl/thirdparty/spdlog/include)
+    ${PROJECT_SOURCE_DIR}/nyl/engine/_core/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/entity/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/component/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/system/
+    ${PROJECT_SOURCE_DIR}/nyl/thirdparty/spdlog/include)
 
-include_directories(${CMAKE_SOURCE_DIR}/Nyl/thirdparty/spdlog/include)
-include_directories(${CMAKE_SOURCE_DIR}/Nyl)
+include_directories(${CMAKE_SOURCE_DIR}/nyl/thirdparty/spdlog/include)
+include_directories(${CMAKE_SOURCE_DIR}/nyl)
 # add the glfw3 library directory
 # link the GLFW library
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -67,10 +91,10 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(include/glfw-3.3.9)
 
 # link against the GLFW and GLAD libraries
-target_link_libraries(Nyl glfw glad)
+target_link_libraries(nyl glfw glad)
 
 # preprocessor definitions
-target_compile_definitions(Nyl PRIVATE 
+target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     _CONSOLE
     NYL_PLATFORM_WINDOWS
@@ -78,15 +102,15 @@ target_compile_definitions(Nyl PRIVATE
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>
 )
-# set the output directory for the Nyl executable
-set_target_properties(Nyl PROPERTIES
+# set the output directory for the nyl executable
+set_target_properties(nyl PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/output)
 ############################### ANTARES ########################################
 # add the source files
 add_executable(Antares Antares/source/Antares.cpp)
 
 # link the DLL with the executable
-target_link_libraries(Antares Nyl)
+target_link_libraries(Antares nyl)
 
 
 # Set the output directory for the Antares executable
@@ -107,9 +131,11 @@ endif()
 # set include directories
 target_include_directories(Antares PRIVATE 
     ${PROJECT_SOURCE_DIR}/Antares
-    ${PROJECT_SOURCE_DIR}/Nyl
     ${PROJECT_SOURCE_DIR}/Antares/header
-    ${PROJECT_SOURCE_DIR}/Nyl/header
+    ${PROJECT_SOURCE_DIR}/nyl/engine/_core/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/entity/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/component/
+    ${PROJECT_SOURCE_DIR}/nyl/engine/system/
 )
 
 # set preprocessor definitions
