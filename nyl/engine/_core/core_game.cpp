@@ -92,8 +92,8 @@ namespace Nyl
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // load shaders
-        ResourceManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/sprite.vert", "D:/gitHub/nyl/Nyl/Shaders/sprite.frag", nullptr, "sprite");
-        ResourceManager::LoadShader("D:/gitHub/nyl/Nyl/Shaders/debug.vert", "D:/gitHub/nyl/Nyl/Shaders/debug.frag", nullptr, "debug");
+        ResourceManager::LoadShader("D:/gitHub/nyl/nyl/Shaders/sprite.vert", "D:/gitHub/nyl/nyl/Shaders/sprite.frag", nullptr, "sprite");
+        ResourceManager::LoadShader("D:/gitHub/nyl/nyl/Shaders/debug.vert", "D:/gitHub/nyl/nyl/Shaders/debug.frag", nullptr, "debug");
 
         // configure shaders TODO::Abstract this garbage
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
@@ -115,7 +115,7 @@ namespace Nyl
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        ProcessInput(0);// Antares foo
+        //ProcessInput(0);// Antares foo
 
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -155,7 +155,7 @@ void Game::run()
         if (totalTime >= 1.0f) // if a second has passed
         {
             float averageFPS = frameCount / totalTime;
-            NYL_CORE_INFO("Avg FPS: {0}", (int)averageFPS);
+            //NYL_CORE_INFO("Avg FPS: {0}", (int)averageFPS);
 
             // reset frameCount and totalTime
             frameCount = 0;
@@ -163,13 +163,10 @@ void Game::run()
         }
     }
 }
-    void Game::cleanup()
-    {
-        NYL_CORE_INFO("cleanup");
-    }
-
-
-
+void Game::cleanup()
+{
+    NYL_CORE_INFO("cleanup");
+}
  void Game::toggle_polygon_mode()
 {
         GLint polygonMode[2];
@@ -220,7 +217,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 
  void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-     NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+    //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
 
 void Game::error_callback(int error, const char* description)

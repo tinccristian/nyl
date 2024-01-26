@@ -27,6 +27,10 @@ ShaderComponent* ResourceManager::LoadShader(const char* vShaderFile, const char
 
 ShaderComponent* ResourceManager::GetShader(std::string name)
 {
+    if (Shaders.find(name) == Shaders.end())
+    {
+        NYL_CORE_ERROR("Shader {0} not found.", name);
+    }
     return Shaders[name];
 }
 
@@ -38,6 +42,10 @@ TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std
 
 TextureComponent* ResourceManager::GetTexture(std::string name)
 {
+    if (Textures.find(name) == Textures.end())
+    {
+        NYL_CORE_ERROR("Texture {0} not found.", name);
+    }
     return Textures[name];
 }
 

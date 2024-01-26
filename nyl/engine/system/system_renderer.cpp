@@ -20,6 +20,9 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::DrawSprite(const TextureComponent& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
+
+    this->shader.use();                 // fuck you
+    //glUseProgram(this->shader.ID);
     // prepare transformations
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (sprite position)
@@ -30,21 +33,25 @@ void RenderSystem::DrawSprite(const TextureComponent& texture, glm::vec2 positio
     // transform back to origin
 
     model = glm::scale(model, glm::vec3(size, 1.0f)); // scale
-
+    CheckGLError();
     // Set the model matrix
     this->shader.set_mat4("model", model);
-
+    CheckGLError();
     // render textured quad
     this->shader.set_vec3f("spriteColor", color);
-
+    //glUseProgram(this->shader.ID);
+    CheckGLError();
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
-
+    CheckGLError();
     // Draw the sprite
     glBindVertexArray(this->quadVAO);
+    CheckGLError();
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    CheckGLError();
     glBindVertexArray(0);
+    CheckGLError();
 }
 
 void RenderSystem::DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color, float direction)
@@ -81,12 +88,17 @@ void RenderSystem::DrawObject(const TextureComponent& texture, glm::vec2 positio
 
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
+    CheckGLError();
     texture.Bind();
+    CheckGLError();
 
     // Draw the sprite
     glBindVertexArray(this->quadVAO);
+    CheckGLError();
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    CheckGLError();
     glBindVertexArray(0);
+    CheckGLError();
 }
 
 void RenderSystem::initRenderData()
@@ -137,6 +149,7 @@ void RenderSystem::initRenderData()
 }
 void RenderSystem::DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
+    this->shader.use();
     // prepare transformations
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate
@@ -153,6 +166,7 @@ void RenderSystem::DrawRectangleOutline(glm::vec2 position, glm::vec2 size, floa
     glBindVertexArray(this->outlineVAO);
     glDrawArrays(GL_LINE_LOOP, 0, 4);
     glBindVertexArray(0);
+    CheckGLError();
 }
 void RenderSystem::update() {
     for (Entity& entity : entities) {
@@ -161,5 +175,12 @@ void RenderSystem::update() {
             // Draw the entity using the data in the renderComponent...
             DrawSprite(renderComponent->texture, renderComponent->position, renderComponent->size, renderComponent->rotate, renderComponent->color);
         }
+    }
+}
+void RenderSystem::CheckGLError()
+{
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        NYL_CORE_ERROR("OpenGL error: " + std::to_string(err));
     }
 }

@@ -53,7 +53,6 @@ namespace Nyl
         ShaderComponent shader;
         unsigned int quadVAO;
         unsigned int outlineVAO;
-
-
+        void CheckGLError();
     };
 }
