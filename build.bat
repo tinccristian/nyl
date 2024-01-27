@@ -1,6 +1,4 @@
 @echo off
-cd /d "%~dp0build"
-
 setlocal enabledelayedexpansion
 
 set run=false
@@ -32,9 +30,14 @@ for %%a in (%*) do (
     )
 )
 
+:: Change to the appropriate build directory based on the build type
+cd /d "%~dp0"
+mkdir build\%build_type%
+cd build\%build_type%
+
 :: Configure CMake
 echo Configuring CMake...
-cmake -G Ninja -DCMAKE_BUILD_TYPE=%build_type% -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
+cmake -G Ninja -DCMAKE_BUILD_TYPE=%build_type% -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ../..
 
 :: Start the build
 echo Starting build...
@@ -58,7 +61,8 @@ echo [Build completed in : %mins% minutes, %secs%.%hundredths% seconds]
 
 :: Run the executable if the -run argument was provided
 IF "%run%"=="true" (
-    echo Running /output/Antares.exe
+    echo Running ../output/Antares.exe
+    cd ../
     cd output
     Antares.exe
 )

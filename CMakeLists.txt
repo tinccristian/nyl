@@ -85,14 +85,23 @@ include_directories(${CMAKE_SOURCE_DIR}/nyl/thirdparty/spdlog/include)
 include_directories(${CMAKE_SOURCE_DIR}/nyl)
 # add the glfw3 library directory
 # link the GLFW library
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(include/glfw-3.3.9)
+# set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+# set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+# set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# add_subdirectory(include/glfw-3.3.9)
 
-# link against the GLFW and GLAD libraries
-target_link_libraries(nyl glfw glad)
+# # link against the GLFW and GLAD libraries
+# target_link_libraries(nyl glfw glad)
 
+# Find the pre-built GLFW library depending on the build type
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_library(GLFW_LIBRARY glfw3 PATHS D:/gitHub/nyl/include/glfw-3.3.9/build/Debug/src)
+else()
+    find_library(GLFW_LIBRARY glfw3 PATHS D:/gitHub/nyl/include/glfw-3.3.9/build/Release/src)
+endif()
+
+# Link against the GLFW and GLAD libraries
+target_link_libraries(nyl ${GLFW_LIBRARY} glad)
 # preprocessor definitions
 target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING

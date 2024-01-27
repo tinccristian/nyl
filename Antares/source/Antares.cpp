@@ -50,7 +50,7 @@ namespace Antares
         NYL_TRACE("ANTARES init");
 
         // Load textures
-        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/backgrounds/02.png", true, "background");
+        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/backgrounds/background.png", false, "background");
         ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/chikboy/chikboy_trim.png", true, "chikboy");
 
         // Configure game objects
@@ -63,6 +63,8 @@ namespace Antares
         Player->addComponent<PhysicsComponent>(1, 1, 50);
         Player->addComponent<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
         Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
+
+
         // Create collider components
         float platformWidth = 400.0f;
         float platformHeight = 50.0f;
@@ -81,6 +83,8 @@ namespace Antares
         ShaderComponent* debugShader = ResourceManager::GetShader("debug");
         debugRenderer = new RenderSystem(*debugShader);
         physics = new PhysicsSystem();
+        // add player entity to physics system
+        physics->addEntity(*Player);
         colliderSystem = new ColliderSystem();
         joystick = new Joystick(1);
 
@@ -103,17 +107,21 @@ namespace Antares
 
         auto colliders = {collider_platform, collider_platform_1, collider_platform_2, groundCollider};
 
-        if (colliderSystem->isColliding(*collider, *groundCollider)) {
-            NYL_TRACE("Player is colliding with ground");
-            HandleCollision(Player, groundCollider);
-        }
-
-        for (auto& worldColider : colliders) {
-            if (colliderSystem->isColliding(*collider, *worldColider)) {
-                HandleCollision(Player, collider);
+        // Check collision with platforms
+        bool isCollidingWithPlatform = false;
+        for (auto& worldCollider : colliders) {
+            if (colliderSystem->isColliding(*collider, *worldCollider)) {
+                HandleCollision(Player, worldCollider);
+                isCollidingWithPlatform = true;
                 break;
             }
         }
+
+        // // If not colliding with any platform, check collision with ground
+        // if (!isCollidingWithPlatform && colliderSystem->isColliding(*collider, *groundCollider)) {
+        //     NYL_TRACE("Player is colliding with ground");
+        //     HandleCollision(Player, groundCollider);
+        // }
 
         //Draw player
         Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
@@ -128,7 +136,8 @@ namespace Antares
 
     void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<ColliderComponent> collider)
     {
-        player->getComponent<TransformComponent>()->position.y = collider->Position.y - player->getComponent<TransformComponent>()->size.y;
+        //float offset = 30.0f; // Adjust this value as needed
+        player->getComponent<TransformComponent>()->position.y = collider->Position.y - player->getComponent<TransformComponent>()->size.y;// - offset;
         player->getComponent<PhysicsComponent>()->velocity.y = 0;
         player->getComponent<PhysicsComponent>()->canJump = true;
     }
@@ -136,7 +145,7 @@ namespace Antares
     void Antares::ProcessInput(float deltaTime)
     {
         float speed = 250.0f;
-        float jumpSpeed = 400.f;
+        float jumpSpeed = 600.0f;
 
         joystick->update();
 
@@ -159,13 +168,10 @@ namespace Antares
         float groundLevel = height - Player->getComponent<TransformComponent>()->size.y;
         float tolerance = 10.0f;
 
-        if(jumpButton){
-            NYL_TRACE("Jump!");
-        }
         if (jumpButton && Player->getComponent<PhysicsComponent>()->canJump) {
+            NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
-            NYL_ERROR("foo2");
         }
 
         physics->applyGravity(*Player, deltaTime);
@@ -181,6 +187,6 @@ namespace Antares
 Nyl::Application* Nyl::CreateApplication()
 {
     NYL_TRACE("Create Antares");
-    return new Antares::Antares(1280, 720, "Antares");
+    return new Antares::Antares(1280, 640, "Antares");
     //return new Antares::Antares(1920, 1080, "Antares");
 }
