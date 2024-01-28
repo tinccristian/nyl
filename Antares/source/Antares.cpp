@@ -53,17 +53,22 @@ namespace Antares
         ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/backgrounds/background.png", false, "background");
         ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/chikboy/chikboy_trim.png", true, "chikboy");
 
-        // Configure game objects
+        // Configure the player
         float sizeY = 64.0f;
         float sizeX = 36.0f;
         point startPoint = {60.0f, 280.0f};
 
-        // Create the Player entity and add components
+        // Create the Player entity
         Player = std::make_shared<Entity>();
-        Player->addComponent<PhysicsComponent>(1, 1, 50);
-        Player->addComponent<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
-        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
+        // Add components to the Player entity
 
+        // (1,1) velocity, 50 mass
+        Player->addComponent<PhysicsComponent>(1, 1, 50);
+        // add collider component
+        Player->addComponent<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
+        // 
+        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
+        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy"));
 
         // Create collider components
         float platformWidth = 400.0f;
@@ -116,16 +121,9 @@ namespace Antares
                 break;
             }
         }
-
-        // // If not colliding with any platform, check collision with ground
-        // if (!isCollidingWithPlatform && colliderSystem->isColliding(*collider, *groundCollider)) {
-        //     NYL_TRACE("Player is colliding with ground");
-        //     HandleCollision(Player, groundCollider);
-        // }
-
         //Draw player
-        Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
-
+        //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
+        Renderer->DrawEntity(*Player);
         // Debug draw
         debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
         debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
@@ -160,6 +158,7 @@ namespace Antares
         if (std::abs(moveX) > 0.1) {
             Player->getComponent<PhysicsComponent>()->velocity.x = moveX * speed;
             Player->getComponent<PhysicsComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
+            Player->getComponent<TransformComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
         }
         else {
             Player->getComponent<PhysicsComponent>()->velocity.x = 0.0f;
