@@ -2,12 +2,13 @@
 #include "component.h"
 #include <glm/glm.hpp>
 
-class TransformComponent : public Component {
+struct TransformComponent : public Component {
 public:
     glm::vec2 position; ///< Position of the entity.
     float rotation; ///< Rotation of the entity (in degrees).
     glm::vec2 scale; ///< Scale of the entity.
     glm::vec2 size; ///< Size of the entity.
+    float direction=1.0f; ///< Direction of the entity (1 = right, -1 = left).
 
     /**
      * @brief Construct a new TransformComponent object.

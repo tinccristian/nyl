@@ -2,6 +2,7 @@
 #include "resource_manager.h"
 #include "component_shader.h"
 #include "component_texture.h"
+#include "component_transform.h"
 #include "core_log.h"
 
 using namespace Nyl;
@@ -100,7 +101,68 @@ void RenderSystem::DrawObject(const TextureComponent& texture, glm::vec2 positio
     glBindVertexArray(0);
     CheckGLError();
 }
+void RenderSystem::DrawEntitySprite(const TextureComponent& texture, TransformComponent& transform, glm::vec3 color)
+{
+    this->shader.use();
 
+    // prepare transformations
+    glm::mat4 model = glm::mat4(1.0f);
+
+    // translate to the sprite position
+    model = glm::translate(model, glm::vec3(transform.position, 0.0f));  
+
+    // translate back by half the size to set the rotation origin to the center of the sprite
+    model = glm::translate(model, glm::vec3(0.5f * transform.size.x, 0.5f * transform.size.y, 0.0f));
+
+    // Flip the sprite based on the direction
+    if (transform.direction != 0)
+    {
+        model = glm::scale(model, glm::vec3(transform.direction, 1.0f, 1.0f)); // flip without distorting
+    }
+
+    // translate back to the original position
+    model = glm::translate(model, glm::vec3(-0.5f * transform.size.x, -0.5f * transform.size.y, 0.0f));
+
+    // then rotate
+    model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
+
+    // Apply the original scale
+    model = glm::scale(model, glm::vec3(transform.size, 1.0f)); 
+
+    // Set the model matrix
+    this->shader.set_mat4("model", model);
+
+    // render textured quad
+    this->shader.set_vec3f("spriteColor", color);
+
+    // Bind the texture
+    glActiveTexture(GL_TEXTURE0);
+    texture.Bind();
+
+    // Draw the sprite
+    glBindVertexArray(this->quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+void RenderSystem::DrawEntity(const Entity& entity)
+{
+        // Get the entity's transform component
+    auto transform = entity.getComponent<TransformComponent>();
+    if (!transform) {
+        NYL_CORE_ERROR("Error: Entity does not have a TransformComponent");
+        return;
+    }
+
+    // Get the entity's texture component
+    auto texture = entity.getComponent<TextureComponent>();
+    if (!texture) {
+        NYL_CORE_ERROR("Error: Entity does not have a TransformComponent");
+        return;
+    }
+
+    // Draw the sprite at the entity's position
+    DrawEntitySprite(*texture, *transform, Nyl::Colors::White);
+}
 void RenderSystem::initRenderData()
 {
     // configure VAO/VBO for filled rectangle
