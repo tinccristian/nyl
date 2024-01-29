@@ -18,25 +18,19 @@ namespace Antares
     // ColliderComponent* groundCollider;
     std::shared_ptr<Entity> Player; // Declare the "Player" variable
     TransformComponent* transform;
-    std::shared_ptr<ColliderComponent> collider;
     std::shared_ptr<ColliderComponent> collider_platform;
     std::shared_ptr<ColliderComponent> collider_platform_1;
-    std::shared_ptr<ColliderComponent> collider_platform_2;
     std::shared_ptr<ColliderComponent> groundCollider;
-    RenderSystem* Renderer;
-    RenderSystem* debugRenderer;
-    PhysicsSystem* physics;
-    ColliderSystem* colliderSystem;
-    Joystick* joystick;
+    std::unique_ptr<RenderSystem> Renderer;
+    std::unique_ptr<RenderSystem> debugRenderer;
+    std::unique_ptr<PhysicsSystem> physics;
+    std::unique_ptr<ColliderSystem> colliderSystem;
+    std::unique_ptr<Joystick> joystick;
+    
 
     Antares::Antares(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
     {
-        Renderer = nullptr;
-        debugRenderer = nullptr;
-        physics = nullptr;
-        colliderSystem = nullptr;
-        joystick = nullptr;
         NYL_TRACE("ANTARES constructor");
     }
 
@@ -49,10 +43,69 @@ namespace Antares
     {
         NYL_TRACE("ANTARES init");
 
-        // Load textures
-        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/backgrounds/background.png", false, "background");
-        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/chikboy/chikboy_trim.png", true, "chikboy");
+        // Load resources
+        LoadResources();
+        // Configure the player
+        ConfigurePlayer();
 
+        // Create collider components
+        CreateColliders();
+
+        // Create systems
+        CreateSystems();
+    }
+
+    void Antares::Update(float deltaTime)
+    {
+        // Draw background
+        TextureComponent* background = ResourceManager::GetTexture("background");
+        Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
+
+        // Process input
+        ProcessInput(deltaTime);
+
+        // Update collider
+        Player->getComponent<ColliderComponent>()->Update(Player->getComponent<TransformComponent>()->position);
+        auto colliders = {collider_platform, collider_platform_1, groundCollider};
+
+        // Check collision with platforms
+        bool isCollidingWithPlatform = false;
+        for (auto& worldCollider : colliders) {
+            if (colliderSystem->isColliding(*Player->getComponent<ColliderComponent>(), *worldCollider)) {
+                HandleCollision(Player, worldCollider);
+                isCollidingWithPlatform = true;
+                break;
+            }
+        }
+        //Draw player
+        //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
+        Renderer->DrawEntity(*Player);
+        // Debug draw
+        debugRenderer->DrawRectangleOutline(Player->getComponent<ColliderComponent>()->Position, Player->getComponent<ColliderComponent>()->Size, 0.0f, Colors::Green.value);
+        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
+        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
+        //debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
+        debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
+    }
+
+#pragma region init_helper_foo
+    void Antares::LoadResources()
+    {
+        // Load textures
+        if (!ResourceManager::LoadTexture((workingPath + "resources/backgrounds/lv1.png").c_str(), true, "background"))
+        {
+            NYL_ERROR("Failed to load background texture");
+            return;
+        }
+
+        if (!ResourceManager::LoadTexture((workingPath+"resources/characters/chikboy_trim.png").c_str(), true, "chikboy"))
+        {
+            NYL_ERROR("Failed to load chikboy texture");
+            return;
+        }
+    }
+    void Antares::ConfigurePlayer()
+    {
         // Configure the player
         float sizeY = 64.0f;
         float sizeX = 36.0f;
@@ -69,69 +122,42 @@ namespace Antares
         // 
         Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
         Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy"));
-
+    }
+    void Antares::CreateColliders()
+    {
         // Create collider components
         float platformWidth = 400.0f;
         float platformHeight = 50.0f;
-        float platformPosX = startPoint.x;
-        float platformPosY = startPoint.y + sizeY + 100.0f;
+        //float platformPosX = startPoint.x;
+        //float platformPosY = startPoint.y + sizeY + 100.0f;
 
-        collider = std::make_shared<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
+        //collider = std::make_unique<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
         collider_platform = std::make_shared<ColliderComponent>(0, 350, 190, 90);
         collider_platform_1 = std::make_shared<ColliderComponent>(319, 205, 511 - 319, 20);
-        collider_platform_2 = std::make_shared<ColliderComponent>(platformPosX + 500, platformPosY + 200, platformWidth, platformHeight);
+        //collider_platform_2 = std::make_shared<ColliderComponent>(platformPosX + 500, platformPosY + 200, platformWidth, platformHeight);
         groundCollider = std::make_shared<ColliderComponent>(0, height - 5.0f, width, 10.0f);
 
-        // Create systems
-        ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
-        Renderer = new RenderSystem(*spriteShader);
-        ShaderComponent* debugShader = ResourceManager::GetShader("debug");
-        debugRenderer = new RenderSystem(*debugShader);
-        physics = new PhysicsSystem();
-        // add player entity to physics system
-        physics->addEntity(*Player);
-        colliderSystem = new ColliderSystem();
-        joystick = new Joystick(1);
-
-        if (joystick->isPresent()) {
-            NYL_TRACE("Joystick {0} is present", joystick->getName());
-        }
     }
-
-    void Antares::Update(float deltaTime)
+    void Antares::CreateSystems()
     {
-        // Draw background
-        TextureComponent* background = ResourceManager::GetTexture("background");
-        Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
+            ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
+            Renderer = std::make_unique<RenderSystem>(*spriteShader);
+            ShaderComponent* debugShader = ResourceManager::GetShader("debug");
+            debugRenderer = std::make_unique<RenderSystem>(*debugShader);
+            physics = std::make_unique<PhysicsSystem>();
+            // add player entity to physics system
+            physics->addEntity(*Player);
+            colliderSystem = std::make_unique<ColliderSystem>();
+            joystick = std::make_unique<Joystick>(1);
 
-        // Process input
-        ProcessInput(deltaTime);
-
-        // Update collider
-        collider->Update(Player->getComponent<TransformComponent>()->position);
-
-        auto colliders = {collider_platform, collider_platform_1, collider_platform_2, groundCollider};
-
-        // Check collision with platforms
-        bool isCollidingWithPlatform = false;
-        for (auto& worldCollider : colliders) {
-            if (colliderSystem->isColliding(*collider, *worldCollider)) {
-                HandleCollision(Player, worldCollider);
-                isCollidingWithPlatform = true;
-                break;
+            if (joystick->isPresent()) {
+                NYL_TRACE("Joystick {0} is present", joystick->getName());
             }
-        }
-        //Draw player
-        //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
-        Renderer->DrawEntity(*Player);
-        // Debug draw
-        debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
-        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
+            else {
+                NYL_TRACE("Joystick not present");
+            }
     }
-
+#pragma endregion
     void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<ColliderComponent> collider)
     {
         //float offset = 30.0f; // Adjust this value as needed
@@ -186,6 +212,6 @@ namespace Antares
 Nyl::Application* Nyl::CreateApplication()
 {
     NYL_TRACE("Create Antares");
-    return new Antares::Antares(1280, 640, "Antares");
+    return new Antares::Antares(1280, 720, "Antares");
     //return new Antares::Antares(1920, 1080, "Antares");
 }
