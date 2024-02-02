@@ -76,15 +76,15 @@ namespace Antares
             worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
 
             if (worldCollider->isColliding) {
-                if (!wasColliding) {
-                    debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Red.value);
-                }
+                // if (!wasColliding) {
+                //     debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Red.value);
+                // }
                 HandleCollision(Player, worldCollider);
                 isCollidingWithPlatform = true;
                 break;
-            } else if (wasColliding) {
-                debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Green.value);
-            }
+            }// else if (wasColliding) {
+                //debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Green.value);
+            //}
         }
         if (!isCollidingWithPlatform) {
             Player->getComponent<PhysicsComponent>()->canJump = false;
@@ -93,7 +93,7 @@ namespace Antares
         //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
         Renderer->DrawEntity(*Player);
         // Debug draw
-        debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
+        //debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
     }
 
 #pragma region init_helper_foo
@@ -123,7 +123,7 @@ namespace Antares
         Player = std::make_shared<Entity>();
 
         // (1,1) velocity, 50 mass
-        Player->addComponent<PhysicsComponent>(1, 1, 50);
+        Player->addComponent<PhysicsComponent>(1, 2, 50);
         // add collider component
         Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
         auto transform = Player->getComponent<TransformComponent>();
@@ -185,8 +185,8 @@ void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<Bo
 
     void Antares::ProcessInput(float deltaTime)
     {
-        float speed = 250.0f;
-        float jumpSpeed = 450.0f;
+        float speed = 200.0f;
+        float jumpSpeed = 300.0f;
 
         joystick->update();
 
