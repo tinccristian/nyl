@@ -23,11 +23,14 @@ void ColliderSystem::update() {
 
 bool ColliderSystem::isColliding(const BoxCollider& a, const BoxCollider& b) const {
     // Check if the two colliders are colliding...
-    bool result = a.min.x < b.max.x &&
-                  a.max.x > b.min.x &&
-                  a.min.y < b.max.y &&
-                  a.max.y > b.min.y;
-    if(result)
-        NYL_TRACE("Collision: {0}, {1}, {2}", a.flag, b.flag, result);
-    return result;
+    // bool result = a.min.x < b.max.x &&
+    //               a.max.x > b.min.x &&
+    //               a.min.y < b.max.y &&
+    //               a.max.y > b.min.y;
+    // if(result)
+    //     NYL_TRACE("Collision: {0}, {1}, {2}", a.flag, b.flag, result);
+    return  a.min.x < b.max.x &&
+            a.max.x > b.min.x &&
+            a.min.y < b.max.y &&
+            a.max.y > b.min.y;
 }

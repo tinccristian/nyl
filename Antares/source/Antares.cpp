@@ -6,17 +6,8 @@
 using namespace Nyl;
 namespace Antares
 {
-    // RenderSystem* Renderer;
-    // RenderSystem* debugRenderer;
-    // Joystick* joystick;
-    // PhysicsSystem* physics;
-    // Entity* Player; // Declare the "Player" variable
-    // ColliderComponent* collider;
-    // ColliderComponent* collider_platform;
-    // ColliderComponent* collider_platform_1;
-    // ColliderComponent* collider_platform_2;
-    // ColliderComponent* groundCollider;
-    std::shared_ptr<Entity> Player; // Declare the "Player" variable
+
+    std::shared_ptr<Entity> Player; 
     TransformComponent* transform;
     std::vector<std::shared_ptr<BoxCollider>> colliders;
     std::unique_ptr<RenderSystem> Renderer;
@@ -24,23 +15,22 @@ namespace Antares
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<ColliderSystem> collisions;
     std::unique_ptr<Joystick> joystick;
-    
+    float cloudTimer = 0.0f;
+    const float cloudInterval = 5.0f;
 
     Antares::Antares(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
     {
-        NYL_TRACE("ANTARES constructor");
+        //NYL_TRACE("ANTARES constructor");
     }
 
     Antares::~Antares()
     {
-        NYL_TRACE("ANTARES destructor");
+        //NYL_TRACE("ANTARES destructor");
     }
 
     void Antares::Init()
     {
-        NYL_TRACE("ANTARES init");
-
         // Load resources
         LoadResources();
 
@@ -59,15 +49,20 @@ namespace Antares
         physics->updatePhysics(deltaTime, width);
 
         // Draw background
-        TextureComponent* background = ResourceManager::GetTexture("background");
+        TextureComponent* background = ResourceManager::GetTexture("lv2");
+        TextureComponent* cloud = ResourceManager::GetTexture("cloud");
         Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
 
+        Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
         // Process input
         ProcessInput(deltaTime);
 
         // Update collider
         collisions->update();
-        //Player->getComponent<BoxCollider>()->Update(Player->getComponent<TransformComponent>()->position);
 
         // Check collision with platforms
         bool isCollidingWithPlatform = false;
@@ -90,7 +85,6 @@ namespace Antares
             Player->getComponent<PhysicsComponent>()->canJump = false;
         }
         //Draw player
-        //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
         Renderer->DrawEntity(*Player);
         // Debug draw
         //debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
@@ -99,17 +93,19 @@ namespace Antares
 #pragma region init_helper_foo
     void Antares::LoadResources()
     {
-        // Load textures
-        if (!ResourceManager::LoadTexture((workingPath + "resources/backgrounds/lv1.png").c_str(), true, "background"))
-        {
-            NYL_ERROR("Failed to load background texture");
-            return;
-        }
+        std::vector<std::string> texturePaths = {
+            workingPath + "resources/backgrounds/lv2.png",
+            workingPath + "resources/characters/chikboy_trim.png",
+            workingPath + "resources/backgrounds/cloud.png"
+        };
 
-        if (!ResourceManager::LoadTexture((workingPath+"resources/characters/chikboy_trim.png").c_str(), true, "chikboy"))
-        {
-            NYL_ERROR("Failed to load chikboy texture");
-            return;
+        for (const std::string& path : texturePaths) {
+            std::string textureName = path.substr(path.find_last_of('/') + 1);
+            textureName = textureName.substr(0, textureName.find_last_of('.'));
+            if (!ResourceManager::LoadTexture(path.c_str(), true, textureName)) {
+                NYL_ERROR("Failed to load texture: {}", textureName);
+                return;
+            }
         }
     }
     void Antares::ConfigurePlayer()
@@ -128,7 +124,7 @@ namespace Antares
         Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
         auto transform = Player->getComponent<TransformComponent>();
         Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
-        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy"));
+        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy_trim"));
     }
     void Antares::CreateColliders()
     {
@@ -169,7 +165,7 @@ namespace Antares
             }
     }
 #pragma endregion
-void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
+    void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
 {
     //float offset = 0.0f; // Adjust this value as needed
     player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
