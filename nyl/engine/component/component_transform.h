@@ -9,6 +9,8 @@ public:
     glm::vec2 scale; ///< Scale of the entity.
     glm::vec2 size; ///< Size of the entity.
     float direction=1.0f; ///< Direction of the entity (1 = right, -1 = left).
+    glm::vec2 min; ///< Minimum point of the entity (bottom-left corner).
+    glm::vec2 max; ///< Maximum point of the entity (top-right corner).
 
     /**
      * @brief Construct a new TransformComponent object.
@@ -18,10 +20,16 @@ public:
      * @param scale Initial scale of the entity.
      * @param size Initial size of the entity.
      */
-    TransformComponent(const glm::vec2& position = glm::vec2(0.0f), float rotation = 0.0f, const glm::vec2& scale = glm::vec2(1.0f), const glm::vec2& size = glm::vec2(1.0f))
-        : position(position), rotation(rotation), scale(scale), size(size) {}
+    TransformComponent(
+        const glm::vec2& position = glm::vec2(0.0f),
+        float rotation = 0.0f,
+        const glm::vec2& scale = glm::vec2(1.0f),
+        const glm::vec2& size = glm::vec2(1.0f))
+        : position(position), rotation(rotation), scale(scale), size(size) {
+            updateMinMax();
+        }
 
-         /**
+    /**
      * @brief Construct a new TransformComponent object using floats.
      * 
      * @param posX Initial x position of the entity.
@@ -32,6 +40,22 @@ public:
      * @param sizeX Initial x size of the entity.
      * @param sizeY Initial y size of the entity.
      */
-TransformComponent(float posX = 0.0f, float posY = 0.0f, float rotation = 0.0f, float scaleX = 1.0f, float scaleY = 1.0f, float sizeX = 1.0f, float sizeY = 1.0f)
-    : position(glm::vec2(posX, posY)), rotation(rotation), scale(glm::vec2(scaleX, scaleY)), size(glm::vec2(sizeX, sizeY)) {}
+    TransformComponent(float posX = 0.0f,
+        float posY = 0.0f,
+        float rotation = 0.0f,
+        float scaleX = 1.0f,
+        float scaleY = 1.0f,
+        float sizeX = 1.0f,
+        float sizeY = 1.0f)
+        : position(glm::vec2(posX, posY)), rotation(rotation), scale(glm::vec2(scaleX, scaleY)), size(glm::vec2(sizeX, sizeY)) {
+            updateMinMax();
+        }
+
+    /**
+     * @brief Update the min and max points of the entity.
+     */
+    void updateMinMax() {
+        min = position;
+        max = position + size;
+    }
 };

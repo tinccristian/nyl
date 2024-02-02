@@ -56,7 +56,6 @@ namespace Nyl
         glfwMakeContextCurrent(window);
 
 
-
         // glad: load all OpenGL function pointers
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
@@ -152,11 +151,11 @@ void Game::run()
         frameCount++;
         totalTime += frameTime;
 
-        if (totalTime >= 1.0f) // if a second has passed
+        if (totalTime >= 1.0f)
         {
-            float averageFPS = frameCount / totalTime;
-            //NYL_CORE_INFO("Avg FPS: {0}", (int)averageFPS);
-
+            int averageFPS = (int)(frameCount / totalTime);
+            std::string newTitle = title + " - FPS: " + std::to_string(averageFPS);
+            glfwSetWindowTitle(window, newTitle.c_str());
             // reset frameCount and totalTime
             frameCount = 0;
             totalTime = 0.0f;
@@ -217,7 +216,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 
  void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+    NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
 
 void Game::error_callback(int error, const char* description)

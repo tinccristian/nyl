@@ -5,6 +5,7 @@
 #include <memory>
 #include <queue>
 #include "core.h"
+#include "core_log.h"
 
 class Component;
 
@@ -52,7 +53,12 @@ public:
      */
     template <typename T, typename... Args>
     void addComponent(Args&&... args) {
-        components[std::type_index(typeid(T))] = std::make_shared<T>(std::forward<Args>(args)...);
+        auto type = std::type_index(typeid(T));
+        if (components.count(type) > 0) {
+            NYL_CORE_ERROR("Component of type {0} already exists", typeid(T).name());
+            return;
+        }
+        components[type] = std::make_shared<T>(std::forward<Args>(args)...);
     }
 
     /**
@@ -66,10 +72,11 @@ public:
     template <typename T>
     std::shared_ptr<T> getComponent() const {
         auto iter = components.find(std::type_index(typeid(T)));
-        if (iter != components.end()) {
-            return std::static_pointer_cast<T>(iter->second);
+        if (iter == components.end()) {
+            NYL_CORE_ERROR("Component of type {0} does not exist", typeid(T).name());
+            return nullptr;
         }
-        return nullptr;
+        return std::static_pointer_cast<T>(iter->second);
     }
 
     /**
@@ -93,7 +100,12 @@ public:
      */
     template <typename T>
     void removeComponent() {
-        components.erase(std::type_index(typeid(T)));
+        auto type = std::type_index(typeid(T));
+        if (components.count(type) == 0) {
+            NYL_CORE_ERROR("Component of type {0} does not exist", typeid(T).name());
+            return;
+        }
+        components.erase(type);
     }
 
 private:

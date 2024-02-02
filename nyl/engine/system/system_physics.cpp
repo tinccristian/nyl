@@ -10,7 +10,7 @@ void PhysicsSystem::updatePhysics(float deltaTime, float width) {
         auto physics = entity.getComponent<PhysicsComponent>();
         if (transform && physics) {
             transform->position += physics->velocity * deltaTime;
-
+            transform->updateMinMax();
             if (transform->position.x < 0) {
                 transform->position.x = 0;
                 physics->velocity.x = 0;
@@ -38,7 +38,7 @@ void PhysicsSystem::jump(Entity& entity, float jumpSpeed, float deltaTime) {
     }
 }
 
-bool PhysicsSystem::checkCollision(const Nyl::ColliderComponent& one, const Nyl::ColliderComponent& two) {
+bool PhysicsSystem::checkCollision(const Nyl::BoxCollider& one, const Nyl::BoxCollider& two) {
     if (one.max.x < two.min.x || one.min.x > two.max.x) {
         return false;
     }

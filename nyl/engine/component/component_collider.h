@@ -1,48 +1,50 @@
-// ColliderComponent.h
+// BoxColliderComponent.h
 #pragma once
 #include "component.h"
 #include <glm/glm.hpp>
+#include <string>
 
 namespace Nyl
 {
-    class NYL_API ColliderComponent : public Component {
+    /**
+     * @brief Represents a box collider component.
+     * 
+     * The BoxCollider class is a derived class of the Component class and represents a box-shaped collider in the nyl game engine.
+     * It defines a rectangular region in 2D space defined by a minimum and maximum vector.
+     * The collider can be associated with a flag for identification purposes.
+     */
+    class NYL_API BoxCollider : public Component {
     public:
-        glm::vec2 Position, Size, min, max; ///< Position, Size, min and max vectors of the collider.
+        glm::vec2 min, max; ///< Min and max vectors of the collider.
+        std::string flag;
+        bool isColliding=false;
 
         /**
-         * @brief Construct a new ColliderComponent object.
+         * @brief Construct a new BoxCollider object from two points.
          * 
-         * @param posX X position of the collider.
-         * @param posY Y position of the collider.
-         * @param sizeX Width of the collider.
-         * @param sizeY Height of the collider.
+         * @param min The bottom-left corner of the box.
+         * @param max The top-right corner of the box.
+         * @param flag The flag of the collider.
          */
-        ColliderComponent(float posX, float posY, float sizeX, float sizeY)
-            : Position(posX, posY), Size(sizeX, sizeY) {
-            min = Position - Size / 2.0f;
-            max = Position + Size / 2.0f;
+        BoxCollider(const glm::vec2& bottomLeft, const glm::vec2& topRight, std::string flag = "default")
+        : min(bottomLeft.x, topRight.y), max(topRight.x, bottomLeft.y), flag(flag) {}
+
+        /**
+         * @brief Get the position of the collider.
+         * 
+         * @return The position of the collider, which is the same as the minimum vector.
+         */
+        glm::vec2 getPosition() {
+            return min;
         }
 
         /**
-         * @brief Update the position of the collider.
+         * @brief Get the size of the collider.
          * 
-         * @param position The new position of the collider.
+         * @return The size of the collider, which is the difference between the maximum and minimum vectors.
          */
-        void Update(const glm::vec2& position) {
-            Position = position;
-            min = Position - Size / 2.0f;
-            max = Position + Size / 2.0f;
-        }
-
-        /**
-         * @brief Set the size of the collider.
-         * 
-         * @param size The new size of the collider.
-         */
-        void SetSize(const glm::vec2& size) {
-            Size = size;
-            min = Position - Size / 2.0f;
-            max = Position + Size / 2.0f;
+        glm::vec2 getSize() {
+            return max - min;
         }
     };
 }

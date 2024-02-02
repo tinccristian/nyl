@@ -18,13 +18,11 @@ namespace Antares
     // ColliderComponent* groundCollider;
     std::shared_ptr<Entity> Player; // Declare the "Player" variable
     TransformComponent* transform;
-    std::shared_ptr<ColliderComponent> collider_platform;
-    std::shared_ptr<ColliderComponent> collider_platform_1;
-    std::shared_ptr<ColliderComponent> groundCollider;
+    std::vector<std::shared_ptr<BoxCollider>> colliders;
     std::unique_ptr<RenderSystem> Renderer;
     std::unique_ptr<RenderSystem> debugRenderer;
     std::unique_ptr<PhysicsSystem> physics;
-    std::unique_ptr<ColliderSystem> colliderSystem;
+    std::unique_ptr<ColliderSystem> collisions;
     std::unique_ptr<Joystick> joystick;
     
 
@@ -45,6 +43,7 @@ namespace Antares
 
         // Load resources
         LoadResources();
+
         // Configure the player
         ConfigurePlayer();
 
@@ -57,6 +56,8 @@ namespace Antares
 
     void Antares::Update(float deltaTime)
     {
+        physics->updatePhysics(deltaTime, width);
+
         // Draw background
         TextureComponent* background = ResourceManager::GetTexture("background");
         Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
@@ -65,27 +66,34 @@ namespace Antares
         ProcessInput(deltaTime);
 
         // Update collider
-        Player->getComponent<ColliderComponent>()->Update(Player->getComponent<TransformComponent>()->position);
-        auto colliders = {collider_platform, collider_platform_1, groundCollider};
+        collisions->update();
+        //Player->getComponent<BoxCollider>()->Update(Player->getComponent<TransformComponent>()->position);
 
         // Check collision with platforms
         bool isCollidingWithPlatform = false;
         for (auto& worldCollider : colliders) {
-            if (colliderSystem->isColliding(*Player->getComponent<ColliderComponent>(), *worldCollider)) {
+            bool wasColliding = worldCollider->isColliding;
+            worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
+
+            if (worldCollider->isColliding) {
+                if (!wasColliding) {
+                    debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Red.value);
+                }
                 HandleCollision(Player, worldCollider);
                 isCollidingWithPlatform = true;
                 break;
+            } else if (wasColliding) {
+                debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Green.value);
             }
+        }
+        if (!isCollidingWithPlatform) {
+            Player->getComponent<PhysicsComponent>()->canJump = false;
         }
         //Draw player
         //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
         Renderer->DrawEntity(*Player);
         // Debug draw
-        debugRenderer->DrawRectangleOutline(Player->getComponent<ColliderComponent>()->Position, Player->getComponent<ColliderComponent>()->Size, 0.0f, Colors::Green.value);
-        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
-        //debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
+        debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
     }
 
 #pragma region init_helper_foo
@@ -109,34 +117,36 @@ namespace Antares
         // Configure the player
         float sizeY = 64.0f;
         float sizeX = 36.0f;
-        point startPoint = {60.0f, 280.0f};
+        point startPoint = {0.0f, 0.0f};
 
         // Create the Player entity
         Player = std::make_shared<Entity>();
-        // Add components to the Player entity
 
         // (1,1) velocity, 50 mass
         Player->addComponent<PhysicsComponent>(1, 1, 50);
         // add collider component
-        Player->addComponent<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
-        // 
         Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
+        auto transform = Player->getComponent<TransformComponent>();
+        Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
         Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy"));
     }
     void Antares::CreateColliders()
     {
-        // Create collider components
-        float platformWidth = 400.0f;
-        float platformHeight = 50.0f;
-        //float platformPosX = startPoint.x;
-        //float platformPosY = startPoint.y + sizeY + 100.0f;
-
-        //collider = std::make_unique<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
-        collider_platform = std::make_shared<ColliderComponent>(0, 350, 190, 90);
-        collider_platform_1 = std::make_shared<ColliderComponent>(319, 205, 511 - 319, 20);
-        //collider_platform_2 = std::make_shared<ColliderComponent>(platformPosX + 500, platformPosY + 200, platformWidth, platformHeight);
-        groundCollider = std::make_shared<ColliderComponent>(0, height - 5.0f, width, 10.0f);
-
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,height), glm::vec2(width,height-5.0f), "ground"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(163,80),  glm::vec2(212,31) , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(429,524), glm::vec2(478,475), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(291,614), glm::vec2(340,565), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(542,282), glm::vec2(796,246), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(615,245), glm::vec2(664,5)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(872,524), glm::vec2(922,475)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1077,650), glm::vec2(1126,601)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(943,384), glm::vec2(1274,335)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(945,192), glm::vec2(994,143)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));
     }
     void Antares::CreateSystems()
     {
@@ -147,7 +157,8 @@ namespace Antares
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
-            colliderSystem = std::make_unique<ColliderSystem>();
+            collisions = std::make_unique<ColliderSystem>();
+            collisions->addEntity(*Player);
             joystick = std::make_unique<Joystick>(1);
 
             if (joystick->isPresent()) {
@@ -158,18 +169,24 @@ namespace Antares
             }
     }
 #pragma endregion
-    void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<ColliderComponent> collider)
-    {
-        //float offset = 30.0f; // Adjust this value as needed
-        player->getComponent<TransformComponent>()->position.y = collider->Position.y - player->getComponent<TransformComponent>()->size.y;// - offset;
-        player->getComponent<PhysicsComponent>()->velocity.y = 0;
+void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
+{
+    //float offset = 0.0f; // Adjust this value as needed
+    player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
+    player->getComponent<PhysicsComponent>()->velocity.y = 0;
+    player->getComponent<PhysicsComponent>()->canJump = true;
+
+    // Check if player is on top of the platform
+    if (player->getComponent<TransformComponent>()->position.y >= collider->getPosition().y + collider->getSize().y) {
         player->getComponent<PhysicsComponent>()->canJump = true;
     }
+
+}
 
     void Antares::ProcessInput(float deltaTime)
     {
         float speed = 250.0f;
-        float jumpSpeed = 600.0f;
+        float jumpSpeed = 450.0f;
 
         joystick->update();
 
@@ -194,13 +211,13 @@ namespace Antares
         float tolerance = 10.0f;
 
         if (jumpButton && Player->getComponent<PhysicsComponent>()->canJump) {
-            NYL_TRACE("Jump!");
+            //NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
+            //physics->applyGravity(*Player, deltaTime);
         }
 
-        physics->applyGravity(*Player, deltaTime);
-        physics->updatePhysics(deltaTime, width);
+        //physics->applyGravity(*Player, deltaTime);
     }
 
     void Antares::Quit()
