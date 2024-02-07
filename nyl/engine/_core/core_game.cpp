@@ -214,9 +214,16 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
         NYL_CORE_WARN("going right");
 }
 
- void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+    // Convert from GLFW coordinates to world coordinates
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+
+    double worldX = xpos - game->width / 2.0;
+    double worldY = game->height - ypos - game->height / 2.0;
+
+    NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
+    //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
 
 void Game::error_callback(int error, const char* description)

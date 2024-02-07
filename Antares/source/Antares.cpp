@@ -2,6 +2,8 @@
 #include "core_input.h"
 #include <system_renderer.h>
 #include "component_collider.h"
+#include "component_camera.h"
+#include "system_camera.h"
 
 using namespace Nyl;
 namespace Antares
@@ -10,6 +12,8 @@ namespace Antares
     std::shared_ptr<Entity> Player; 
     TransformComponent* transform;
     std::vector<std::shared_ptr<BoxCollider>> colliders;
+    std::shared_ptr<Camera> camera;
+    std::unique_ptr<CameraSystem> cameraManager;
     std::unique_ptr<RenderSystem> Renderer;
     std::unique_ptr<RenderSystem> debugRenderer;
     std::unique_ptr<PhysicsSystem> physics;
@@ -48,11 +52,15 @@ namespace Antares
     {
         physics->updatePhysics(deltaTime, width);
 
+        // Update camera
+        cameraManager->update(*Player);
+        
         // Draw background
         TextureComponent* background = ResourceManager::GetTexture("lv2");
-        TextureComponent* cloud = ResourceManager::GetTexture("cloud");
         Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
 
+        // Draw clouds
+        TextureComponent* cloud = ResourceManager::GetTexture("cloud");
         Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
         Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
         Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
@@ -110,6 +118,7 @@ namespace Antares
     }
     void Antares::ConfigurePlayer()
     {
+        camera = std::make_shared<Camera>(0, 0, 800, 600,0.5f);
         // Configure the player
         float sizeY = 64.0f;
         float sizeX = 36.0f;
@@ -118,6 +127,7 @@ namespace Antares
         // Create the Player entity
         Player = std::make_shared<Entity>();
 
+        Player->addComponent<Camera>(*camera);
         // (1,1) velocity, 50 mass
         Player->addComponent<PhysicsComponent>(1, 2, 50);
         // add collider component
@@ -147,9 +157,12 @@ namespace Antares
     void Antares::CreateSystems()
     {
             ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
-            Renderer = std::make_unique<RenderSystem>(*spriteShader);
+            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->width,this->height);
+
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
-            debugRenderer = std::make_unique<RenderSystem>(*debugShader);
+            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->width,this->height);
+
+            cameraManager = std::make_unique<CameraSystem>(*camera);
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
@@ -158,10 +171,10 @@ namespace Antares
             joystick = std::make_unique<Joystick>(1);
 
             if (joystick->isPresent()) {
-                NYL_TRACE("Joystick {0} is present", joystick->getName());
+                NYL_TRACE("Joystick {0} is connected.", joystick->getName());
             }
             else {
-                NYL_TRACE("Joystick not present");
+                NYL_TRACE("Joystick not connected");
             }
     }
 #pragma endregion
