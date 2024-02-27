@@ -9,7 +9,8 @@
 #include "resource_manager.h"
 #include "component_render.h"
 #include "system_renderer.h"
-
+#include "component_camera.h"
+#include "system_camera.h"
 //physics
 #include "component_physics.h"
 #include "system_physics.h"

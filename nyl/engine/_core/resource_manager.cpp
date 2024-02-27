@@ -128,11 +128,20 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     // load image
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
-    NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
-    // now generate texture
-    texture->Generate(width, height, data);
-    // and finally free image data
-    stbi_image_free(data);
+    if (data)
+    {
+        NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
+        // now generate texture
+        texture->Generate(width, height, data);
+        // and finally free image data
+        stbi_image_free(data);
+    }
+    else
+    {
+        NYL_CORE_ERROR("Failed to load texture file {0}: {1}", file, stbi_failure_reason());
+        delete texture;
+        return nullptr;
+    }
     return texture;
 }
 }

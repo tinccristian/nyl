@@ -26,6 +26,7 @@ set(NYL_SOURCES
     "nyl/engine/system/system_physics.cpp"
     "nyl/engine/system/system_renderer.cpp"
     "nyl/engine/system/system_shader.cpp"
+    "nyl/engine/system/system_camera.cpp"
     #thirdparty
     "nyl/engine/stb.cpp"
 )
@@ -51,11 +52,13 @@ set(NYL_HEADERS
     "nyl/engine/component/component_shader.h"
     "nyl/engine/component/component_texture.h"
     "nyl/engine/component/component_transform.h"
+    "nyl/engine/component/component_camera.h"
     #system
     "nyl/engine/system/system.h"
     "nyl/engine/system/system_collider.h"
     "nyl/engine/system/system_physics.h"
     "nyl/engine/system/system_renderer.h"
+    "nyl/engine/system/system_camera.h"
     #thirdparty
     "nyl/engine/linmath.h"
 )

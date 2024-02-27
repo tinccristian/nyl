@@ -2,148 +2,200 @@
 #include "core_input.h"
 #include <system_renderer.h>
 #include "component_collider.h"
+#include "component_camera.h"
+#include "system_camera.h"
 
 using namespace Nyl;
 namespace Antares
 {
-    // RenderSystem* Renderer;
-    // RenderSystem* debugRenderer;
-    // Joystick* joystick;
-    // PhysicsSystem* physics;
-    // Entity* Player; // Declare the "Player" variable
-    // ColliderComponent* collider;
-    // ColliderComponent* collider_platform;
-    // ColliderComponent* collider_platform_1;
-    // ColliderComponent* collider_platform_2;
-    // ColliderComponent* groundCollider;
-    std::shared_ptr<Entity> Player; // Declare the "Player" variable
+
+    std::shared_ptr<Entity> Player; 
     TransformComponent* transform;
-    std::shared_ptr<ColliderComponent> collider;
-    std::shared_ptr<ColliderComponent> collider_platform;
-    std::shared_ptr<ColliderComponent> collider_platform_1;
-    std::shared_ptr<ColliderComponent> collider_platform_2;
-    std::shared_ptr<ColliderComponent> groundCollider;
-    RenderSystem* Renderer;
-    RenderSystem* debugRenderer;
-    PhysicsSystem* physics;
-    ColliderSystem* colliderSystem;
-    Joystick* joystick;
+    std::vector<std::shared_ptr<BoxCollider>> colliders;
+    std::shared_ptr<Camera> camera;
+    std::unique_ptr<CameraSystem> cameraManager;
+    std::unique_ptr<RenderSystem> Renderer;
+    std::unique_ptr<RenderSystem> debugRenderer;
+    std::unique_ptr<PhysicsSystem> physics;
+    std::unique_ptr<ColliderSystem> collisions;
+    std::unique_ptr<Joystick> joystick;
+    float cloudTimer = 0.0f;
+    const float cloudInterval = 5.0f;
 
     Antares::Antares(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
     {
-        Renderer = nullptr;
-        debugRenderer = nullptr;
-        physics = nullptr;
-        colliderSystem = nullptr;
-        joystick = nullptr;
-        NYL_TRACE("ANTARES constructor");
+        //NYL_TRACE("ANTARES constructor");
     }
 
     Antares::~Antares()
     {
-        NYL_TRACE("ANTARES destructor");
+        //NYL_TRACE("ANTARES destructor");
     }
 
     void Antares::Init()
     {
-        NYL_TRACE("ANTARES init");
-
-        // Load textures
-        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/backgrounds/background.png", false, "background");
-        ResourceManager::LoadTexture("D:/gitHub/nyl/nyl/resources/chikboy/chikboy_trim.png", true, "chikboy");
+        // Load resources
+        LoadResources();
 
         // Configure the player
-        float sizeY = 64.0f;
-        float sizeX = 36.0f;
-        point startPoint = {60.0f, 280.0f};
-
-        // Create the Player entity
-        Player = std::make_shared<Entity>();
-        // Add components to the Player entity
-
-        // (1,1) velocity, 50 mass
-        Player->addComponent<PhysicsComponent>(1, 1, 50);
-        // add collider component
-        Player->addComponent<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
-        // 
-        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
-        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy"));
+        ConfigurePlayer();
 
         // Create collider components
-        float platformWidth = 400.0f;
-        float platformHeight = 50.0f;
-        float platformPosX = startPoint.x;
-        float platformPosY = startPoint.y + sizeY + 100.0f;
-
-        collider = std::make_shared<ColliderComponent>(startPoint.x, startPoint.y, sizeX, sizeY);
-        collider_platform = std::make_shared<ColliderComponent>(0, 350, 190, 90);
-        collider_platform_1 = std::make_shared<ColliderComponent>(319, 205, 511 - 319, 20);
-        collider_platform_2 = std::make_shared<ColliderComponent>(platformPosX + 500, platformPosY + 200, platformWidth, platformHeight);
-        groundCollider = std::make_shared<ColliderComponent>(0, height - 5.0f, width, 10.0f);
+        CreateColliders();
 
         // Create systems
-        ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
-        Renderer = new RenderSystem(*spriteShader);
-        ShaderComponent* debugShader = ResourceManager::GetShader("debug");
-        debugRenderer = new RenderSystem(*debugShader);
-        physics = new PhysicsSystem();
-        // add player entity to physics system
-        physics->addEntity(*Player);
-        colliderSystem = new ColliderSystem();
-        joystick = new Joystick(1);
-
-        if (joystick->isPresent()) {
-            NYL_TRACE("Joystick {0} is present", joystick->getName());
-        }
+        CreateSystems();
     }
 
     void Antares::Update(float deltaTime)
     {
+        physics->updatePhysics(deltaTime, width);
+
+        // Update camera
+        cameraManager->update(*Player);
+        
         // Draw background
-        TextureComponent* background = ResourceManager::GetTexture("background");
+        TextureComponent* background = ResourceManager::GetTexture("lv2");
         Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
 
+        // Draw clouds
+        TextureComponent* cloud = ResourceManager::GetTexture("cloud");
+        Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
+        Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
         // Process input
         ProcessInput(deltaTime);
 
         // Update collider
-        collider->Update(Player->getComponent<TransformComponent>()->position);
-
-        auto colliders = {collider_platform, collider_platform_1, collider_platform_2, groundCollider};
+        collisions->update();
 
         // Check collision with platforms
         bool isCollidingWithPlatform = false;
         for (auto& worldCollider : colliders) {
-            if (colliderSystem->isColliding(*collider, *worldCollider)) {
+            bool wasColliding = worldCollider->isColliding;
+            worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
+
+            if (worldCollider->isColliding) {
+                // if (!wasColliding) {
+                //     debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Red.value);
+                // }
                 HandleCollision(Player, worldCollider);
                 isCollidingWithPlatform = true;
                 break;
-            }
+            }// else if (wasColliding) {
+                //debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Green.value);
+            //}
+        }
+        if (!isCollidingWithPlatform) {
+            Player->getComponent<PhysicsComponent>()->canJump = false;
         }
         //Draw player
-        //Renderer->DrawSprite(*ResourceManager::GetTexture("chikboy"), Player->getComponent<TransformComponent>()->position, Player->getComponent<TransformComponent>()->size, 0.0f, glm::vec3(1.0f));
         Renderer->DrawEntity(*Player);
         // Debug draw
-        debugRenderer->DrawRectangleOutline(collider->Position, collider->Size, 0.0f, Colors::Green.value);
-        debugRenderer->DrawRectangleOutline(collider_platform->Position, collider_platform->Size, 0.0f, Colors::Red.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_1->Position, collider_platform_1->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(collider_platform_2->Position, collider_platform_2->Size, 0.0f, Colors::Blue.value);
-        debugRenderer->DrawRectangleOutline(groundCollider->Position, groundCollider->Size, 0.0f, Colors::Red.value);
+        //debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
     }
 
-    void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<ColliderComponent> collider)
+#pragma region init_helper_foo
+    void Antares::LoadResources()
     {
-        //float offset = 30.0f; // Adjust this value as needed
-        player->getComponent<TransformComponent>()->position.y = collider->Position.y - player->getComponent<TransformComponent>()->size.y;// - offset;
-        player->getComponent<PhysicsComponent>()->velocity.y = 0;
+        std::vector<std::string> texturePaths = {
+            workingPath + "resources/backgrounds/lv2.png",
+            workingPath + "resources/characters/chikboy_trim.png",
+            workingPath + "resources/backgrounds/cloud.png"
+        };
+
+        for (const std::string& path : texturePaths) {
+            std::string textureName = path.substr(path.find_last_of('/') + 1);
+            textureName = textureName.substr(0, textureName.find_last_of('.'));
+            if (!ResourceManager::LoadTexture(path.c_str(), true, textureName)) {
+                NYL_ERROR("Failed to load texture: {}", textureName);
+                return;
+            }
+        }
+    }
+    void Antares::ConfigurePlayer()
+    {
+        camera = std::make_shared<Camera>(0, 0, 800, 600,0.5f);
+        // Configure the player
+        float sizeY = 64.0f;
+        float sizeX = 36.0f;
+        point startPoint = {0.0f, 0.0f};
+
+        // Create the Player entity
+        Player = std::make_shared<Entity>();
+
+        Player->addComponent<Camera>(*camera);
+        // (1,1) velocity, 50 mass
+        Player->addComponent<PhysicsComponent>(1, 2, 50);
+        // add collider component
+        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
+        auto transform = Player->getComponent<TransformComponent>();
+        Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
+        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy_trim"));
+    }
+    void Antares::CreateColliders()
+    {
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,height), glm::vec2(width,height-5.0f), "ground"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(163,80),  glm::vec2(212,31) , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(429,524), glm::vec2(478,475), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(291,614), glm::vec2(340,565), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(542,282), glm::vec2(796,246), "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(615,245), glm::vec2(664,5)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(872,524), glm::vec2(922,475)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1077,650), glm::vec2(1126,601)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(943,384), glm::vec2(1274,335)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(945,192), glm::vec2(994,143)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));
+    }
+    void Antares::CreateSystems()
+    {
+            ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
+            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->width,this->height);
+
+            ShaderComponent* debugShader = ResourceManager::GetShader("debug");
+            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->width,this->height);
+
+            cameraManager = std::make_unique<CameraSystem>(*camera);
+            physics = std::make_unique<PhysicsSystem>();
+            // add player entity to physics system
+            physics->addEntity(*Player);
+            collisions = std::make_unique<ColliderSystem>();
+            collisions->addEntity(*Player);
+            joystick = std::make_unique<Joystick>(1);
+
+            if (joystick->isPresent()) {
+                NYL_TRACE("Joystick {0} is connected.", joystick->getName());
+            }
+            else {
+                NYL_TRACE("Joystick not connected");
+            }
+    }
+#pragma endregion
+    void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
+{
+    //float offset = 0.0f; // Adjust this value as needed
+    player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
+    player->getComponent<PhysicsComponent>()->velocity.y = 0;
+    player->getComponent<PhysicsComponent>()->canJump = true;
+
+    // Check if player is on top of the platform
+    if (player->getComponent<TransformComponent>()->position.y >= collider->getPosition().y + collider->getSize().y) {
         player->getComponent<PhysicsComponent>()->canJump = true;
     }
 
+}
+
     void Antares::ProcessInput(float deltaTime)
     {
-        float speed = 250.0f;
-        float jumpSpeed = 600.0f;
+        float speed = 200.0f;
+        float jumpSpeed = 300.0f;
 
         joystick->update();
 
@@ -168,13 +220,13 @@ namespace Antares
         float tolerance = 10.0f;
 
         if (jumpButton && Player->getComponent<PhysicsComponent>()->canJump) {
-            NYL_TRACE("Jump!");
+            //NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
+            //physics->applyGravity(*Player, deltaTime);
         }
 
-        physics->applyGravity(*Player, deltaTime);
-        physics->updatePhysics(deltaTime, width);
+        //physics->applyGravity(*Player, deltaTime);
     }
 
     void Antares::Quit()
@@ -186,6 +238,6 @@ namespace Antares
 Nyl::Application* Nyl::CreateApplication()
 {
     NYL_TRACE("Create Antares");
-    return new Antares::Antares(1280, 640, "Antares");
+    return new Antares::Antares(1280, 720, "Antares");
     //return new Antares::Antares(1920, 1080, "Antares");
 }

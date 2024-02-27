@@ -6,6 +6,7 @@
 #include "component_shader.h"
 #include "component_texture.h"
 #include "component_transform.h"
+#include "component_camera.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -44,7 +45,7 @@ namespace Colors
     class NYL_API RenderSystem : public System {
     public:
         // constructor (inits shaders/shapes)
-        RenderSystem(ShaderComponent &shader);
+        RenderSystem(ShaderComponent &shader, float screenWidth, float screenHeight);
         // destructor
         ~RenderSystem();
         // Update all Entities in this system.
@@ -56,13 +57,16 @@ namespace Colors
         void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
 
         // Entity Draw functions
-        void DrawEntitySprite(const TextureComponent &texture, TransformComponent &transform, glm::vec3 color);
+        void DrawEntitySprite(const TextureComponent &texture, TransformComponent &transform, Camera &camera,glm::vec3 color);
         void DrawEntity(const Entity& entity);
         
         void DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
+        glm::vec2 getGlfwCoordinates(glm::vec2 worldPos, glm::vec2 windowSize);
+
     private:
         // render state
         ShaderComponent shader;
+        glm::vec2 windowSize;
         unsigned int quadVAO;
         unsigned int outlineVAO;
         void CheckGLError();

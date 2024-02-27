@@ -21,6 +21,6 @@ namespace Nyl{
          * @return true If the colliders are colliding.
          * @return false otherwise.
          */
-        bool isColliding(const ColliderComponent& a, const ColliderComponent& b) const;
-    };
+        bool isColliding(const BoxCollider& a, const BoxCollider& b) const;
+        };
 }
