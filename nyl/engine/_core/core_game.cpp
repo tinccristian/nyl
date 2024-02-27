@@ -10,10 +10,7 @@ namespace Nyl
     {
         return Nyl::Game::window;
     }
-    // GameObject* Game::getPlayer()
-    // {
-    //     return Nyl::Game::Player;
-    // }
+
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
@@ -67,6 +64,7 @@ namespace Nyl
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetKeyCallback(window, key_callback);
         glfwSetCursorPosCallback(window, cursor_position_callback);
+        glfwSetMouseButtonCallback(window, mouse_button_callback);
 
         // set the window user pointer to the Window instance
         glfwSetWindowUserPointer(window, this);
@@ -216,16 +214,31 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
 
 void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    // Convert from GLFW coordinates to world coordinates
-    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    // // Convert from GLFW coordinates to world coordinates
+    // Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
 
-    double worldX = xpos - game->width / 2.0;
-    double worldY = game->height - ypos - game->height / 2.0;
+    // double worldX = xpos - game->width / 2.0;
+    // double worldY = game->height - ypos - game->height / 2.0;
 
-    NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+    // NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
+    // //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
 }
+void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
 
+        Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+        // Convert from GLFW coordinates to world coordinates
+
+        double worldX = xpos - game->width / 2.0;
+        double worldY = game->height - ypos - game->height / 2.0;
+
+        NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
+    }
+}
 void Game::error_callback(int error, const char* description)
 {
     NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
