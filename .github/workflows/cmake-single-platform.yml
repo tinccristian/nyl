@@ -33,8 +33,6 @@ jobs:
       run: |
         git clone https://github.com/Dav1dde/glad.git thirdparty/glad
         cd thirdparty/glad
-        cmake .
-        cmake --build .
 
     - name: Install STB
       run: |
