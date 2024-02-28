@@ -21,7 +21,7 @@ namespace Antares
 		void CreateSystems();
 		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<Nyl::BoxCollider> collider);
 	public:
-		std::string workingPath = "D:/gitHub/nyl/nyl/";
+		std::string workingPath = "D:/gitHub/nyl/engine/";
 
 	};
 }

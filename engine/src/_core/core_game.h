@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-//#include "linmath.h"
 
 //nyl includes
 #include "core.h"
