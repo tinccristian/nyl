@@ -5,6 +5,7 @@ set(NYL_SOURCES
     "src/_core/core_input.cpp"
     "src/_core/core_log.cpp"
     "src/_core/core_application.cpp"
+    "src/_core/utils.cpp"
     #entity
     "src/entity/entity.cpp"
     #component
@@ -17,7 +18,7 @@ set(NYL_SOURCES
     "src/system/system_shader.cpp"
     "src/system/system_camera.cpp"
     #thirdparty
-    "src/stb.cpp"
+    "thirdparty/stb/stb.cpp"
 )
 
 set(NYL_HEADERS 
@@ -29,6 +30,7 @@ set(NYL_HEADERS
     "src/_core/core_log.h"
     "src/_core/core_main.h"
     "src/_core/resource_manager.h"
+    "src/_core/utils.h"
     "src/_core/nyl.h"
     #entity
     "src/entity/entity.h"
@@ -68,14 +70,13 @@ target_include_directories(nyl PRIVATE
     src/entity/
     src/component/
     src/system/
-    ${PROJECT_SOURCE_DIR}/thirdparty/spdlog/include/
 )
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_library(GLFW_LIBRARY glfw3 PATHS D:/gitHub/nyl/engine/thirdparty/glfw-3.3.9/build/Debug/src)
+    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
 else()
-    find_library(GLFW_LIBRARY glfw3 PATHS D:/gitHub/nyl/engine/thirdparty/glfw-3.3.9/build/Release/src)
+    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
 endif()
 
 target_link_libraries(nyl ${GLFW_LIBRARY} glad)
