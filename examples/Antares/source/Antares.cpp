@@ -101,10 +101,12 @@ namespace Antares
 #pragma region init_helper_foo
     void Antares::LoadResources()
     {
+        std::string resourcePath = getFullPath("../../../engine/resources/");
+
         std::vector<std::string> texturePaths = {
-            workingPath + "resources/backgrounds/lv2.png",
-            workingPath + "resources/characters/chikboy_trim.png",
-            workingPath + "resources/backgrounds/cloud.png"
+            resourcePath + "backgrounds/lv2.png",
+            resourcePath + "characters/chikboy_trim.png",
+            resourcePath + "backgrounds/cloud.png"
         };
 
         for (const std::string& path : texturePaths) {

@@ -4,6 +4,9 @@
 #include "core_game.h"
 #include "resource_manager.h"
 #include "system_renderer.h"
+
+#include "utils.h"
+
 namespace Nyl
 {
     GLFWwindow* Game::getWindow()
@@ -89,9 +92,9 @@ namespace Nyl
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // load shaders
-        ResourceManager::LoadShader("D:/gitHub/nyl/engine/resources/shaders/sprite.vert", "D:/gitHub/nyl/engine/resources/shaders/sprite.frag", nullptr, "sprite");
-        ResourceManager::LoadShader("D:/gitHub/nyl/engine/resources/shaders/debug.vert", "D:/gitHub/nyl/engine/resources/shaders/debug.frag", nullptr, "debug");
-
+        ResourceManager::LoadShader(getFullPath("../../resources/shaders/sprite.vert").c_str(), getFullPath("../../resources/shaders/sprite.frag").c_str(), nullptr, "sprite");
+        ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
+        
         // configure shaders TODO::Abstract this garbage
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
         ResourceManager::GetShader("sprite")->use().set_int("sprite", 0);
