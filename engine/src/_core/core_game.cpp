@@ -89,8 +89,8 @@ namespace Nyl
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // load shaders
-        ResourceManager::LoadShader("D:/gitHub/nyl/nyl/Shaders/sprite.vert", "D:/gitHub/nyl/nyl/Shaders/sprite.frag", nullptr, "sprite");
-        ResourceManager::LoadShader("D:/gitHub/nyl/nyl/Shaders/debug.vert", "D:/gitHub/nyl/nyl/Shaders/debug.frag", nullptr, "debug");
+        ResourceManager::LoadShader("D:/gitHub/nyl/engine/resources/shaders/sprite.vert", "D:/gitHub/nyl/engine/resources/shaders/sprite.frag", nullptr, "sprite");
+        ResourceManager::LoadShader("D:/gitHub/nyl/engine/resources/shaders/debug.vert", "D:/gitHub/nyl/engine/resources/shaders/debug.frag", nullptr, "debug");
 
         // configure shaders TODO::Abstract this garbage
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
