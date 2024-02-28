@@ -19,33 +19,28 @@ jobs:
     - name: Install Ninja
       run: choco install ninja
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libglm-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
-
     - name: Install GLFW
       run: |
-        wget https://github.com/glfw/glfw/releases/download/3.3.9/glfw-3.3.9.zip
-        unzip glfw-3.3.9.zip -d thirdparty/
+        Invoke-WebRequest -Uri https://github.com/glfw/glfw/releases/download/3.3.9/glfw-3.3.9.zip -OutFile glfw-3.3.9.zip
+        Expand-Archive glfw-3.3.9.zip -DestinationPath thirdparty/
         cd thirdparty/glfw-3.3.9
         mkdir build
         cd build
         cmake ..
-        make
+        cmake --build .
 
     - name: Install GLAD
       run: |
         git clone https://github.com/Dav1dde/glad.git thirdparty/glad
         cd thirdparty/glad
         cmake .
-        make
+        cmake --build .
 
     - name: Install STB
       run: |
         mkdir -p thirdparty/stb
-        wget -O thirdparty/stb/stb.h https://raw.githubusercontent.com/nothings/stb/master/stb.h
-        touch thirdparty/stb/stb.cpp
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/nothings/stb/master/stb.h -OutFile thirdparty/stb/stb.h
+        New-Item -Path thirdparty/stb/stb.cpp -ItemType "file"
 
     - name: Build
       run: .\build.bat -r
