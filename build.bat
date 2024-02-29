@@ -69,8 +69,8 @@ echo %build_type% build completed in : %mins% minutes, %secs%.%hundredths% secon
 
 :: Run the executable if the -run argument was provided
 IF "%run%"=="true" (
-    echo Running ../output/Antares.exe
+    echo Running ../output/platformer.exe
     cd ../
     cd output
-    Antares.exe
+    platformer.exe
 )

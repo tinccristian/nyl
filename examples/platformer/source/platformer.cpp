@@ -1,4 +1,4 @@
-#include "Antares.h"
+#include "platformer.h"
 #include "core_input.h"
 #include <system_renderer.h>
 #include "component_collider.h"
@@ -6,7 +6,7 @@
 #include "system_camera.h"
 
 using namespace Nyl;
-namespace Antares
+namespace platformer
 {
 
     std::shared_ptr<Entity> Player; 
@@ -22,18 +22,18 @@ namespace Antares
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
 
-    Antares::Antares(int width, int height, const std::string& title)
+    platformer::platformer(int width, int height, const std::string& title)
         : Nyl::Application(width, height, title)
     {
         //NYL_TRACE("ANTARES constructor");
     }
 
-    Antares::~Antares()
+    platformer::~platformer()
     {
         //NYL_TRACE("ANTARES destructor");
     }
 
-    void Antares::Init()
+    void platformer::Init()
     {
         // Load resources
         LoadResources();
@@ -48,7 +48,7 @@ namespace Antares
         CreateSystems();
     }
 
-    void Antares::Update(float deltaTime)
+    void platformer::Update(float deltaTime)
     {
         physics->updatePhysics(deltaTime, width);
 
@@ -99,7 +99,7 @@ namespace Antares
     }
 
 #pragma region init_helper_foo
-    void Antares::LoadResources()
+    void platformer::LoadResources()
     {
         std::string resourcePath = getFullPath("../../../engine/resources/");
 
@@ -118,7 +118,7 @@ namespace Antares
             }
         }
     }
-    void Antares::ConfigurePlayer()
+    void platformer::ConfigurePlayer()
     {
         camera = std::make_shared<Camera>(0, 0, 800, 600,0.5f);
         // Configure the player
@@ -138,7 +138,7 @@ namespace Antares
         Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
         Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy_trim"));
     }
-    void Antares::CreateColliders()
+    void platformer::CreateColliders()
     {
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,height), glm::vec2(width,height-5.0f), "ground"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
@@ -156,7 +156,7 @@ namespace Antares
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));
     }
-    void Antares::CreateSystems()
+    void platformer::CreateSystems()
     {
             ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
             Renderer = std::make_unique<RenderSystem>(*spriteShader,this->width,this->height);
@@ -180,7 +180,7 @@ namespace Antares
             }
     }
 #pragma endregion
-    void Antares::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
+    void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
 {
     //float offset = 0.0f; // Adjust this value as needed
     player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
@@ -194,7 +194,7 @@ namespace Antares
 
 }
 
-    void Antares::ProcessInput(float deltaTime)
+    void platformer::ProcessInput(float deltaTime)
     {
         float speed = 200.0f;
         float jumpSpeed = 300.0f;
@@ -231,7 +231,7 @@ namespace Antares
         //physics->applyGravity(*Player, deltaTime);
     }
 
-    void Antares::Quit()
+    void platformer::Quit()
     {
         NYL_TRACE("ANTARES quit");
     }
@@ -239,7 +239,7 @@ namespace Antares
 
 Nyl::Application* Nyl::CreateApplication()
 {
-    NYL_TRACE("Create Antares");
-    return new Antares::Antares(1280, 720, "Antares");
-    //return new Antares::Antares(1920, 1080, "Antares");
+    NYL_TRACE("Create platformer");
+    return new platformer::platformer(1280, 720, "platformer");
+    //return new platformer::platformer(1920, 1080, "platformer");
 }

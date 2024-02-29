@@ -2,14 +2,14 @@
 
 #include <nyl.h>
 
-namespace Antares
+namespace platformer
 {
-	class Antares : public Nyl::Application
+	class platformer : public Nyl::Application
 	{
 	public:
 
-		Antares(int width, int height, const std::string& title);
-		~Antares();
+		platformer(int width, int height, const std::string& title);
+		~platformer();
 
 		virtual void Init() override;
 		virtual void Update(float deltaTime) override;

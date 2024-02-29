@@ -115,7 +115,7 @@ namespace Nyl
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        //ProcessInput(0);// Antares foo
+        //ProcessInput(0);// platformer foo
 
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
