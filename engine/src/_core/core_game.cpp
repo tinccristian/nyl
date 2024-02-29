@@ -9,75 +9,15 @@
 
 namespace Nyl
 {
-    GLFWwindow* Game::getWindow()
-    {
-        return Nyl::Game::window;
-    }
-
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
     Game::Game(int width, int height, const std::string& title)
-        : window(nullptr), width(width), height(height), title(title)
-    {
-        initialize_glfw_window();
-    }
+        : window(width, height, title){}
 
     Game::~Game()
     {
         ResourceManager::Clear();
-        glfwTerminate();
-    }
-    void Game::initialize_glfw_window()
-    {
-        // glfw initialize and configure
-        glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        // set the error callback to use our Log system
-        glfwSetErrorCallback(error_callback);
-#pragma region AAPL
-
-#ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-#pragma endregion
-        // no resize
-        glfwWindowHint(GLFW_RESIZABLE, false);
-        // glfw window creation
-        window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);    //fullscreen    GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
-        if (window == NULL)
-        {
-            NYL_CORE_ERROR("Failed to create GLFW window");
-            glfwTerminate();
-            return;
-        }
-        glfwMakeContextCurrent(window);
-
-
-        // glad: load all OpenGL function pointers
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            NYL_CORE_ERROR("Failed to initialize GLAD");
-            return;
-        }
-
-        // set the callback functions, should come from the APP, but for now engine specific 
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        glfwSetKeyCallback(window, key_callback);
-        glfwSetCursorPosCallback(window, cursor_position_callback);
-        glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-        // set the window user pointer to the Window instance
-        glfwSetWindowUserPointer(window, this);
-
-        // glfw compile version
-        NYL_CORE_TRACE("Compiled against: {0} {1} {2}", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_MINOR);
-        // glfw runtime version
-        int major, minor, revision;
-        glfwGetVersion(&major, &minor, &revision);
-        NYL_CORE_TRACE("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
     }
 
     void Game::init()
@@ -86,7 +26,7 @@ namespace Nyl
 
 
         // OpenGL configuration
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, window.width, window.height);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -96,7 +36,7 @@ namespace Nyl
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
         
         // configure shaders TODO::Abstract this garbage
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(this->height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
         ResourceManager::GetShader("sprite")->use().set_int("sprite", 0);
         ResourceManager::GetShader("sprite")->set_mat4("projection", projection);
 
@@ -124,7 +64,7 @@ namespace Nyl
         Update(deltaTime);
         glfwPollEvents();
         // game update
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.getGLFWwindow());
     }
 void Game::run()
 {
@@ -134,7 +74,7 @@ void Game::run()
     int frameCount = 0;
     float totalTime = 0.0f;
 
-    while (!should_close())
+    while (!window.shouldClose())
     {
         float startFrame = glfwGetTime();
 
@@ -155,8 +95,8 @@ void Game::run()
         if (totalTime >= 1.0f)
         {
             int averageFPS = (int)(frameCount / totalTime);
-            std::string newTitle = title + " - FPS: " + std::to_string(averageFPS);
-            glfwSetWindowTitle(window, newTitle.c_str());
+            std::string newTitle = window.title + " - FPS: " + std::to_string(averageFPS);
+            glfwSetWindowTitle(window.getGLFWwindow(), newTitle.c_str());
             // reset frameCount and totalTime
             frameCount = 0;
             totalTime = 0.0f;
@@ -167,85 +107,6 @@ void Game::cleanup()
 {
     NYL_CORE_INFO("cleanup");
 }
- void Game::toggle_polygon_mode()
-{
-        GLint polygonMode[2];
-        glGetIntegerv(GL_POLYGON_MODE, polygonMode);
 
-        if (polygonMode[0] == GL_FILL)
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//
-            NYL_CORE_TRACE("Wireframe mode set.");
-        }
-        else
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//
-            NYL_CORE_TRACE("Line mode set.");
-        }
-}
-bool Game::should_close() const
-    {
-        return glfwWindowShouldClose(window);
-    }
-#pragma region callbacks
-void Game::framebuffer_size_callback(GLFWwindow*, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions
-    glViewport(0, 0, width, height);
-}
-// void Game::process_input()//press and hold events ~~ not used for now
-// {
-//     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-//         glfwSetWindowShouldClose(window, true);
-// }
-//INPUT -> to be moved to separate header
-void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        toggle_polygon_mode();
-    if (key == GLFW_KEY_W && action == GLFW_PRESS)
-        NYL_CORE_WARN("going up");
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
-        NYL_CORE_WARN("going left");
-    if (key == GLFW_KEY_S && action == GLFW_PRESS)
-        NYL_CORE_WARN("going down");
-    if (key == GLFW_KEY_D && action == GLFW_PRESS)
-        NYL_CORE_WARN("going right");
-}
-
-void Game::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    // // Convert from GLFW coordinates to world coordinates
-    // Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-
-    // double worldX = xpos - game->width / 2.0;
-    // double worldY = game->height - ypos - game->height / 2.0;
-
-    // NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    // //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
-}
-void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-
-        Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-        // Convert from GLFW coordinates to world coordinates
-
-        double worldX = xpos - game->width / 2.0;
-        double worldY = game->height - ypos - game->height / 2.0;
-
-        NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    }
-}
-void Game::error_callback(int error, const char* description)
-{
-    NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-}
-#pragma endregion
 
 } // namespace Nyl

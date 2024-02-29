@@ -1,10 +1,11 @@
-//For use by Nyl applications
+//For use by nyl applications
 
 #include "core_application.h"
 #include "core_game.h"
 #include "core_log.h"
 #include "core_input.h"
 #include "utils.h"
+#include "window.h"
 //#include "GameObject.h"
 #include "component_texture.h"
 #include "resource_manager.h"

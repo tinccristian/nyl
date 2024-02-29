@@ -13,6 +13,7 @@
 #include "core_log.h"
 #include "component_shader.h"
 #include "component_texture.h"
+#include "window.h"
 //#include "GameObject.h"
 
 namespace Nyl 
@@ -43,21 +44,6 @@ namespace Nyl
         // main loop
         void run();
 
-        // accessors
-        GLFWwindow* getWindow();
-        // GameObject* getPlayer();
-
-
-        // static function for toggling polygon mode
-        static void toggle_polygon_mode();
-
-        // static callback functions
-        static void framebuffer_size_callback(GLFWwindow*, int width, int height);
-        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-        static void error_callback(int error, const char* description);
-        static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-        static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-
     protected:
         // struct for a point
         struct point {
@@ -65,24 +51,13 @@ namespace Nyl
             float y = 280.0f;
         };
 
-    // player ptr
-    //GameObject* Player;
-    // window properties
-    GLFWwindow* window;
-    int width;
-    int height;
-    std::string title;
-
     // shader and texture
     ShaderComponent* shader;
     TextureComponent* m_texture;
 
 
     private:
-        // private helper hunction for GLFW window initialization
-        void initialize_glfw_window();
-        // private GLFW window util function
-        bool should_close() const;
+        Window window;
     };
 
 }

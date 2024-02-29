@@ -6,6 +6,7 @@ set(NYL_SOURCES
     "src/_core/core_log.cpp"
     "src/_core/core_application.cpp"
     "src/_core/utils.cpp"
+    "src/_core/window.cpp"
     #entity
     "src/entity/entity.cpp"
     #component
@@ -31,6 +32,7 @@ set(NYL_HEADERS
     "src/_core/core_main.h"
     "src/_core/resource_manager.h"
     "src/_core/utils.h"
+    "src/_core/window.h"
     "src/_core/nyl.h"
     #entity
     "src/entity/entity.h"
