@@ -1,4 +1,4 @@
-#include "core_input.h"
+#include "input.h"
 using namespace Nyl;
 
 Joystick::Joystick(int i) {

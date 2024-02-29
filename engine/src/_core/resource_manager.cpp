@@ -1,5 +1,5 @@
 // nyl includes
-#include "core_log.h"
+#include "log.h"
 #include "resource_manager.h"
 
 // thirdparty

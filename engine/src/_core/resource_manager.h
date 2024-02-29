@@ -5,8 +5,8 @@
 
 #include <glad/glad.h>
 
-#include "component_texture.h"
-#include "component_shader.h"
+#include "texture.h"
+#include "shader.h"
 #include "system_shader.h"
 
 #include "core.h"

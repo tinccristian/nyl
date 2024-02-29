@@ -1,7 +1,7 @@
 #pragma once
 
 #include "component.h"
-#include "component_texture.h"
+#include "texture.h"
 #include <glm/glm.hpp>
 
 namespace Nyl{

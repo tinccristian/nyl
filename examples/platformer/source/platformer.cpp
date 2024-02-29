@@ -1,8 +1,8 @@
 #include "platformer.h"
-#include "core_input.h"
+#include "input.h"
 #include <system_renderer.h>
-#include "component_collider.h"
-#include "component_camera.h"
+#include "collider.h"
+#include "camera.h"
 #include "system_camera.h"
 
 using namespace Nyl;
@@ -50,14 +50,14 @@ namespace platformer
 
     void platformer::Update(float deltaTime)
     {
-        physics->updatePhysics(deltaTime, width);
+        physics->updatePhysics(deltaTime);
 
         // Update camera
         cameraManager->update(*Player);
         
         // Draw background
         TextureComponent* background = ResourceManager::GetTexture("lv2");
-        Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height));
+        Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->m_width, this->m_height));
 
         // Draw clouds
         TextureComponent* cloud = ResourceManager::GetTexture("cloud");
@@ -140,7 +140,7 @@ namespace platformer
     }
     void platformer::CreateColliders()
     {
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,height), glm::vec2(width,height-5.0f), "ground"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "ground"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
@@ -159,10 +159,10 @@ namespace platformer
     void platformer::CreateSystems()
     {
             ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
-            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->width,this->height);
+            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->m_width,this->m_height);
 
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
-            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->width,this->height);
+            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
             cameraManager = std::make_unique<CameraSystem>(*camera);
             physics = std::make_unique<PhysicsSystem>();
@@ -218,7 +218,7 @@ namespace platformer
             Player->getComponent<PhysicsComponent>()->velocity.x = 0.0f;
         }
 
-        float groundLevel = height - Player->getComponent<TransformComponent>()->size.y;
+        float groundLevel = this->m_height - Player->getComponent<TransformComponent>()->size.y;
         float tolerance = 10.0f;
 
         if (jumpButton && Player->getComponent<PhysicsComponent>()->canJump) {

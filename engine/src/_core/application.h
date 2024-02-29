@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core_game.h"
+#include "game.h"
 
 //std
 #include <string>

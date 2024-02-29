@@ -2,11 +2,11 @@
 
 #include "system.h"
 #include "entity.h"
-#include "component_render.h"
-#include "component_shader.h"
-#include "component_texture.h"
-#include "component_transform.h"
-#include "component_camera.h"
+#include "render.h"
+#include "shader.h"
+#include "texture.h"
+#include "transform.h"
+#include "camera.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

@@ -1,5 +1,5 @@
-#include "core_application.h"
-#include "core_log.h"
+#include "application.h"
+#include "log.h"
 #include "core.h"
 namespace Nyl {
 

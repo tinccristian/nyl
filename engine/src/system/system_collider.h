@@ -1,7 +1,7 @@
 #pragma once
 #include "system.h"
-#include "component_collider.h"
-#include "component_transform.h"
+#include "collider.h"
+#include "transform.h"
 
 namespace Nyl{
     class NYL_API ColliderSystem : public System {

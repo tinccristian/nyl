@@ -1,7 +1,7 @@
 #pragma once
 #include "system.h"
-#include "component_camera.h"
-#include "component_transform.h"
+#include "camera.h"
+#include "transform.h"
 //#include <GL/glew.h>
 
 namespace Nyl {

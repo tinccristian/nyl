@@ -3,8 +3,8 @@
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "component_shader.h"
-#include "core_log.h"
+#include "shader.h"
+#include "log.h"
 
 
 ShaderComponent& ShaderComponent::use()
