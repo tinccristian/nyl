@@ -1,9 +1,8 @@
-// main.cpp
 // entry point for Nyl applications on Windows
 
 #pragma once
-#include "core_log.h"
-#include "core_application.h"
+#include "log.h"
+#include "application.h"
 //#ifdef NYL_PLATFORM_WINDOWS
 
 #include <stdexcept>

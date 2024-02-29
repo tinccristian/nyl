@@ -11,6 +11,7 @@ target_include_directories(platformer PRIVATE
     ${PROJECT_SOURCE_DIR}/engine/src/entity/
     ${PROJECT_SOURCE_DIR}/engine/src/component/
     ${PROJECT_SOURCE_DIR}/engine/src/system/
+    ${PROJECT_SOURCE_DIR}/engine/src/
     ${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include/
 )
 

@@ -1,6 +1,6 @@
 #include "system_renderer.h"
 #include "resource_manager.h"
-#include "core_log.h"
+#include "log.h"
 
 using namespace Nyl;
 

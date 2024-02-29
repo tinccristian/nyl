@@ -10,9 +10,9 @@
 
 //nyl includes
 #include "core.h"
-#include "core_log.h"
-#include "component_shader.h"
-#include "component_texture.h"
+#include "log.h"
+#include "shader.h"
+#include "texture.h"
 #include "window.h"
 //#include "GameObject.h"
 
@@ -38,7 +38,6 @@ namespace Nyl
         virtual void ProcessInput(float deltaTime) = 0;
         
         // cleanup
-        void cleanup();
         virtual void Quit() = 0;
 
         // main loop

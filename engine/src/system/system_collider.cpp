@@ -1,6 +1,6 @@
 // ColliderSystem.cpp
 #include "system_collider.h"
-#include "core_log.h"
+#include "log.h"
 using namespace Nyl;
 
 void ColliderSystem::update() {

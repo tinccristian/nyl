@@ -1,7 +1,7 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "core_game.h"
+#include "game.h"
 #include "resource_manager.h"
 #include "system_renderer.h"
 
@@ -31,12 +31,12 @@ namespace Nyl
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // load shaders
+        // load default shaders
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/sprite.vert").c_str(), getFullPath("../../resources/shaders/sprite.frag").c_str(), nullptr, "sprite");
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
         
         // configure shaders TODO::Abstract this garbage
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);// to be abstracted to app
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);// to be abstracted to app?
         ResourceManager::GetShader("sprite")->use().set_int("sprite", 0);
         ResourceManager::GetShader("sprite")->set_mat4("projection", projection);
 
@@ -103,10 +103,5 @@ void Game::run()
         }
     }
 }
-void Game::cleanup()
-{
-    NYL_CORE_INFO("cleanup");
-}
-
 
 } // namespace Nyl

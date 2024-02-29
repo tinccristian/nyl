@@ -5,7 +5,7 @@
 #include <memory>
 #include <queue>
 #include "core.h"
-#include "core_log.h"
+#include "log.h"
 
 class Component;
 

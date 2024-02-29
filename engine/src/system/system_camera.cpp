@@ -1,7 +1,7 @@
 #include "system_camera.h"
-#include "core_log.h"
-#include "component_transform.h"
-#include "component_camera.h"
+#include "log.h"
+#include "transform.h"
+#include "camera.h"
 #include <glad.h>
 
 namespace Nyl

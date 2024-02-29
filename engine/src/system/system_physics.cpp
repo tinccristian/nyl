@@ -1,24 +1,16 @@
 #include "system_physics.h"
-#include "component_physics.h"
-#include "component_transform.h"
+#include "physics.h"
+#include "transform.h"
 
 const float PhysicsSystem::GRAVITY = 9.8f*60.0f;
 
-void PhysicsSystem::updatePhysics(float deltaTime, float width) {
+void PhysicsSystem::updatePhysics(float deltaTime) {
     for (Entity& entity : entities) {
         auto transform = entity.getComponent<TransformComponent>();
         auto physics = entity.getComponent<PhysicsComponent>();
         if (transform && physics) {
             transform->position += physics->velocity * deltaTime;
             transform->updateMinMax();
-            if (transform->position.x < 0) {
-                transform->position.x = 0;
-                physics->velocity.x = 0;
-            } else if (transform->position.x > width - transform->size.x) {
-                transform->position.x = width - transform->size.x;
-                physics->velocity.x = 0;
-            }
-
             applyGravity(entity, deltaTime);
         }
     }

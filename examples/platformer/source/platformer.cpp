@@ -1,8 +1,8 @@
 #include "platformer.h"
-#include "core_input.h"
+#include "input.h"
 #include <system_renderer.h>
-#include "component_collider.h"
-#include "component_camera.h"
+#include "collider.h"
+#include "camera.h"
 #include "system_camera.h"
 
 using namespace Nyl;
@@ -50,7 +50,7 @@ namespace platformer
 
     void platformer::Update(float deltaTime)
     {
-        physics->updatePhysics(deltaTime, m_width);
+        physics->updatePhysics(deltaTime);
 
         // Update camera
         cameraManager->update(*Player);

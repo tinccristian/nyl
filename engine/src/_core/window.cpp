@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "core_log.h"
+#include "log.h"
 
 
 #include <glm/glm.hpp>

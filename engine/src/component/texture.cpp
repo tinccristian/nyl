@@ -1,4 +1,4 @@
-#include "component_texture.h"
+#include "texture.h"
 
 namespace Nyl 
 {
