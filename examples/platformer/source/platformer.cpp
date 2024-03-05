@@ -151,7 +151,7 @@ namespace platformer
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(615,245), glm::vec2(664,5)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(872,524), glm::vec2(922,475)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1077,650), glm::vec2(1126,601)  , "platform"));
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(943,384), glm::vec2(1274,335)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(907,386), glm::vec2(1274,335)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(945,192), glm::vec2(994,143)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));

@@ -137,6 +137,7 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         
+        NYL_CORE_INFO("Glfw coordinates - x: {0}, y: {1}", xpos, ypos);
         // Get the Window instance from the GLFWwindow
         Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
@@ -144,6 +145,6 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
         double worldX = xpos - win->width / 2.0;
         double worldY = win->height - ypos - win->height / 2.0;
 
-        NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
+        //NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
     }
 }
