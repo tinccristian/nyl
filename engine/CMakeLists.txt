@@ -20,6 +20,13 @@ set(NYL_SOURCES
     "src/system/system_camera.cpp"
     #thirdparty
     "thirdparty/stb/stb.cpp"
+    "thirdparty/imgui/imgui.cpp"
+    "thirdparty/imgui/imgui_demo.cpp" # If you want to include the demo windows
+    "thirdparty/imgui/imgui_draw.cpp"
+    "thirdparty/imgui/imgui_widgets.cpp"
+    "thirdparty/imgui/imgui_tables.cpp"
+    "thirdparty/imgui/backends/imgui_impl_glfw.cpp"
+    "thirdparty/imgui/backends/imgui_impl_opengl3.cpp"
 )
 
 set(NYL_HEADERS 
@@ -53,6 +60,13 @@ set(NYL_HEADERS
     "src/system/system_renderer.h"
     "src/system/system_camera.h"
     #thirdparty
+    "thirdparty/imgui/imgui.h"
+    "thirdparty/imgui/imgui_internal.h"
+    "thirdparty/imgui/imstb_rectpack.h"
+    "thirdparty/imgui/imstb_textedit.h" 
+    "thirdparty/imgui/imstb_truetype.h" 
+    "thirdparty/imgui/backends/imgui_impl_glfw.h"
+    "thirdparty/imgui/backends/imgui_impl_opengl3.h"
 )
 
 add_library(glad thirdparty/glad/glad.h thirdparty/glad/glad.c)
@@ -66,6 +80,8 @@ target_include_directories(nyl PRIVATE
     thirdparty/GLFW/
     thirdparty/glm/
     thirdparty/stb/
+    thirdparty/imgui/
+    thirdparty/imgui/backends/
     src/
     src/component
     src/_core/
@@ -74,6 +90,7 @@ target_include_directories(nyl PRIVATE
     src/system/
 )
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)

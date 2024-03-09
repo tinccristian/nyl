@@ -13,6 +13,8 @@ target_include_directories(platformer PRIVATE
     ${PROJECT_SOURCE_DIR}/engine/src/system/
     ${PROJECT_SOURCE_DIR}/engine/src/
     ${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include/
+    ${PROJECT_SOURCE_DIR}/engine/thirdparty/imgui/
+    ${PROJECT_SOURCE_DIR}/engine/thirdparty/imgui/backends/
 )
 
 target_compile_definitions(platformer PRIVATE 
