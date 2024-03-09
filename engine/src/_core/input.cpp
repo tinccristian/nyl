@@ -1,5 +1,5 @@
 #include "input.h"
-using namespace Nyl;
+using namespace nyl;
 
 Joystick::Joystick(int i) {
     this->id = getId(i);

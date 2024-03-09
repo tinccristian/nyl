@@ -35,7 +35,7 @@
 /*
     joystick class to handle input from joystick controller
 */
-namespace Nyl{
+namespace nyl{
 class NYL_API Joystick {
 public:
     /*

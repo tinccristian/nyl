@@ -1,7 +1,7 @@
 #include "application.h"
 #include "log.h"
 #include "core.h"
-namespace Nyl {
+namespace nyl {
 
 	//Application* Application::m_instance = nullptr;
 
@@ -12,11 +12,11 @@ namespace Nyl {
 		// }
 		// m_instance = this;
 
-		NYL_CORE_TRACE("Nyl application constructor");
+		NYL_CORE_TRACE("nyl application constructor");
 	}
 	Application::~Application()
 	{
-		NYL_CORE_TRACE("Nyl application destructor");
+		NYL_CORE_TRACE("nyl application destructor");
 	}
 	// Application* Application::get() 
 	// {

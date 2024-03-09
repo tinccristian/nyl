@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <string>
 
-namespace Nyl
+namespace nyl
 {
     /**
      * @brief Represents a box collider component.

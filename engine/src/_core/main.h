@@ -1,4 +1,4 @@
-// entry point for Nyl applications on Windows
+// entry point for nyl applications on Windows
 
 #pragma once
 #include "log.h"
@@ -9,15 +9,15 @@
 
 // declare the application creation function defined by the user
 
-extern Nyl::Application* Nyl::CreateApplication();
+extern nyl::Application* nyl::CreateApplication();
 
 int main(int argc, char** argv)
 {
 	// initialize and test our logger
-	Nyl::Log::Init();
+	nyl::Log::Init();
 	NYL_CORE_WARN("<><><><><><><><><><>  NYL  <><><><><><><><><><>");
 
-	auto app = Nyl::CreateApplication();
+	auto app = nyl::CreateApplication();
 	try {
 		// run the application 
 		app->run(); //pretty useless layer for now; it just calls the run function of Game, and the main game loop is defined there

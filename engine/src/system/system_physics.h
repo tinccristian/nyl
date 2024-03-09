@@ -11,7 +11,7 @@ public:
     void updatePhysics(float deltaTime);
     void applyGravity(Entity& entity, float deltaTime);
     void jump(Entity& entity, float jumpSpeed, float deltaTime);
-    bool checkCollision(const Nyl::BoxCollider& one, const Nyl::BoxCollider& two);
+    bool checkCollision(const nyl::BoxCollider& one, const nyl::BoxCollider& two);
 
     void applyFriction(Entity& entity, float friction);
     void applyImpulse(Entity& entity, const glm::vec2& impulse);

@@ -10,7 +10,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace Nyl {
+namespace nyl {
 
 // <><><><><>          instantiate static variables          <><><><><>
 std::map<std::string, ShaderComponent*> ResourceManager::Shaders;

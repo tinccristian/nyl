@@ -2,7 +2,7 @@
 #include "resource_manager.h"
 #include "log.h"
 
-using namespace Nyl;
+using namespace nyl;
 
 RenderSystem::RenderSystem(ShaderComponent &shader, float screenWidth, float screenHeight)
     : shader(shader) , windowSize(glm::vec2(screenWidth, screenHeight))
@@ -180,7 +180,7 @@ void RenderSystem::DrawEntity(const Entity& entity)
     }
 
     // Draw the sprite at the entity's position
-    DrawEntitySprite(*texture, *transform, *camera, Nyl::Colors::White);
+    DrawEntitySprite(*texture, *transform, *camera, nyl::Colors::White);
 }
 void RenderSystem::initRenderData()
 {

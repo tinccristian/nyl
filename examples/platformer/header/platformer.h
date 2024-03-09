@@ -4,7 +4,7 @@
 
 namespace platformer
 {
-	class platformer : public Nyl::Application
+	class platformer : public nyl::Application
 	{
 	public:
 
@@ -19,7 +19,7 @@ namespace platformer
 		void ConfigurePlayer();
 		void CreateColliders();
 		void CreateSystems();
-		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<Nyl::BoxCollider> collider);
+		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<nyl::BoxCollider> collider);
 
 	};
 }

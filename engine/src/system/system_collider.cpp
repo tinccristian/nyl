@@ -1,7 +1,7 @@
 // ColliderSystem.cpp
 #include "system_collider.h"
 #include "log.h"
-using namespace Nyl;
+using namespace nyl;
 
 void ColliderSystem::update() {
     for (Entity& entity : entities) {

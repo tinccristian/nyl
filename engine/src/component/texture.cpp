@@ -1,6 +1,6 @@
 #include "texture.h"
 
-namespace Nyl 
+namespace nyl 
 {
     TextureComponent::TextureComponent()
         : width(0), height(0),
