@@ -5,7 +5,7 @@
 #include "component.h"
 #include "core.h"
 
-namespace Nyl
+namespace nyl
 {
     class NYL_API TextureComponent : public Component
     {

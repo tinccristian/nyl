@@ -4,7 +4,7 @@
 #include "texture.h"
 #include <glm/glm.hpp>
 
-namespace Nyl{
+namespace nyl{
     class RenderComponent : public Component {
     public:
         RenderComponent(const TextureComponent& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)

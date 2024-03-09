@@ -16,7 +16,7 @@
 #include "window.h"
 //#include "GameObject.h"
 
-namespace Nyl 
+namespace nyl 
 {
 
     class NYL_API Game 

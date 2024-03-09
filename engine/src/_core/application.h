@@ -5,7 +5,7 @@
 //std
 #include <string>
 
-namespace Nyl 
+namespace nyl 
 {
 	class NYL_API Application : public Game
 	{

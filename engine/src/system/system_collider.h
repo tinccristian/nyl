@@ -3,7 +3,7 @@
 #include "collider.h"
 #include "transform.h"
 
-namespace Nyl{
+namespace nyl{
     class NYL_API ColliderSystem : public System {
     public:
         /**

@@ -4,7 +4,7 @@
 #include "component.h"
 #include "glm/glm.hpp"
 
-namespace Nyl
+namespace nyl
 {
     /**
      * @brief The Camera component is used to define the camera position and viewport.

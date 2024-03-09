@@ -11,7 +11,7 @@
 
 #include "core.h"
 
-namespace Nyl
+namespace nyl
 {
 
 /**

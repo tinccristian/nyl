@@ -4,7 +4,7 @@
 #include "camera.h"
 #include <glad.h>
 
-namespace Nyl
+namespace nyl
 {
     CameraSystem::CameraSystem(Camera &camera)
         : camera(camera)

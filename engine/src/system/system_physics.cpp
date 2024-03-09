@@ -30,7 +30,7 @@ void PhysicsSystem::jump(Entity& entity, float jumpSpeed, float deltaTime) {
     }
 }
 
-bool PhysicsSystem::checkCollision(const Nyl::BoxCollider& one, const Nyl::BoxCollider& two) {
+bool PhysicsSystem::checkCollision(const nyl::BoxCollider& one, const nyl::BoxCollider& two) {
     if (one.max.x < two.min.x || one.min.x > two.max.x) {
         return false;
     }

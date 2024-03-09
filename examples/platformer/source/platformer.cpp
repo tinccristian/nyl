@@ -5,7 +5,7 @@
 #include "camera.h"
 #include "system_camera.h"
 
-using namespace Nyl;
+using namespace nyl;
 namespace platformer
 {
 
@@ -23,7 +23,7 @@ namespace platformer
     const float cloudInterval = 5.0f;
 
     platformer::platformer(int width, int height, const std::string& title)
-        : Nyl::Application(width, height, title)
+        : nyl::Application(width, height, title)
     {
         //NYL_TRACE("ANTARES constructor");
     }
@@ -237,7 +237,7 @@ namespace platformer
     }
 }
 
-Nyl::Application* Nyl::CreateApplication()
+nyl::Application* nyl::CreateApplication()
 {
     NYL_TRACE("Create platformer");
     return new platformer::platformer(1280, 720, "platformer");

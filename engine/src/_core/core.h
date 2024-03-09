@@ -11,5 +11,5 @@
 #define NYL_API __declspec(dllimport)             // define NYL_API as __declspec(dllimport) when using the DLL to import functions
 #endif
 //#else
-//#error Nyl only works for windows!  // Display an error if Nyl is used on a platform other than Windows
+//#error nyl only works for windows!  // Display an error if nyl is used on a platform other than Windows
 //#endif

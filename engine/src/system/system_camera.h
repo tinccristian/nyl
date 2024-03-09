@@ -4,7 +4,7 @@
 #include "transform.h"
 //#include <GL/glew.h>
 
-namespace Nyl {
+namespace nyl {
     class NYL_API CameraSystem : public System {
     public:
         CameraSystem(Camera &camera);

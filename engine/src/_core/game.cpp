@@ -7,7 +7,7 @@
 
 #include "utils.h"
 
-namespace Nyl
+namespace nyl
 {
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -83,7 +83,7 @@ void Game::run()
         float endFrame = glfwGetTime();
         float frameTime = endFrame - startFrame; // time taken for this frame
 
-        // if (frameTime < targetFrameTime)
+        // if (frameTime < targetFrameTime) //lock the framerate
         // {
         //     float sleepTime = targetFrameTime - frameTime;
         //     std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
@@ -104,4 +104,4 @@ void Game::run()
     }
 }
 
-} // namespace Nyl
+} // namespace nyl
