@@ -32,27 +32,19 @@ namespace nyl
 
         // initialization
         void init();
+        void configureOpenGL();
+        void setupImGui();
+
+        // functions to be implemented by the user
         virtual void Init() = 0;
-
-        // update
-        void update();
         virtual void Update(float deltaTime) = 0;
-
-        // input processing from app
+        virtual void Render() = 0;
         virtual void ProcessInput(float deltaTime) = 0;
-        
-        // cleanup
         virtual void Quit() = 0;
 
         // main loop
         void run();
-
-    protected:
-        // struct for a point
-        struct point {
-            float x = 60.0f;
-            float y = 280.0f;
-        };
+        void updateFPS(int& frameCount, float& totalTime);
 
     // shader and texture
     ShaderComponent* shader;

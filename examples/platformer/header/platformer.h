@@ -13,6 +13,7 @@ namespace platformer
 
 		virtual void Init() override;
 		virtual void Update(float deltaTime) override;
+		virtual void Render() override;
 		virtual void Quit() override;
 		virtual void ProcessInput(float deltaTime) override;
 		void LoadResources();
@@ -21,5 +22,10 @@ namespace platformer
 		void CreateSystems();
 		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<nyl::BoxCollider> collider);
 
+		// struct for a point
+        struct point {
+            float x = 60.0f;
+            float y = 280.0f;
+        };
 	};
 }
