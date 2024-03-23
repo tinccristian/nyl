@@ -50,9 +50,7 @@ namespace nyl
     ShaderComponent* shader;
     TextureComponent* m_texture;
 
-
     private:
         Window window;
     };
-
 }
