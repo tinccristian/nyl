@@ -1,3 +1,5 @@
+project(nyl)
+
 set(NYL_SOURCES 
     #core
     "src/_core/resource_manager.cpp"
@@ -18,15 +20,6 @@ set(NYL_SOURCES
     "src/system/system_renderer.cpp"
     "src/system/system_shader.cpp"
     "src/system/system_camera.cpp"
-    #thirdparty
-    "thirdparty/stb/stb.cpp"
-    "thirdparty/imgui/imgui.cpp"
-    "thirdparty/imgui/imgui_demo.cpp" # If you want to include the demo windows
-    "thirdparty/imgui/imgui_draw.cpp"
-    "thirdparty/imgui/imgui_widgets.cpp"
-    "thirdparty/imgui/imgui_tables.cpp"
-    "thirdparty/imgui/backends/imgui_impl_glfw.cpp"
-    "thirdparty/imgui/backends/imgui_impl_opengl3.cpp"
 )
 
 set(NYL_HEADERS 
@@ -59,29 +52,12 @@ set(NYL_HEADERS
     "src/system/system_physics.h"
     "src/system/system_renderer.h"
     "src/system/system_camera.h"
-    #thirdparty
-    "thirdparty/imgui/imgui.h"
-    "thirdparty/imgui/imgui_internal.h"
-    "thirdparty/imgui/imstb_rectpack.h"
-    "thirdparty/imgui/imstb_textedit.h" 
-    "thirdparty/imgui/imstb_truetype.h" 
-    "thirdparty/imgui/backends/imgui_impl_glfw.h"
-    "thirdparty/imgui/backends/imgui_impl_opengl3.h"
 )
-
-add_library(glad thirdparty/glad/glad.h thirdparty/glad/glad.c)
-target_include_directories(glad PUBLIC thirdparty/)
 
 add_library(nyl SHARED ${NYL_SOURCES} ${NYL_HEADERS})
 set_target_properties(nyl PROPERTIES OUTPUT_NAME "__nylengine" PREFIX "")
 
 target_include_directories(nyl PRIVATE 
-    thirdparty/glad/
-    thirdparty/GLFW/
-    thirdparty/glm/
-    thirdparty/stb/
-    thirdparty/imgui/
-    thirdparty/imgui/backends/
     src/
     src/component
     src/_core/
@@ -89,18 +65,15 @@ target_include_directories(nyl PRIVATE
     src/component/
     src/system/
 )
-include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
+set(CMAKE_PREFIX_PATH "dependencies" ${CMAKE_PREFIX_PATH})
+find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
+find_package(imgui REQUIRED)
+find_package(stb REQUIRED)
+find_package(spdlog REQUIRED)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
-else()
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
-endif()
-
-target_link_libraries(nyl ${GLFW_LIBRARY} glad)
-
-target_compile_definitions(nyl PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm imgui::imgui stb::stb spdlog::spdlog)
+target_compile_definitions(${PROJECT_NAME} PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     _CONSOLE
     NYL_PLATFORM_WINDOWS

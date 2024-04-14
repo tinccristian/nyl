@@ -1,0 +1,11 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "C:\\Dev\\nyl\\script\\dependencies\\CMakePresets.json",
+        "C:\\Dev\\nyl\\engine\\dependencies\\CMakePresets.json",
+        "C:\\Dev\\nyl\\build\\CMakePresets.json"
+    ]
+}

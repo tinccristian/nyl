@@ -37,7 +37,7 @@ cd build\%build_type%
 
 :: Configure CMake
 echo Configuring CMake...
-cmake -G Ninja -DCMAKE_BUILD_TYPE=%build_type% -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ../..
+cmake -G Ninja -DCMAKE_BUILD_TYPE=%build_type% -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ../.. -DCMAKE_TOOLCHAIN_FILE=C:/Dev/nyl/build/conan_toolchain.cmake
 
 :: Start the build
 echo Starting %build_type% build...

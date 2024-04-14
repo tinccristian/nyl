@@ -7,10 +7,14 @@ build/
 .git/
 bin/
 docs/
+script/
+engine/thirdparty/
+engine/dependencies/
 
 #Files
 
 .user
+build.json
 
 #compileScore
 *.scor
