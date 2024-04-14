@@ -92,13 +92,24 @@ target_include_directories(nyl PRIVATE
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
-else()
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
-endif()
+# build and link the GLFW library
+# comment the code below to stop building glfw3 as a part of nyl
+# set glfw build options
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# add the glfw3 directory
+add_subdirectory(thirdparty/glfw-3.3.9)
 
-target_link_libraries(nyl ${GLFW_LIBRARY} glad)
+# link glfw3 (prebuilt)
+# uncomment the code below if you already built glfw3
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
+# else()
+#     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
+# endif()
+
+target_link_libraries(nyl glfw glad)
 
 target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
@@ -109,5 +120,4 @@ target_compile_definitions(nyl PRIVATE
     $<$<CONFIG:Release>:NDEBUG>
 )
 
-set_target_properties(nyl PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/output)
+set_target_properties(nyl PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/output)
