@@ -1,9 +1,9 @@
 #Folders
-
 .vs/
 .vscode/
 .idea/
 build/
+build-vs22/
 .git/
 bin/
 docs/

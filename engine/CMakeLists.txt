@@ -20,6 +20,13 @@ set(NYL_SOURCES
     "src/system/system_camera.cpp"
     #thirdparty
     "thirdparty/stb/stb.cpp"
+    "thirdparty/imgui/imgui.cpp"
+    "thirdparty/imgui/imgui_demo.cpp" # If you want to include the demo windows
+    "thirdparty/imgui/imgui_draw.cpp"
+    "thirdparty/imgui/imgui_widgets.cpp"
+    "thirdparty/imgui/imgui_tables.cpp"
+    "thirdparty/imgui/backends/imgui_impl_glfw.cpp"
+    "thirdparty/imgui/backends/imgui_impl_opengl3.cpp"
 )
 
 set(NYL_HEADERS 
@@ -53,6 +60,13 @@ set(NYL_HEADERS
     "src/system/system_renderer.h"
     "src/system/system_camera.h"
     #thirdparty
+    "thirdparty/imgui/imgui.h"
+    "thirdparty/imgui/imgui_internal.h"
+    "thirdparty/imgui/imstb_rectpack.h"
+    "thirdparty/imgui/imstb_textedit.h" 
+    "thirdparty/imgui/imstb_truetype.h" 
+    "thirdparty/imgui/backends/imgui_impl_glfw.h"
+    "thirdparty/imgui/backends/imgui_impl_opengl3.h"
 )
 
 add_library(glad thirdparty/glad/glad.h thirdparty/glad/glad.c)
@@ -66,6 +80,8 @@ target_include_directories(nyl PRIVATE
     thirdparty/GLFW/
     thirdparty/glm/
     thirdparty/stb/
+    thirdparty/imgui/
+    thirdparty/imgui/backends/
     src/
     src/component
     src/_core/
@@ -74,14 +90,26 @@ target_include_directories(nyl PRIVATE
     src/system/
 )
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
-else()
-    find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
-endif()
+# build and link the GLFW library
+# comment the code below to stop building glfw3 as a part of nyl
+# set glfw build options
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# add the glfw3 directory
+add_subdirectory(thirdparty/glfw-3.3.9)
 
-target_link_libraries(nyl ${GLFW_LIBRARY} glad)
+# link glfw3 (prebuilt)
+# uncomment the code below if you already built glfw3
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Debug/src)
+# else()
+#     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
+# endif()
+
+target_link_libraries(nyl glfw glad)
 
 target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
@@ -92,5 +120,4 @@ target_compile_definitions(nyl PRIVATE
     $<$<CONFIG:Release>:NDEBUG>
 )
 
-set_target_properties(nyl PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/output)
+set_target_properties(nyl PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/$<CONFIG>)

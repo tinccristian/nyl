@@ -48,56 +48,53 @@ namespace platformer
         CreateSystems();
     }
 
-    void platformer::Update(float deltaTime)
-    {
-        physics->updatePhysics(deltaTime);
+void platformer::Update(float deltaTime)
+{
+    physics->updatePhysics(deltaTime);
 
-        // Update camera
-        cameraManager->update(*Player);
-        
-        // Draw background
-        TextureComponent* background = ResourceManager::GetTexture("lv2");
-        Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->m_width, this->m_height));
+    // Update camera
+    cameraManager->update(*Player);
 
-        // Draw clouds
-        TextureComponent* cloud = ResourceManager::GetTexture("cloud");
-        Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
-        Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
-        Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
-        Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
-        Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
-        // Process input
-        ProcessInput(deltaTime);
+    // Process input
+    ProcessInput(deltaTime);
 
-        // Update collider
-        collisions->update();
+    // Update collider
+    collisions->update();
 
-        // Check collision with platforms
-        bool isCollidingWithPlatform = false;
-        for (auto& worldCollider : colliders) {
-            bool wasColliding = worldCollider->isColliding;
-            worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
+    // Check collision with platforms
+    bool isCollidingWithPlatform = false;
+    for (auto& worldCollider : colliders) {
+        bool wasColliding = worldCollider->isColliding;
+        worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
 
-            if (worldCollider->isColliding) {
-                // if (!wasColliding) {
-                //     debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Red.value);
-                // }
-                HandleCollision(Player, worldCollider);
-                isCollidingWithPlatform = true;
-                break;
-            }// else if (wasColliding) {
-                //debugRenderer->DrawRectangleOutline(worldCollider->getPosition(), worldCollider->getSize(), 0.0f, Colors::Green.value);
-            //}
+        if (worldCollider->isColliding) {
+            HandleCollision(Player, worldCollider);
+            isCollidingWithPlatform = true;
+            break;
         }
-        if (!isCollidingWithPlatform) {
-            Player->getComponent<PhysicsComponent>()->canJump = false;
-        }
-        //Draw player
-        Renderer->DrawEntity(*Player);
-        // Debug draw
-        //debugRenderer->DrawRectangleOutline(Player->getComponent<BoxCollider>()->getPosition(), Player->getComponent<BoxCollider>()->getSize(), 0.0f, Colors::Green.value);
     }
+    if (!isCollidingWithPlatform) {
+        Player->getComponent<PhysicsComponent>()->canJump = false;
+    }
+}
 
+void platformer::Render()
+{
+    // Draw background
+    TextureComponent* background = ResourceManager::GetTexture("lv2");
+    Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->m_width, this->m_height));
+
+    // Draw clouds
+    TextureComponent* cloud = ResourceManager::GetTexture("cloud");
+    Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
+    Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
+    Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
+    Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
+    Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
+
+    //Draw player
+    Renderer->DrawEntity(*Player);
+}
 #pragma region init_helper_foo
     void platformer::LoadResources()
     {
@@ -180,7 +177,7 @@ namespace platformer
             }
     }
 #pragma endregion
-    void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
+void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
 {
     //float offset = 0.0f; // Adjust this value as needed
     player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
