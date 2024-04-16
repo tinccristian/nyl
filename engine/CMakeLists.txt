@@ -120,4 +120,4 @@ target_compile_definitions(nyl PRIVATE
     $<$<CONFIG:Release>:NDEBUG>
 )
 
-set_target_properties(nyl PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/output)
+set_target_properties(nyl PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/$<CONFIG>)
