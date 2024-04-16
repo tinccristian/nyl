@@ -47,7 +47,10 @@ Once the project is built, you can use the generated executable to run your game
 
 ## Contributing
 
-Contributions to NYL are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to the project.
+## Contributing
+
+Contributions to NYL are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to the project. Additionally, tasks and project boards can be found on our Trello board: [NYL Trello Board](https://trello.com/w/nylengine).
+
 
 ## License
 
