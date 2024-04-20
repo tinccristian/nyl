@@ -43,6 +43,7 @@ void Window::initializeGLFWwindow()
 #pragma endregion
         // no resize
         glfwWindowHint(GLFW_RESIZABLE, false);
+
         // glfw window creation
         window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);    //fullscreen    GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
         if (window == NULL)
@@ -53,6 +54,8 @@ void Window::initializeGLFWwindow()
         }
         glfwMakeContextCurrent(window);
 
+		//VSYNC off
+		glfwSwapInterval(0);
 
         // glad: load all OpenGL function pointers
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

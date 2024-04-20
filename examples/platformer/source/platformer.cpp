@@ -1,7 +1,6 @@
 #include "platformer.h"
 #include "input.h"
 #include <system_renderer.h>
-#include "collider.h"
 #include "camera.h"
 #include "system_camera.h"
 
@@ -21,16 +20,15 @@ namespace platformer
     std::unique_ptr<Joystick> joystick;
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
+    int currentLevel = 1;
 
     platformer::platformer(int width, int height, const std::string& title)
         : nyl::Application(width, height, title)
     {
-        //NYL_TRACE("ANTARES constructor");
     }
 
     platformer::~platformer()
     {
-        //NYL_TRACE("ANTARES destructor");
     }
 
     void platformer::Init()
@@ -48,41 +46,57 @@ namespace platformer
         CreateSystems();
     }
 
-void platformer::Update(float deltaTime)
-{
-    physics->updatePhysics(deltaTime);
+	void platformer::Update(float deltaTime)
+	{
+		physics->updatePhysics(deltaTime);
 
-    // Update camera
-    cameraManager->update(*Player);
+		// Update camera
+		cameraManager->update(*Player);
 
-    // Process input
-    ProcessInput(deltaTime);
+		// Process input
+		ProcessInput(deltaTime);
 
-    // Update collider
-    collisions->update();
+		// Update collider
+		collisions->update();
 
-    // Check collision with platforms
-    bool isCollidingWithPlatform = false;
-    for (auto& worldCollider : colliders) {
-        bool wasColliding = worldCollider->isColliding;
-        worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
-
-        if (worldCollider->isColliding) {
-            HandleCollision(Player, worldCollider);
-            isCollidingWithPlatform = true;
-            break;
-        }
-    }
-    if (!isCollidingWithPlatform) {
-        Player->getComponent<PhysicsComponent>()->canJump = false;
-    }
-}
+		// Check collisions
+		bool collisionDetected = false;
+		for (auto& worldCollider : colliders)
+		{
+			auto collisionInfo = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
+			if (collisionInfo.has_value())
+			{
+				if (worldCollider->flag == "platform")
+				{
+					HandleCollision(Player, worldCollider, collisionInfo.value());
+                    collisionDetected = true;
+					break;
+				}
+				else if (worldCollider->flag == "level2")
+				{
+					NYL_INFO("Level 2 reached");
+                    currentLevel++;
+                    Player->getComponent<TransformComponent>()->position.x = 0.0f;
+                    Player->getComponent<TransformComponent>()->position.y = 0.0f;
+				}
+			}
+		}
+		if (!collisionDetected)
+		{
+			Player->getComponent<PhysicsComponent>()->canJump = false;
+		}
+	}
 
 void platformer::Render()
 {
+    TextureComponent* background;
     // Draw background
-    TextureComponent* background = ResourceManager::GetTexture("lv2");
-    Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->m_width, this->m_height));
+    background = ResourceManager::GetTexture("lv1");
+    if (currentLevel > 1)
+    {
+        background = ResourceManager::GetTexture("lv2");
+    }
+    Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
 
     // Draw clouds
     TextureComponent* cloud = ResourceManager::GetTexture("cloud");
@@ -98,9 +112,10 @@ void platformer::Render()
 #pragma region init_helper_foo
     void platformer::LoadResources()
     {
-        std::string resourcePath = getFullPath("../../../engine/resources/");
+        std::string resourcePath = getFullPath("../../resources/");
 
         std::vector<std::string> texturePaths = {
+            resourcePath + "backgrounds/lv1.png",
             resourcePath + "backgrounds/lv2.png",
             resourcePath + "characters/chikboy_trim.png",
             resourcePath + "backgrounds/cloud.png"
@@ -111,7 +126,6 @@ void platformer::Render()
             textureName = textureName.substr(0, textureName.find_last_of('.'));
             if (!ResourceManager::LoadTexture(path.c_str(), true, textureName)) {
                 NYL_ERROR("Failed to load texture: {}", textureName);
-                return;
             }
         }
     }
@@ -137,7 +151,7 @@ void platformer::Render()
     }
     void platformer::CreateColliders()
     {
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "ground"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "platform"));//ground
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
@@ -152,6 +166,7 @@ void platformer::Render()
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(945,192), glm::vec2(994,143)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1255,715), glm::vec2(1276,0), "level2"));
     }
     void platformer::CreateSystems()
     {
@@ -177,28 +192,43 @@ void platformer::Render()
             }
     }
 #pragma endregion
-void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
-{
-    //float offset = 0.0f; // Adjust this value as needed
-    player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;// - offset;
-    player->getComponent<PhysicsComponent>()->velocity.y = 0;
-    player->getComponent<PhysicsComponent>()->canJump = true;
+	void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider, const CollisionInfo& collisionInfo)
+	{
+		auto p_Transform = player->getComponent<TransformComponent>();
+		auto p_Physics = player->getComponent<PhysicsComponent>();
 
-    // Check if player is on top of the platform
-    if (player->getComponent<TransformComponent>()->position.y >= collider->getPosition().y + collider->getSize().y) {
-        player->getComponent<PhysicsComponent>()->canJump = true;
-    }
-
-}
+		// Update player's position and velocity based on collision direction
+		switch (collisionInfo.direction)
+		{
+		case CollisionDirection::Left:
+			p_Transform->position.x = collider->min.x - p_Transform->size.x;
+			p_Physics->velocity.x = 0;
+			break;
+		case CollisionDirection::Right:
+			p_Transform->position.x = collider->max.x;
+			p_Physics->velocity.x = 0;
+			break;
+		case CollisionDirection::Bottom:
+            p_Transform->position.y = collider->min.y +p_Transform->size.y-11.0f;
+			p_Physics->velocity.y = 0;
+			break;
+		case CollisionDirection::Top:
+			p_Transform->position.y = collider->min.y - p_Transform->size.y;
+			p_Physics->velocity.y = 0;
+			p_Physics->canJump = true;
+			break;
+		}
+	}
 
     void platformer::ProcessInput(float deltaTime)
     {
         float speed = 200.0f;
-        float jumpSpeed = 300.0f;
+        float jumpSpeed = 450.0f;
 
         joystick->update();
 
-        if (!joystick->isPresent()) {
+        if (!joystick->isPresent()) 
+        {
             NYL_TRACE("Joystick not present");
             return;
         }
@@ -206,12 +236,14 @@ void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr
         auto moveX = joystick->axesState(0);
         auto jumpButton = joystick->buttonState(GLFW_JOYSTICK_BTN_DOWN) || joystick->buttonState(GLFW_JOYSTICK_BTN_LEFT);
 
-        if (std::abs(moveX) > 0.1) {
-            Player->getComponent<PhysicsComponent>()->velocity.x = moveX * speed;
+        if (std::abs(moveX) > 0.1) 
+        {
+			Player->getComponent<PhysicsComponent>()->velocity.x = (moveX > 0) ? speed : (moveX < 0) ? -speed : 0;
             Player->getComponent<PhysicsComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
             Player->getComponent<TransformComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
         }
-        else {
+        else 
+        {
             Player->getComponent<PhysicsComponent>()->velocity.x = 0.0f;
         }
 
@@ -222,10 +254,7 @@ void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr
             //NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
-            //physics->applyGravity(*Player, deltaTime);
         }
-
-        //physics->applyGravity(*Player, deltaTime);
     }
 
     void platformer::Quit()

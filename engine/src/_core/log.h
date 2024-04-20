@@ -8,7 +8,7 @@
 namespace nyl 
 {
 
-	class NYL_API Log // /write a function to initialize the logger
+	class NYL_API Log
 	{
 	public:
 		static void Init();
