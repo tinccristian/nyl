@@ -53,7 +53,7 @@ namespace Colors
         // initializes and configures the quad's buffer and vertex attributes
         void initRenderData();
         // Draw a defined quad textured with given sprite
-        void DrawSprite(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+        void DrawSprite(const TextureComponent& texture, glm::vec2 position = glm::vec2(0.0f,0.0f), glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
         void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
 
         // Entity Draw functions

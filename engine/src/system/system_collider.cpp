@@ -41,24 +41,24 @@ std::optional<CollisionInfo> ColliderSystem::isColliding(const BoxCollider& a, c
 			if (dx1 < dx2) {
 				// Collision from the left side of 'a' to right side of 'b'
 				direction = CollisionDirection::Right;
-				NYL_TRACE("Collision from the right");
+				NYL_CORE_TRACE("Collision from the right");
 			}
 			else {
 				// Collision from the right side of 'a' to left side of 'b'
 				direction = CollisionDirection::Left;
-				NYL_TRACE("Collision from the left");
+				NYL_CORE_TRACE("Collision from the left");
 			}
 		}
 		else {
 			if (dy1 < dy2) {
 				// Collision from the bottom side of 'a' to top side of 'b'
 				direction = CollisionDirection::Bottom;
-				NYL_TRACE("Collision from the bottom");
+				NYL_CORE_TRACE("Collision from the bottom");
 			}
 			else {
 				// Collision from the top side of 'a' to bottom side of 'b'
 				direction = CollisionDirection::Top;
-				NYL_TRACE("Collision from the top");
+				NYL_CORE_TRACE("Collision from the top");
 			}
 		}
 

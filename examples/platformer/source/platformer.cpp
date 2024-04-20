@@ -20,6 +20,7 @@ namespace platformer
     std::unique_ptr<Joystick> joystick;
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
+    int currentLevel = 1;
 
     platformer::platformer(int width, int height, const std::string& title)
         : nyl::Application(width, height, title)
@@ -58,19 +59,29 @@ namespace platformer
 		// Update collider
 		collisions->update();
 
-		// Check collision with platforms
-		bool isCollidingWithPlatform = false;
+		// Check collisions
+		bool collisionDetected = false;
 		for (auto& worldCollider : colliders)
 		{
 			auto collisionInfo = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
 			if (collisionInfo.has_value())
 			{
-				HandleCollision(Player, worldCollider, collisionInfo.value());
-				isCollidingWithPlatform = true;
-				break;
+				if (worldCollider->flag == "platform")
+				{
+					HandleCollision(Player, worldCollider, collisionInfo.value());
+                    collisionDetected = true;
+					break;
+				}
+				else if (worldCollider->flag == "level2")
+				{
+					NYL_INFO("Level 2 reached");
+                    currentLevel++;
+                    Player->getComponent<TransformComponent>()->position.x = 0.0f;
+                    Player->getComponent<TransformComponent>()->position.y = 0.0f;
+				}
 			}
 		}
-		if (!isCollidingWithPlatform)
+		if (!collisionDetected)
 		{
 			Player->getComponent<PhysicsComponent>()->canJump = false;
 		}
@@ -78,9 +89,14 @@ namespace platformer
 
 void platformer::Render()
 {
+    TextureComponent* background;
     // Draw background
-    TextureComponent* background = ResourceManager::GetTexture("lv2");
-    Renderer->DrawSprite(*background, glm::vec2(0.0f, 0.0f), glm::vec2(this->m_width, this->m_height));
+    background = ResourceManager::GetTexture("lv1");
+    if (currentLevel > 1)
+    {
+        background = ResourceManager::GetTexture("lv2");
+    }
+    Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
 
     // Draw clouds
     TextureComponent* cloud = ResourceManager::GetTexture("cloud");
@@ -96,9 +112,10 @@ void platformer::Render()
 #pragma region init_helper_foo
     void platformer::LoadResources()
     {
-        std::string resourcePath = getFullPath("../../../engine/resources/");
+        std::string resourcePath = getFullPath("../../resources/");
 
         std::vector<std::string> texturePaths = {
+            resourcePath + "backgrounds/lv1.png",
             resourcePath + "backgrounds/lv2.png",
             resourcePath + "characters/chikboy_trim.png",
             resourcePath + "backgrounds/cloud.png"
@@ -109,7 +126,6 @@ void platformer::Render()
             textureName = textureName.substr(0, textureName.find_last_of('.'));
             if (!ResourceManager::LoadTexture(path.c_str(), true, textureName)) {
                 NYL_ERROR("Failed to load texture: {}", textureName);
-                return;
             }
         }
     }
@@ -135,7 +151,7 @@ void platformer::Render()
     }
     void platformer::CreateColliders()
     {
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "ground"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "platform"));//ground
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
@@ -150,6 +166,7 @@ void platformer::Render()
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(945,192), glm::vec2(994,143)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1169,66), glm::vec2(1218,17)  , "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(712,84), glm::vec2(754,5)  , "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(1255,715), glm::vec2(1276,0), "level2"));
     }
     void platformer::CreateSystems()
     {
