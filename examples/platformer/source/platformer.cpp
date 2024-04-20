@@ -1,7 +1,6 @@
 #include "platformer.h"
 #include "input.h"
 #include <system_renderer.h>
-#include "collider.h"
 #include "camera.h"
 #include "system_camera.h"
 
@@ -46,38 +45,36 @@ namespace platformer
         CreateSystems();
     }
 
-void platformer::Update(float deltaTime)
-{
-    physics->updatePhysics(deltaTime);
+	void platformer::Update(float deltaTime)
+	{
+		physics->updatePhysics(deltaTime);
 
-    // Update camera
-    cameraManager->update(*Player);
+		// Update camera
+		cameraManager->update(*Player);
 
-    // Process input
-    ProcessInput(deltaTime);
+		// Process input
+		ProcessInput(deltaTime);
 
-    // Update collider
-    collisions->update();
+		// Update collider
+		collisions->update();
 
-    // Check collision with platforms
-    bool isCollidingWithPlatform = false;
-    for (auto& worldCollider : colliders) 
-    {
-        bool wasColliding = worldCollider->isColliding;
-        worldCollider->isColliding = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
-
-        if (worldCollider->isColliding) 
-        {
-            HandleCollision(Player, worldCollider);
-            isCollidingWithPlatform = true;
-            break;
-        }
-    }
-    if (!isCollidingWithPlatform) 
-    {
-        Player->getComponent<PhysicsComponent>()->canJump = false;
-    }
-}
+		// Check collision with platforms
+		bool isCollidingWithPlatform = false;
+		for (auto& worldCollider : colliders)
+		{
+			auto collisionInfo = collisions->isColliding(*Player->getComponent<BoxCollider>(), *worldCollider);
+			if (collisionInfo.has_value())
+			{
+				HandleCollision(Player, worldCollider, collisionInfo.value());
+				isCollidingWithPlatform = true;
+				break;
+			}
+		}
+		if (!isCollidingWithPlatform)
+		{
+			Player->getComponent<PhysicsComponent>()->canJump = false;
+		}
+	}
 
 void platformer::Render()
 {
@@ -178,19 +175,38 @@ void platformer::Render()
             }
     }
 #pragma endregion
-void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider)
-{
-    auto playerTransform = player->getComponent<TransformComponent>();
-    player->getComponent<TransformComponent>()->position.y = collider->getPosition().y - player->getComponent<TransformComponent>()->size.y;
-    player->getComponent<PhysicsComponent>()->velocity.y = 0;
-    player->getComponent<PhysicsComponent>()->canJump = true;
+	void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider, const CollisionInfo& collisionInfo)
+	{
+		auto p_Transform = player->getComponent<TransformComponent>();
+		auto p_Physics = player->getComponent<PhysicsComponent>();
 
-}
+		// Update player's position and velocity based on collision direction
+		switch (collisionInfo.direction)
+		{
+		case CollisionDirection::Left:
+			p_Transform->position.x = collider->min.x - p_Transform->size.x;
+			p_Physics->velocity.x = 0;
+			break;
+		case CollisionDirection::Right:
+			p_Transform->position.x = collider->max.x;
+			p_Physics->velocity.x = 0;
+			break;
+		case CollisionDirection::Bottom:
+            p_Transform->position.y = collider->min.y +p_Transform->size.y-11.0f;
+			p_Physics->velocity.y = 0;
+			break;
+		case CollisionDirection::Top:
+			p_Transform->position.y = collider->min.y - p_Transform->size.y;
+			p_Physics->velocity.y = 0;
+			p_Physics->canJump = true;
+			break;
+		}
+	}
 
     void platformer::ProcessInput(float deltaTime)
     {
         float speed = 200.0f;
-        float jumpSpeed = 300.0f;
+        float jumpSpeed = 450.0f;
 
         joystick->update();
 

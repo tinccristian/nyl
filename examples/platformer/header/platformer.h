@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nyl.h>
+#include "collider.h"
 
 namespace platformer
 {
@@ -20,7 +21,7 @@ namespace platformer
 		void ConfigurePlayer();
 		void CreateColliders();
 		void CreateSystems();
-		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<nyl::BoxCollider> collider);
+		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<nyl::BoxCollider> collider, const nyl::CollisionInfo& collisionInfo);
 
 		// struct for a point
         struct point {
