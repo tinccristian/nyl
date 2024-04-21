@@ -26,7 +26,7 @@ void PhysicsSystem::applyGravity(Entity& entity, float deltaTime) {
 void PhysicsSystem::jump(Entity& entity, float jumpSpeed, float deltaTime) {
     auto physics = entity.getComponent<PhysicsComponent>();
     if (physics) {
-        physics->velocity.y = -jumpSpeed + GRAVITY * deltaTime;
+        physics->velocity.y = -jumpSpeed;// +GRAVITY * deltaTime;
     }
 }
 
@@ -38,28 +38,4 @@ bool PhysicsSystem::checkCollision(const nyl::BoxCollider& one, const nyl::BoxCo
         return false;
     }
     return true;
-}
-
-void PhysicsSystem::applyFriction(Entity& entity, float friction) {
-    // Implementation here...
-}
-
-void PhysicsSystem::applyImpulse(Entity& entity, const glm::vec2& impulse) {
-    // Implementation here...
-}
-
-void PhysicsSystem::applyTorque(Entity& entity, float torque) {
-    // Implementation here...
-}
-
-void PhysicsSystem::applyAngularImpulse(Entity& entity, float impulse) {
-    // Implementation here...
-}
-
-void PhysicsSystem::applyDrag(Entity& entity, float dragCoefficient) {
-    // Implementation here...
-}
-
-void PhysicsSystem::applyBuoyancy(Entity& entity, float fluidDensity, float fluidLevel) {
-    // Implementation here...
 }

@@ -21,6 +21,7 @@ namespace platformer
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
     int currentLevel = 1;
+    bool isInAir = false;
 
     platformer::platformer(int width, int height, const std::string& title)
         : nyl::Application(width, height, title)
@@ -78,6 +79,7 @@ namespace platformer
                     currentLevel++;
                     Player->getComponent<TransformComponent>()->position.x = 0.0f;
                     Player->getComponent<TransformComponent>()->position.y = 0.0f;
+                    Player->getComponent<PhysicsComponent>()->velocity = glm::vec2(0, 0);
 				}
 			}
 		}
@@ -216,6 +218,7 @@ void platformer::Render()
 			p_Transform->position.y = collider->min.y - p_Transform->size.y;
 			p_Physics->velocity.y = 0;
 			p_Physics->canJump = true;
+            isInAir = false;
 			break;
 		}
 	}
@@ -254,6 +257,12 @@ void platformer::Render()
             //NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
+            isInAir = true;
+            Player->getComponent<PhysicsComponent>()->velocity.x /= 2.0f;
+        }
+        else if (!jumpButton && isInAir)
+        {
+            physics->applyGravity(*Player, deltaTime);
         }
     }
 
