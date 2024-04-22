@@ -5,7 +5,7 @@ target_link_libraries(platformer nyl)
 # Set output directory based on build type
 set_target_properties(platformer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/$<CONFIG>")
 
-# Set the platformer executable as the startup project for Visual Studio
+# Set the platformer executable as the startup project for Visual Studio (doesnt work :/ )
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT platformer)
 endif()

@@ -1,4 +1,4 @@
-//For use by nyl applications
+// for use by nyl applications
 
 #include "application.h"
 #include "game.h"
@@ -7,19 +7,23 @@
 #include "utils.h"
 #include "window.h"
 
+// entity
+
+#include "player_entity.h"
+
+// render
 #include "texture.h"
 #include "resource_manager.h"
-#include "render.h"
 #include "system_renderer.h"
 #include "camera.h"
 #include "system_camera.h"
-//physics
+// physics
 #include "physics.h"
 #include "system_physics.h"
 
-//colliders
+// colliders
 #include "collider.h"
 #include "system_collider.h"
 
-//entry point
+// entry point
 #include "main.h"

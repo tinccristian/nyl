@@ -1,6 +1,6 @@
 #include "platformer.h"
 #include "input.h"
-#include <system_renderer.h>
+#include "system_renderer.h"
 #include "camera.h"
 #include "system_camera.h"
 
@@ -8,7 +8,8 @@ using namespace nyl;
 namespace platformer
 {
 
-    std::shared_ptr<Entity> Player; 
+    //std::shared_ptr<Entity> Player; 
+    std::shared_ptr<PlayerEntity> Player; 
     TransformComponent* transform;
     std::vector<std::shared_ptr<BoxCollider>> colliders;
     std::shared_ptr<Camera> camera;
@@ -120,6 +121,7 @@ void platformer::Render()
             resourcePath + "backgrounds/lv1.png",
             resourcePath + "backgrounds/lv2.png",
             resourcePath + "characters/chikboy_trim.png",
+            resourcePath + "characters/chikboy_trim.png",// should be moved engine side as default texture (game.h)
             resourcePath + "backgrounds/cloud.png"
         };
 
@@ -133,28 +135,21 @@ void platformer::Render()
     }
     void platformer::ConfigurePlayer()
     {
-        camera = std::make_shared<Camera>(0, 0, 800, 600,0.5f);
-        // Configure the player
-        float sizeY = 64.0f;
-        float sizeX = 36.0f;
-        point startPoint = {0.0f, 0.0f};
 
         // Create the Player entity
-        Player = std::make_shared<Entity>();
+        Player = std::make_shared<PlayerEntity>();
 
-        Player->addComponent<Camera>(*camera);
-        // (1,1) velocity, 50 mass
-        Player->addComponent<PhysicsComponent>(1, 2, 50);
-        // add collider component
-        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
-        auto transform = Player->getComponent<TransformComponent>();
-        Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
-        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy_trim"));
+        NYL_INFO("TransformComponent: {0}",Player->hasComponent<TransformComponent>());
+        NYL_INFO("PhysicsComponent: {0}",Player->hasComponent<PhysicsComponent>());
+        NYL_INFO("BoxCollider: {0}",Player->hasComponent<BoxCollider>());
+        NYL_INFO("TextureComponent: {0}",Player->hasComponent<TextureComponent>());
+        NYL_INFO("Camera: {0}",Player->hasComponent<Camera>());
+
     }
     void platformer::CreateColliders()
     {
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "platform"));//ground
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(163,80),  glm::vec2(212,31) , "platform"));
@@ -178,7 +173,7 @@ void platformer::Render()
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
             debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
-            cameraManager = std::make_unique<CameraSystem>(*camera);
+            cameraManager = std::make_unique<CameraSystem>(Player->camera);
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
@@ -268,7 +263,7 @@ void platformer::Render()
 
     void platformer::Quit()
     {
-        NYL_TRACE("ANTARES quit");
+        NYL_TRACE("app quit");
     }
 }
 

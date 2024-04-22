@@ -1,11 +1,9 @@
-// EntityManager.h
 #pragma once
 
 #include <vector>
 #include <memory>
 #include <algorithm>
 
-#include "core.h"
 #include "entity.h"
 
 /**
@@ -16,14 +14,16 @@
  * 
  * This class is part of the NYL engine and is exported as a DLL.
  */
-class NYL_API EntityManager {
+class NYL_API EntityManager 
+{
 public:
     /**
      * @brief Create a new entity with a unique ID.
      * 
      * @return Entity* A pointer to the newly created entity.
      */
-    Entity* createEntity() {
+    Entity* createEntity() 
+    {
         int id = entities.size();
         Entity* entity = new Entity();
         entities.push_back(std::unique_ptr<Entity>(entity));
@@ -35,8 +35,10 @@ public:
      * 
      * This method loops over all entities and updates their components.
      */
-    void update(float deltaTime) {
-        for (auto& entity : entities) {
+    void update(float deltaTime) 
+    {
+        for (auto& entity : entities) 
+        {
             // Update the entity's components here.
             // This will depend on your specific component implementation.
         }
@@ -48,7 +50,8 @@ public:
      * @param entity The entity to delete.
      */
 
-    void deleteEntity(Entity* entity) {
+    void deleteEntity(Entity* entity) 
+    {
         // Find and remove the entity from the entities vector.
         // This will automatically delete the entity and its components because of the unique_ptr.
         entities.erase(std::remove_if(entities.begin(), entities.end(),

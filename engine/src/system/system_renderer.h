@@ -2,7 +2,6 @@
 
 #include "system.h"
 #include "entity.h"
-#include "render.h"
 #include "shader.h"
 #include "texture.h"
 #include "transform.h"

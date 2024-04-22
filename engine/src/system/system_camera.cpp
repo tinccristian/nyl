@@ -53,7 +53,8 @@ namespace nyl
     void CameraSystem::CheckGLError()
     {
         GLenum err;
-        while ((err = glGetError()) != GL_NO_ERROR) {
+        while ((err = glGetError()) != GL_NO_ERROR) 
+        {
             NYL_CORE_ERROR("OpenGL error: " + std::to_string(err));
         }
     }

@@ -249,21 +249,23 @@ void RenderSystem::DrawRectangleOutline(glm::vec2 position, glm::vec2 size, floa
     glBindVertexArray(0);
     CheckGLError();
 }
-void RenderSystem::update() {
-    for (Entity& entity : entities) {
-        auto renderComponent = entity.getComponent<RenderComponent>();
-        auto cameraComponent = entity.getComponent<Camera>();
-        
-        if (renderComponent) {
-            // Draw the entity using the data in the renderComponent...
-            DrawSprite(renderComponent->texture, renderComponent->position, renderComponent->size, renderComponent->rotate, renderComponent->color);
-        }
-    }
+void RenderSystem::update() 
+{
+    //for (Entity& entity : entities) {
+    //    auto renderComponent = entity.getComponent<RenderComponent>();
+    //    auto cameraComponent = entity.getComponent<Camera>();
+    //    
+    //    if (renderComponent) {
+    //        // Draw the entity using the data in the renderComponent...
+    //        DrawSprite(renderComponent->texture, renderComponent->position, renderComponent->size, renderComponent->rotate, renderComponent->color);
+    //    }
+    //}
 }
 void RenderSystem::CheckGLError()
 {
     GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
+    while ((err = glGetError()) != GL_NO_ERROR) 
+    {
         NYL_CORE_ERROR("OpenGL error: " + std::to_string(err));
     }
 }
