@@ -120,7 +120,6 @@ void platformer::Render()
         std::vector<std::string> texturePaths = {
             resourcePath + "backgrounds/lv1.png",
             resourcePath + "backgrounds/lv2.png",
-            resourcePath + "characters/chikboy_trim.png",
             resourcePath + "characters/chikboy_trim.png",// should be moved engine side as default texture (game.h)
             resourcePath + "backgrounds/cloud.png"
         };
