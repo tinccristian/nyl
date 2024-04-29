@@ -27,7 +27,6 @@ target_include_directories(platformer PRIVATE
 target_compile_definitions(platformer PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     _CONSOLE
-    NYL_PLATFORM_WINDOWS
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>
 )

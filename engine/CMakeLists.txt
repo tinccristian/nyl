@@ -70,6 +70,7 @@ set(NYL_HEADERS
 )
 
 add_library(glad thirdparty/glad/glad.h thirdparty/glad/glad.c)
+set_property(TARGET glad PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_include_directories(glad PUBLIC thirdparty/)
 
 add_library(nyl SHARED ${NYL_SOURCES} ${NYL_HEADERS})
@@ -114,7 +115,6 @@ target_link_libraries(nyl glfw glad)
 target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
     _CONSOLE
-    NYL_PLATFORM_WINDOWS
     NYL_BUILD_DLL
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>

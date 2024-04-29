@@ -3,7 +3,6 @@
 #pragma once
 #include "log.h"
 #include "application.h"
-//#ifdef NYL_PLATFORM_WINDOWS
 
 #include <stdexcept>
 
