@@ -6,15 +6,10 @@
 
 namespace nyl
 {
-    CameraSystem::CameraSystem(Camera &camera)
+    CameraSystem::CameraSystem(std::shared_ptr<Camera> camera)
         : camera(camera)
     {
         this->initCameraData();
-    }
-
-    CameraSystem::~CameraSystem()
-    {
-        // Add any necessary cleanup here
     }
 
     void CameraSystem::update(Entity& entity) 
@@ -28,25 +23,13 @@ namespace nyl
         
         camera->position.x = transform->position.x;
         camera->position.y = transform->position.y;
-        
-        // // Define the size of the deadzone
-        // float deadzone = 100.0f;
 
-        // // Only update the camera's position if the player has moved out of the deadzone
-        // if (abs(camera->position.x - transform->position.x) > deadzone) {
-        //     camera->position.x = transform->position.x;
-        // }
-        // if (abs(camera->position.y - transform->position.y) > deadzone) {
-        //     camera->position.y = transform->position.y;
-        // }
-
-        // Check for OpenGL errors after updating the camera
         this->CheckGLError();
     }
 
     void CameraSystem::initCameraData()
     {
-        camera.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        camera->position = glm::vec3(0.0f, 0.0f, 0.0f);
         // Initialize camera data here
     }
 

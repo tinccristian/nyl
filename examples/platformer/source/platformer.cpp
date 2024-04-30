@@ -10,18 +10,17 @@ namespace platformer
 
     //std::shared_ptr<Entity> Player; 
     std::shared_ptr<PlayerEntity> Player; 
-    TransformComponent* transform;
     std::vector<std::shared_ptr<BoxCollider>> colliders;
-    std::shared_ptr<Camera> camera;
     std::unique_ptr<CameraSystem> cameraManager;
     std::unique_ptr<RenderSystem> Renderer;
     std::unique_ptr<RenderSystem> debugRenderer;
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<ColliderSystem> collisions;
     std::unique_ptr<Joystick> joystick;
+	TextureComponent* background;
+
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
-    int currentLevel = 1;
     bool isInAir = false;
 
     platformer::platformer(int width, int height, const std::string& title)
@@ -46,15 +45,18 @@ namespace platformer
 
         // Create systems
         CreateSystems();
+
     }
 
 	void platformer::Update(float deltaTime)
 	{
+
+        //NYL_INFO("Player->transform->position.x,y: {0}, {1} ", Player->transform.position.x, Player->transform.position.y);
+        //NYL_INFO("Player->getComponent<TransformComponent>()->position.x,y : {0}, {1} ", Player->getComponent<TransformComponent>()->position.x, Player->getComponent<TransformComponent>()->position.y);
 		physics->updatePhysics(deltaTime);
 
 		// Update camera
 		cameraManager->update(*Player);
-
 		// Process input
 		ProcessInput(deltaTime);
 
@@ -77,7 +79,7 @@ namespace platformer
 				else if (worldCollider->flag == "level2")
 				{
 					NYL_INFO("Level 2 reached");
-                    currentLevel++;
+                    state.level++;
                     Player->getComponent<TransformComponent>()->position.x = 0.0f;
                     Player->getComponent<TransformComponent>()->position.y = 0.0f;
                     Player->getComponent<PhysicsComponent>()->velocity = glm::vec2(0, 0);
@@ -92,13 +94,19 @@ namespace platformer
 
 void platformer::Render()
 {
-    TextureComponent* background;
-    // Draw background
-    background = ResourceManager::GetTexture("lv1");
-    if (currentLevel > 1)
-    {
-        background = ResourceManager::GetTexture("lv2");
+
+
+    switch (state.level)
+	{
+	case 1:
+		background = ResourceManager::GetTexture("lv1");
+        break;
+
+    case 2:
+		background = ResourceManager::GetTexture("lv2");
+        break;
     }
+
     Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
 
     // Draw clouds
@@ -135,14 +143,13 @@ void platformer::Render()
     void platformer::ConfigurePlayer()
     {
 
-        // Create the Player entity
         Player = std::make_shared<PlayerEntity>();
 
-        NYL_INFO("TransformComponent: {0}",Player->hasComponent<TransformComponent>());
-        NYL_INFO("PhysicsComponent: {0}",Player->hasComponent<PhysicsComponent>());
-        NYL_INFO("BoxCollider: {0}",Player->hasComponent<BoxCollider>());
-        NYL_INFO("TextureComponent: {0}",Player->hasComponent<TextureComponent>());
-        NYL_INFO("Camera: {0}",Player->hasComponent<Camera>());
+        NYL_TRACE("TransformComponent: {0}",Player->hasComponent<TransformComponent>());
+        NYL_TRACE("PhysicsComponent: {0}",Player->hasComponent<PhysicsComponent>());
+        NYL_TRACE("BoxCollider: {0}",Player->hasComponent<BoxCollider>());
+        NYL_TRACE("TextureComponent: {0}",Player->hasComponent<TextureComponent>());
+        NYL_TRACE("Camera: {0}",Player->hasComponent<Camera>());
 
     }
     void platformer::CreateColliders()
@@ -172,7 +179,7 @@ void platformer::Render()
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
             debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
-            cameraManager = std::make_unique<CameraSystem>(Player->camera);
+            cameraManager = std::make_unique<CameraSystem>(std::make_shared<Camera>(Player->camera));
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
