@@ -1,6 +1,6 @@
 #include "platformer.h"
 #include "input.h"
-#include <system_renderer.h>
+#include "system_renderer.h"
 #include "camera.h"
 #include "system_camera.h"
 
@@ -8,19 +8,20 @@ using namespace nyl;
 namespace platformer
 {
 
-    std::shared_ptr<Entity> Player; 
-    TransformComponent* transform;
+    //std::shared_ptr<Entity> Player; 
+    std::shared_ptr<PlayerEntity> Player; 
     std::vector<std::shared_ptr<BoxCollider>> colliders;
-    std::shared_ptr<Camera> camera;
     std::unique_ptr<CameraSystem> cameraManager;
     std::unique_ptr<RenderSystem> Renderer;
     std::unique_ptr<RenderSystem> debugRenderer;
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<ColliderSystem> collisions;
     std::unique_ptr<Joystick> joystick;
+	TextureComponent* background;
+
     float cloudTimer = 0.0f;
     const float cloudInterval = 5.0f;
-    int currentLevel = 1;
+    bool isInAir = false;
 
     platformer::platformer(int width, int height, const std::string& title)
         : nyl::Application(width, height, title)
@@ -44,15 +45,18 @@ namespace platformer
 
         // Create systems
         CreateSystems();
+
     }
 
 	void platformer::Update(float deltaTime)
 	{
+
+        //NYL_INFO("Player->transform->position.x,y: {0}, {1} ", Player->transform.position.x, Player->transform.position.y);
+        //NYL_INFO("Player->getComponent<TransformComponent>()->position.x,y : {0}, {1} ", Player->getComponent<TransformComponent>()->position.x, Player->getComponent<TransformComponent>()->position.y);
 		physics->updatePhysics(deltaTime);
 
 		// Update camera
 		cameraManager->update(*Player);
-
 		// Process input
 		ProcessInput(deltaTime);
 
@@ -75,9 +79,10 @@ namespace platformer
 				else if (worldCollider->flag == "level2")
 				{
 					NYL_INFO("Level 2 reached");
-                    currentLevel++;
+                    state.level++;
                     Player->getComponent<TransformComponent>()->position.x = 0.0f;
                     Player->getComponent<TransformComponent>()->position.y = 0.0f;
+                    Player->getComponent<PhysicsComponent>()->velocity = glm::vec2(0, 0);
 				}
 			}
 		}
@@ -89,13 +94,19 @@ namespace platformer
 
 void platformer::Render()
 {
-    TextureComponent* background;
-    // Draw background
-    background = ResourceManager::GetTexture("lv1");
-    if (currentLevel > 1)
-    {
-        background = ResourceManager::GetTexture("lv2");
+
+
+    switch (state.level)
+	{
+	case 1:
+		background = ResourceManager::GetTexture("lv1");
+        break;
+
+    case 2:
+		background = ResourceManager::GetTexture("lv2");
+        break;
     }
+
     Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
 
     // Draw clouds
@@ -117,7 +128,7 @@ void platformer::Render()
         std::vector<std::string> texturePaths = {
             resourcePath + "backgrounds/lv1.png",
             resourcePath + "backgrounds/lv2.png",
-            resourcePath + "characters/chikboy_trim.png",
+            resourcePath + "characters/chikboy_trim.png",// should be moved engine side as default texture (game.h)
             resourcePath + "backgrounds/cloud.png"
         };
 
@@ -131,28 +142,20 @@ void platformer::Render()
     }
     void platformer::ConfigurePlayer()
     {
-        camera = std::make_shared<Camera>(0, 0, 800, 600,0.5f);
-        // Configure the player
-        float sizeY = 64.0f;
-        float sizeX = 36.0f;
-        point startPoint = {0.0f, 0.0f};
 
-        // Create the Player entity
-        Player = std::make_shared<Entity>();
+        Player = std::make_shared<PlayerEntity>();
 
-        Player->addComponent<Camera>(*camera);
-        // (1,1) velocity, 50 mass
-        Player->addComponent<PhysicsComponent>(1, 2, 50);
-        // add collider component
-        Player->addComponent<TransformComponent>(startPoint.x, startPoint.y, 0, 1.0f, 1.0f, sizeX, sizeY);
-        auto transform = Player->getComponent<TransformComponent>();
-        Player->addComponent<BoxCollider>(transform->min, transform->max),"player";
-        Player->addComponent<TextureComponent>(*ResourceManager::GetTexture("chikboy_trim"));
+        NYL_TRACE("TransformComponent: {0}",Player->hasComponent<TransformComponent>());
+        NYL_TRACE("PhysicsComponent: {0}",Player->hasComponent<PhysicsComponent>());
+        NYL_TRACE("BoxCollider: {0}",Player->hasComponent<BoxCollider>());
+        NYL_TRACE("TextureComponent: {0}",Player->hasComponent<TextureComponent>());
+        NYL_TRACE("Camera: {0}",Player->hasComponent<Camera>());
+
     }
     void platformer::CreateColliders()
     {
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "platform"));//ground
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335),   "platform"));
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(163,80),  glm::vec2(212,31) , "platform"));
@@ -176,7 +179,7 @@ void platformer::Render()
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
             debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
-            cameraManager = std::make_unique<CameraSystem>(*camera);
+            cameraManager = std::make_unique<CameraSystem>(std::make_shared<Camera>(Player->camera));
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
@@ -216,6 +219,7 @@ void platformer::Render()
 			p_Transform->position.y = collider->min.y - p_Transform->size.y;
 			p_Physics->velocity.y = 0;
 			p_Physics->canJump = true;
+            isInAir = false;
 			break;
 		}
 	}
@@ -254,12 +258,18 @@ void platformer::Render()
             //NYL_TRACE("Jump!");
             physics->jump(*Player, jumpSpeed, deltaTime);
             Player->getComponent<PhysicsComponent>()->canJump = false;
+            isInAir = true;
+            Player->getComponent<PhysicsComponent>()->velocity.x /= 2.0f;
+        }
+        else if (!jumpButton && isInAir)
+        {
+            physics->applyGravity(*Player, deltaTime);
         }
     }
 
     void platformer::Quit()
     {
-        NYL_TRACE("ANTARES quit");
+        NYL_TRACE("app quit");
     }
 }
 

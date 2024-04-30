@@ -5,16 +5,16 @@
 //#include <GL/glew.h>
 
 namespace nyl {
-    class NYL_API CameraSystem : public System {
-    public:
-        CameraSystem(Camera &camera);
-        ~CameraSystem();
+	class NYL_API CameraSystem : public System {
+	public:
+		CameraSystem(std::shared_ptr<Camera> camera); // Change parameter type to shared_ptr
+		~CameraSystem() = default;
 
-        void update(Entity& entity);
-        void initCameraData();
-        void CheckGLError();
+		void update(Entity& entity);
+		void initCameraData();
+		void CheckGLError();
 
-    private:
-        Camera &camera;
-    };
+	private:
+		std::shared_ptr<Camera> camera; // Change member type to shared_ptr
+	};
 }

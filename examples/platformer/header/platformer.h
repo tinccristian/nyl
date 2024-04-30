@@ -5,6 +5,11 @@
 
 namespace platformer
 {
+	struct GameState
+	{
+		int level = 1;
+
+	};
 	class platformer : public nyl::Application
 	{
 	public:
@@ -23,10 +28,8 @@ namespace platformer
 		void CreateSystems();
 		void HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<nyl::BoxCollider> collider, const nyl::CollisionInfo& collisionInfo);
 
-		// struct for a point
-        struct point {
-            float x = 60.0f;
-            float y = 280.0f;
-        };
+	public:
+		GameState state;
+
 	};
 }

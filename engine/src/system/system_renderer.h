@@ -2,7 +2,6 @@
 
 #include "system.h"
 #include "entity.h"
-#include "render.h"
 #include "shader.h"
 #include "texture.h"
 #include "transform.h"
@@ -54,14 +53,17 @@ namespace Colors
         void initRenderData();
         // Draw a defined quad textured with given sprite
         void DrawSprite(const TextureComponent& texture, glm::vec2 position = glm::vec2(0.0f,0.0f), glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
-        void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
+        //void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
 
         // Entity Draw functions
-        void DrawEntitySprite(const TextureComponent &texture, TransformComponent &transform, Camera &camera,glm::vec3 color);
+        //void DrawEntitySprite(const TextureComponent &texture, TransformComponent &transform, Camera &camera,glm::vec3 color);
         void DrawEntity(const Entity& entity);
         
+        bool CheckRenderComponents(const Entity& entity);
         void DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
         glm::vec2 getGlfwCoordinates(glm::vec2 worldPos, glm::vec2 windowSize);
+        glm::vec2 GetWorldPosition(const Entity& entity);
+
 
     private:
         // render state
