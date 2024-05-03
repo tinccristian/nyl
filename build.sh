@@ -12,7 +12,9 @@ for arg in "$@"; do
     case $arg in
         -clean)
             echo "Performing a clean build..."
+            cd build/Debug
             ninja clean
+            exit $? # Exit with exit status of ninja clean
             ;;
         -run)
             run=true
