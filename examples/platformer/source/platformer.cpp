@@ -107,7 +107,7 @@ void platformer::Render()
         break;
     }
 
-    Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
+    Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_window->width, this->m_window->height));
 
     // Draw clouds
     TextureComponent* cloud = ResourceManager::GetTexture("cloud");
@@ -154,7 +154,7 @@ void platformer::Render()
     }
     void platformer::CreateColliders()
     {
-        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,m_height), glm::vec2(m_width,m_height-5.0f), "platform"));//ground
+        colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,this->m_window->height), glm::vec2(this->m_window->width, this->m_window->height -5.0f), "platform"));//ground
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(0,384),   glm::vec2(364,335), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(544,714), glm::vec2(798,458), "platform"));
         colliders.push_back(std::make_shared<BoxCollider>(glm::vec2(309,202), glm::vec2(358,153), "platform"));
@@ -174,10 +174,10 @@ void platformer::Render()
     void platformer::CreateSystems()
     {
             ShaderComponent* spriteShader = ResourceManager::GetShader("sprite");
-            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->m_width,this->m_height);
+            Renderer = std::make_unique<RenderSystem>(*spriteShader,this->m_window->width,this->m_window->height);
 
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
-            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
+            debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_window->width,this->m_window->height);
 
             cameraManager = std::make_unique<CameraSystem>(std::make_shared<Camera>(Player->camera));
             physics = std::make_unique<PhysicsSystem>();
@@ -251,7 +251,7 @@ void platformer::Render()
             Player->getComponent<PhysicsComponent>()->velocity.x = 0.0f;
         }
 
-        float groundLevel = this->m_height - Player->getComponent<TransformComponent>()->size.y;
+        float groundLevel = this->m_window->height - Player->getComponent<TransformComponent>()->size.y;
         float tolerance = 10.0f;
 
         if (jumpButton && Player->getComponent<PhysicsComponent>()->canJump) {

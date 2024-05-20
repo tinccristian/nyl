@@ -27,7 +27,7 @@ namespace nyl
     {
     public:
         // constructors and destructor
-        Game(int width, int height, const std::string& title);
+        Game(std::unique_ptr<Window> window);
         ~Game();
 
         // initialization
@@ -51,6 +51,6 @@ namespace nyl
     TextureComponent* m_texture;
 
     private:
-        Window window;
+        std::unique_ptr<Window> m_window;
     };
 }

@@ -16,8 +16,10 @@ namespace nyl
     float lastFrame = 0.0f;
     const int targetFPS = 1000;
 
-    Game::Game(int width, int height, const std::string& title)
-        : window(width, height, title){}
+    Game::Game(std::unique_ptr<Window> window)
+    {
+        m_window=std::make_unique<Window>(window);
+    }
 
     Game::~Game()
     {
@@ -36,13 +38,13 @@ namespace nyl
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
 
-        ImGui_ImplGlfw_InitForOpenGL(window.getGLFWwindow(), true);
+        ImGui_ImplGlfw_InitForOpenGL(m_window->getGLFWwindow(), true);
         ImGui_ImplOpenGL3_Init();
     }
 
     void Game::configureOpenGL()
     {
-        glViewport(0, 0, window.width, window.height);
+        glViewport(0, 0, m_window->width, m_window->height);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
@@ -57,7 +59,7 @@ namespace nyl
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
         
         // configure shaders
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(m_window->width), static_cast<float>(m_window->height), 0.0f, -1.0f, 1.0f);
         ResourceManager::GetShader("sprite")->use().set_int("sprite", 0);
         ResourceManager::GetShader("sprite")->set_mat4("projection", projection);
 
@@ -72,8 +74,8 @@ namespace nyl
         frameCount++; totalTime += deltaTime;
         if (totalTime >= 1.0f) {
             int averageFPS = static_cast<int>(frameCount / totalTime);
-            std::string newTitle = window.title + " - FPS: " + std::to_string(averageFPS);
-            glfwSetWindowTitle(window.getGLFWwindow(), newTitle.c_str());
+            std::string newTitle = m_window->title + " - FPS: " + std::to_string(averageFPS);
+            glfwSetWindowTitle(m_window->getGLFWwindow(), newTitle.c_str());
             frameCount = 0; totalTime = 0.0f;
         }
     }
@@ -85,7 +87,7 @@ namespace nyl
         int frameCount = 0;
         float totalTime, frameTime, sleepTime = 0.0f;
         
-        while (!window.shouldClose())
+        while (!m_window->shouldClose())
         {
             float frameStart = glfwGetTime();
 
@@ -107,7 +109,7 @@ namespace nyl
             ImGui::ShowMetricsWindow();
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            glfwSwapBuffers(window.getGLFWwindow());
+            glfwSwapBuffers(m_window->getGLFWwindow());
 
             frameTime = glfwGetTime() - frameStart; // time taken for this frame
 

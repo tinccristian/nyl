@@ -7,6 +7,8 @@ set(NYL_SOURCES
     "src/_core/application.cpp"
     "src/_core/utils.cpp"
     "src/_core/window.cpp"
+    "src/_core/layer.cpp"
+    "src/_core/layer_stack.cpp"
     #entity
     "src/entity/entity.cpp"
     "src/entity/player_entity.cpp"
@@ -32,6 +34,7 @@ set(NYL_SOURCES
 
 set(NYL_HEADERS 
     #core
+    "src/nyl.h"
     "src/_core/core.h"
     "src/_core/application.h"
     "src/_core/game.h"
@@ -41,7 +44,8 @@ set(NYL_HEADERS
     "src/_core/resource_manager.h"
     "src/_core/utils.h"
     "src/_core/window.h"
-    "src/nyl.h"
+    "src/_core/layer.h"
+    "src/_core/layer_stack.h"
     #entity
     "src/entity/entity.h"
     "src/entity/entity_manager.h"

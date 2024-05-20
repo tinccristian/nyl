@@ -1,12 +1,12 @@
 #include "application.h"
+
 #include "log.h"
 #include "core.h"
+
 namespace nyl {
 
-	//Application* Application::m_instance = nullptr;
-
 	Application::Application(int& width, int& height, const std::string& title)
-		: Game(width, height, title), m_height(height), m_width(width), m_title(title) 
+		: m_window(std::make_unique<Window>(width,height,title)),Game(std::move(m_window))
 	{
 		NYL_CORE_TRACE("nyl application constructor");
 	}
@@ -15,10 +15,29 @@ namespace nyl {
 		NYL_CORE_TRACE("nyl application destructor");
 	}
 
-    void Application::run() 
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
+	}
+
+    void Application::run()
     {
-		Game::run();
+		Game::init();
+		while(!m_window->shouldClose())
+		{
+			for (Layer* layer: m_LayerStack)
+			{
+				layer->OnUpdate();
+			}
+			Game::run();
+		}
     }
+
 	void Application::quit()
 	{
 		NYL_CORE_TRACE("NYL Application quit()");
