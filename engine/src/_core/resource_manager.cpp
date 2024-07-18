@@ -34,9 +34,9 @@ ShaderComponent* ResourceManager::GetShader(std::string name)
     return Shaders[name];
 }
 
-TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std::string name)
+TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std::string name, int frameCount)
 {
-    Textures[name] = loadTextureFromFile(file, alpha);
+    Textures[name] = loadTextureFromFile(file, alpha, frameCount);
     return Textures[name];
 }
 
@@ -116,7 +116,7 @@ ShaderComponent* ResourceManager::loadShaderFromFile(const char* vShaderFile, co
     return shader;
 }
 
-TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool alpha)
+TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool alpha, int frameCount)
 {
     // create texture object
     TextureComponent* texture = new TextureComponent();
@@ -131,10 +131,17 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     if (data)
     {
         NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
-        // now generate texture
         texture->Generate(width, height, data);
-        // and finally free image data
         stbi_image_free(data);
+
+        // animation properties
+        texture->frameWidth = width / frameCount;;
+        texture->frameHeight = height;
+        texture->frameCount = frameCount;
+        texture->isAnimated = (frameCount > 1);
+
+        //NYL_CORE_INFO("Texture setup: frameWidth = {0}, frameHeight = {1}, frameCount = {2}, isAnimated = {3}",
+        //texture->frameWidth, texture->frameHeight, texture->frameCount, texture->isAnimated);
     }
     else
     {
@@ -144,4 +151,5 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     }
     return texture;
 }
+
 }

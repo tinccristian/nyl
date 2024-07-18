@@ -83,6 +83,10 @@ void ShaderComponent::set_vec2f(const char* name, const glm::vec2& value, bool u
         glUseProgram(ID);
     glUniform2f(glGetUniformLocation(ID, name), value.x, value.y);
 }
+void ShaderComponent::set_bool(const std::string& name, bool value)
+{
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+}
 void ShaderComponent::check_compile_errors(unsigned int shader, std::string type)
 {
     int success;

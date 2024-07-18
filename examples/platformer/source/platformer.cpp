@@ -8,8 +8,9 @@ using namespace nyl;
 namespace platformer
 {
 
-    //std::shared_ptr<Entity> Player; 
-    std::shared_ptr<PlayerEntity> Player; 
+    std::shared_ptr<Entity> Player; 
+    std::shared_ptr<Camera> camera;
+    //std::shared_ptr<PlayerEntity> Player; 
     std::vector<std::shared_ptr<BoxCollider>> colliders;
     std::unique_ptr<CameraSystem> cameraManager;
     std::unique_ptr<RenderSystem> Renderer;
@@ -90,12 +91,12 @@ namespace platformer
 		{
 			Player->getComponent<PhysicsComponent>()->canJump = false;
 		}
+
+
 	}
 
-void platformer::Render()
+void platformer::Render(float deltaTime)
 {
-
-
     switch (state.level)
 	{
 	case 1:
@@ -118,7 +119,7 @@ void platformer::Render()
     Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
 
     //Draw player
-    Renderer->DrawEntity(*Player);
+    Renderer->DrawEntity(*Player, deltaTime);
 }
 #pragma region init_helper_foo
     void platformer::LoadResources()
@@ -139,17 +140,51 @@ void platformer::Render()
                 NYL_ERROR("Failed to load texture: {}", textureName);
             }
         }
+        //std::string characterTex = resourcePath + "characters/chikboy_idle_10.png";
+        //ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_idle_10",10);
+        std::string characterTex = resourcePath + "characters/chikboy_run_10.png";
+        ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_run_10",10);
     }
     void platformer::ConfigurePlayer()
     {
+        camera = std::make_shared<Camera>(0, 0, 800, 600, 0.5f);
+        // Configure the player
+        float sizeY = 32.0f;
+        float sizeX = 32.0f;
 
-        Player = std::make_shared<PlayerEntity>();
+        // Create the Player entity
+        Player = std::make_shared<Entity>();
 
-        NYL_TRACE("TransformComponent: {0}",Player->hasComponent<TransformComponent>());
-        NYL_TRACE("PhysicsComponent: {0}",Player->hasComponent<PhysicsComponent>());
-        NYL_TRACE("BoxCollider: {0}",Player->hasComponent<BoxCollider>());
-        NYL_TRACE("TextureComponent: {0}",Player->hasComponent<TextureComponent>());
-        NYL_TRACE("Camera: {0}",Player->hasComponent<Camera>());
+        Player->addComponent<Camera>(*camera);
+        // (1,1) velocity, 50 mass
+        Player->addComponent<PhysicsComponent>(1, 2, 50);
+        // add collider component
+        Player->addComponent<TransformComponent>(0.0f, 0.0f, 0, 1.0f, 1.0f, sizeX, sizeY);
+        auto transform = Player->getComponent<TransformComponent>();
+        Player->addComponent<BoxCollider>(transform->min, transform->max), "player";
+        // texture
+        //auto playerTexture = ResourceManager::GetTexture("chikboy_idle_10");
+        auto playerTexture = ResourceManager::GetTexture("chikboy_run_10");
+        Player->addComponent<TextureComponent>(*playerTexture);
+
+        if (playerTexture) {
+            // Set up animation properties
+            playerTexture->frameWidth = 64.0f;
+            playerTexture->frameHeight = 64.0f;
+            playerTexture->frameCount = 10;
+            playerTexture->isAnimated = true;
+            playerTexture->frameTime = 100.0f;  // Adjust this value to control animation speed
+
+            NYL_CORE_INFO("Player texture: ID = {0}, Width = {1}, Height = {2}, IsAnimated = {3}, FrameCount = {4}",
+                playerTexture->ID, playerTexture->width, playerTexture->height,
+                playerTexture->isAnimated, playerTexture->frameCount);
+
+            // Ensure the transform size matches the frame size
+            transform->size = glm::vec2(playerTexture->frameWidth, playerTexture->frameHeight);
+        }
+        else {
+            NYL_CORE_ERROR("Player texture not found!");
+        }
 
     }
     void platformer::CreateColliders()
@@ -179,7 +214,7 @@ void platformer::Render()
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
             debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
-            cameraManager = std::make_unique<CameraSystem>(std::make_shared<Camera>(Player->camera));
+            cameraManager = std::make_unique<CameraSystem>(Player->getComponent<Camera>());
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
@@ -195,12 +230,12 @@ void platformer::Render()
             }
     }
 #pragma endregion
-	void platformer::HandleCollision(std::shared_ptr<Entity> player, std::shared_ptr<BoxCollider> collider, const CollisionInfo& collisionInfo)
+	void platformer::HandleCollision(std::shared_ptr<Entity> entity, std::shared_ptr<BoxCollider> collider, const CollisionInfo& collisionInfo)
 	{
-		auto p_Transform = player->getComponent<TransformComponent>();
-		auto p_Physics = player->getComponent<PhysicsComponent>();
+		auto p_Transform = entity->getComponent<TransformComponent>();
+		auto p_Physics = entity->getComponent<PhysicsComponent>();
 
-		// Update player's position and velocity based on collision direction
+		// Update entity's position and velocity based on collision direction
 		switch (collisionInfo.direction)
 		{
 		case CollisionDirection::Left:

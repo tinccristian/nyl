@@ -98,7 +98,7 @@ namespace nyl
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            Render();
+            Render(deltaTime);
 
             glfwPollEvents();
             ImGui_ImplOpenGL3_NewFrame();

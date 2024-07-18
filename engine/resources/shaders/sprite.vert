@@ -6,9 +6,12 @@ out vec2 TexCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec2 texOffset;
+uniform vec2 texScale;
 
 void main()
 {
-    TexCoords = vertex.zw;
+    TexCoords = vertex.zw * texScale + texOffset;
+    
     gl_Position = projection * view * model * vec4(vertex.xy, 0.0, 1.0);
 }
