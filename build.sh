@@ -14,6 +14,18 @@ for arg in "$@"; do
             echo "Performing a clean build..."
             cd build/Debug
             ninja clean
+            if [ $? -ne 0 ]; then
+                    echo "Clean failed with error $?"
+                    exit $?
+            fi
+            # Calculate and display the elapsed time
+            end=$(date +%s%N)
+            elapsed=$((end-start))
+            s=$((elapsed/1000000000))
+            mins=$((secs/60))
+            h=$((mins/60))
+            ms=$((elapsed%1000000/10000))
+            echo "Clean completed in: ${h}h$((h%60))m${s}s${ms}ms"
             exit $? # Exit with exit status of ninja clean
             ;;
         -run)
@@ -60,11 +72,11 @@ fi
 # Calculate and display the elapsed time
 end=$(date +%s%N)
 elapsed=$((end-start))
-mins=$((elapsed/(60*100)))
-secs=$((elapsed%(60*100)/100))
-hundredths=$((elapsed%100))
-
-echo "$build_type build completed in: $mins minutes, $secs.$hundredths seconds"
+s=$((elapsed/1000000000))
+mins=$((secs/60))
+h=$((mins/60))
+ms=$((elapsed%1000000/10000))
+echo "$build_type build completed in: ${h}h$((h%60))m${s}s${ms}ms"
 
 # Run the executable if the -run argument was provided
 if [ "$run" = true ]; then

@@ -13,6 +13,8 @@ set(NYL_SOURCES
     #component
     "src/component/shader.cpp"
     "src/component/texture.cpp"
+    #event
+    "src/event_system/Event.cpp"
     #system
     "src/system/system_collider.cpp"
     "src/system/system_physics.cpp"
@@ -46,6 +48,11 @@ set(NYL_HEADERS
     "src/entity/entity.h"
     "src/entity/entity_manager.h"
     "src/entity/player_entity.h"
+    #event system
+    "src/event_system/ApplicationEvent.h"
+    "src/event_system/Event.h"
+    "src/event_system/KeyEvent.h"
+    "src/event_system/MouseEvent.h"
     #component
     "src/component/component.h"
     "src/component/collider.h"
@@ -90,6 +97,7 @@ target_include_directories(nyl PRIVATE
     src/entity/
     src/component/
     src/system/
+    src/event_system/
 )
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)

@@ -15,7 +15,6 @@ namespace nyl
 		virtual void Update(float deltaTime)=0;
 		virtual void ProcessInput(float deltaTime) = 0;
 		virtual void Quit()=0;
-		void         run();
 		void         quit();
 
 	protected:

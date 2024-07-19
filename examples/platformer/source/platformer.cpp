@@ -233,7 +233,7 @@ void platformer::Render()
 
         if (!joystick->isPresent()) 
         {
-            NYL_TRACE("Joystick not present");
+            //NYL_TRACE("Joystick not present");
             return;
         }
 

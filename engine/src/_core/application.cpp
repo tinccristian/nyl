@@ -15,10 +15,6 @@ namespace nyl {
 		NYL_CORE_TRACE("nyl application destructor");
 	}
 
-    void Application::run() 
-    {
-		Game::run();
-    }
 	void Application::quit()
 	{
 		NYL_CORE_TRACE("NYL Application quit()");

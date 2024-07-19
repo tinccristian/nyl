@@ -4,6 +4,7 @@
 
 
 #include <glm/glm.hpp>
+#include "KeyEvent.h"
 
 Window::Window(int width, int height, const std::string& title)
     : window(nullptr), width(width), height(height), title(title) {
@@ -66,7 +67,14 @@ void Window::initializeGLFWwindow()
 
         // set the callback functions, should come from the APP, but for now engine specific 
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        glfwSetKeyCallback(window, key_callback);
+        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+            {
+                if(action == GLFW_PRESS)
+                {
+                    std::unique_ptr<nyl::KeyPressedEvent> event = std::make_unique<nyl::KeyPressedEvent>((nyl::KeyCode)key);
+                    nyl::EventDispatcher::AddEvent(std::move(event));
+                }
+            });
         glfwSetCursorPosCallback(window, cursor_position_callback);
         glfwSetMouseButtonCallback(window, mouse_button_callback);
 
