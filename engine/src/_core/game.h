@@ -42,15 +42,16 @@ namespace nyl
         virtual void ProcessInput(float deltaTime) = 0;
         virtual void Quit() = 0;
 
+        // utils
+        static float getDeltaTime() { return deltaTime; }
         // main loop
         void run();
-        void updateFPS(int& frameCount, float& totalTime);
-
-    // shader and texture
-    ShaderComponent* shader;
-    TextureComponent* m_texture;
+        
 
     private:
         Window window;
+        static float deltaTime;
+        // shader and texture
+        void updateFPS(int& frameCount, float& totalTime);
     };
 }
