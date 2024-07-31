@@ -1,14 +1,16 @@
 #pragma once
 
-#include "system.h"
-#include "entity.h"
-#include "shader.h"
-#include "texture.h"
-#include "transform.h"
-#include "camera.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "system.h"
+#include "entity.h"
+#include "transform.h"
+#include "camera.h"
+#include "shader.h"
+#include "texture.h"
+#include "animation.h"
 
 namespace nyl
 {
@@ -17,7 +19,6 @@ struct Color
     glm::vec3 value;
     operator glm::vec3() const { return value; }  // Allow implicit conversion to glm::vec3
 };
-
 namespace Colors
 {
     static const Color White{ glm::vec3(1.0f, 1.0f, 1.0f) };
@@ -41,7 +42,8 @@ namespace Colors
     static const Color LightYellow{ glm::vec3(1.0f, 1.0f, 0.5f) };
     static const Color DarkYellow{ glm::vec3(0.5f, 0.5f, 0.0f) };
 }
-    class NYL_API RenderSystem : public System {
+
+class NYL_API RenderSystem : public System {
     public:
         // constructor (inits shaders/shapes)
         RenderSystem(ShaderComponent &shader, float screenWidth, float screenHeight);

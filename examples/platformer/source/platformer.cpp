@@ -143,7 +143,7 @@ void platformer::Render(float deltaTime)
         //std::string characterTex = resourcePath + "characters/chikboy_idle_10.png";
         //ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_idle_10",10);
         std::string characterTex = resourcePath + "characters/chikboy_run_10.png";
-        ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_run_10",10);
+        ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_run_10");
     }
     void platformer::ConfigurePlayer()
     {
@@ -165,25 +165,21 @@ void platformer::Render(float deltaTime)
         // texture
         //auto playerTexture = ResourceManager::GetTexture("chikboy_idle_10");
         auto playerTexture = ResourceManager::GetTexture("chikboy_run_10");
-        Player->addComponent<TextureComponent>(*playerTexture);
+        auto playerAnimComponent = ResourceManager::createAnimation(playerTexture, 10);
 
-        if (playerTexture) {
-            // Set up animation properties
-            playerTexture->frameWidth = 64.0f;
-            playerTexture->frameHeight = 64.0f;
-            playerTexture->frameCount = 10;
-            playerTexture->isAnimated = true;
-            playerTexture->frameTime = 100.0f;  // Adjust this value to control animation speed
+        if (playerTexture && playerAnimComponent) {
+            Player->addComponent<TextureComponent>(*playerTexture);
+            Player->addComponent<AnimationComponent>(*playerAnimComponent);
 
-            NYL_CORE_INFO("Player texture: ID = {0}, Width = {1}, Height = {2}, IsAnimated = {3}, FrameCount = {4}",
-                playerTexture->ID, playerTexture->width, playerTexture->height,
-                playerTexture->isAnimated, playerTexture->frameCount);
+            // Adjust animation properties if needed
+            Player->getComponent<AnimationComponent>()->animation.frameTime = 0.100f;  // 100ms in seconds
 
             // Ensure the transform size matches the frame size
-            transform->size = glm::vec2(playerTexture->frameWidth, playerTexture->frameHeight);
+            transform->size = glm::vec2(playerAnimComponent->animation.frameWidth,
+                playerAnimComponent->animation.frameHeight);
         }
         else {
-            NYL_CORE_ERROR("Player texture not found!");
+            NYL_CORE_ERROR("Failed to load player texture or create animation!");
         }
 
     }
@@ -264,7 +260,9 @@ void platformer::Render(float deltaTime)
         float speed = 200.0f;
         float jumpSpeed = 450.0f;
 
-        joystick->update();
+        joystick->update(); 
+
+
 
         if (!joystick->isPresent()) 
         {

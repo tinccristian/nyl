@@ -6,12 +6,7 @@ namespace nyl
         : width(0), height(0),
           object_format(GL_RGB), image_format(GL_RGB),
           wrap_s(GL_REPEAT), wrap_t(GL_REPEAT),
-          filter_min(GL_NEAREST), filter_max(GL_NEAREST),
-          frameWidth(0), frameHeight(0), frameCount(1),
-          currentFrame(0),
-          frameTime(0.15f),
-          elapsedTime(0.0f),
-          isAnimated(false)
+          filter_min(GL_NEAREST), filter_max(GL_NEAREST)
     {
         glGenTextures(1, &this->ID);
     }
@@ -35,16 +30,7 @@ namespace nyl
         // unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    void TextureComponent::Update(float deltaTime)
-    {
-        if (isAnimated) {
-            elapsedTime += deltaTime;
-            if (elapsedTime >= frameTime) {
-                currentFrame = (currentFrame + 1) % frameCount;
-                elapsedTime = 0.0f;
-            }
-        }
-    }
+
     void TextureComponent::Bind() const
     {
         glBindTexture(GL_TEXTURE_2D, ID);

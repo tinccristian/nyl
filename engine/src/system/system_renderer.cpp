@@ -109,6 +109,7 @@ void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
     auto transform = entity.getComponent<TransformComponent>();
     auto texture = entity.getComponent<TextureComponent>();
     auto camera = entity.getComponent<Camera>();
+    auto animation = entity.getComponent<AnimationComponent>();
 
     // use the shader program first
     this->shader.use();
@@ -140,11 +141,11 @@ void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
     this->shader.set_mat4("model", model);
 
     // set animation properties for the shader
-    if (texture->isAnimated)
+    if (animation)
     {
-        texture->Update(deltaTime);
-        float frameWidth = static_cast<float>(texture->frameWidth) / texture->width;
-        float frameOffsetX = frameWidth * texture->currentFrame;
+        animation->Update(deltaTime);
+        float frameWidth = static_cast<float>(animation->animation.frameWidth) / texture->width;
+        float frameOffsetX = frameWidth * animation->animation.currentFrame;
         this->shader.set_vec2f("texOffset", glm::vec2(frameOffsetX, 0.0f));
         this->shader.set_vec2f("texScale", glm::vec2(frameWidth, 1.0f));
     }

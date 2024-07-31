@@ -34,9 +34,9 @@ ShaderComponent* ResourceManager::GetShader(std::string name)
     return Shaders[name];
 }
 
-TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std::string name, int frameCount)
+TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std::string name)
 {
-    Textures[name] = loadTextureFromFile(file, alpha, frameCount);
+    Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
@@ -116,7 +116,7 @@ ShaderComponent* ResourceManager::loadShaderFromFile(const char* vShaderFile, co
     return shader;
 }
 
-TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool alpha, int frameCount)
+TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool alpha)
 {
     // create texture object
     TextureComponent* texture = new TextureComponent();
@@ -133,15 +133,6 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
         NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
         texture->Generate(width, height, data);
         stbi_image_free(data);
-
-        // animation properties
-        texture->frameWidth = width / frameCount;;
-        texture->frameHeight = height;
-        texture->frameCount = frameCount;
-        texture->isAnimated = (frameCount > 1);
-
-        //NYL_CORE_INFO("Texture setup: frameWidth = {0}, frameHeight = {1}, frameCount = {2}, isAnimated = {3}",
-        //texture->frameWidth, texture->frameHeight, texture->frameCount, texture->isAnimated);
     }
     else
     {
@@ -150,6 +141,29 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
         return nullptr;
     }
     return texture;
+}
+AnimationComponent* ResourceManager::createAnimation(TextureComponent* texture, unsigned int frameCount, float frameTime)
+{
+    if (!texture) {
+        NYL_CORE_ERROR("Cannot create animation for null texture");
+        return nullptr;
+    }
+
+    AnimationComponent* animComponent = new AnimationComponent(texture);
+
+    // Set up animation properties
+    animComponent->animation.frameWidth = texture->width / frameCount;
+    animComponent->animation.frameHeight = texture->height;
+    animComponent->animation.frameCount = frameCount;
+    animComponent->animation.isPlaying = (frameCount > 1);
+    animComponent->animation.frameTime = frameTime;  // Set the frame time
+
+    NYL_CORE_INFO("Animation setup: frameWidth = {0}, frameHeight = {1}, frameCount = {2}, isPlaying = {3}, frameTime = {4}",
+        animComponent->animation.frameWidth, animComponent->animation.frameHeight,
+        animComponent->animation.frameCount, animComponent->animation.isPlaying,
+        animComponent->animation.frameTime);
+
+    return animComponent;
 }
 
 }

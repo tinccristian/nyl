@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "shader.h"
 #include "system_shader.h"
+#include "animation.h"
 
 #include "core.h"
 
@@ -32,12 +33,14 @@ class NYL_API ResourceManager
 
         static ShaderComponent* LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name);
         static ShaderComponent* GetShader(std::string name);
-        static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name,int frameCount=1);
+        static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name);
         static TextureComponent* GetTexture(std::string name);
+        static AnimationComponent* createAnimation(TextureComponent* texture, unsigned int frameCount=1, float frameTime=0.1f);
         static void Clear();
     private:
         ResourceManager() { }
         static ShaderComponent* loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
-        static TextureComponent* loadTextureFromFile(const char* file, bool alpha, int frameCount =1);
+        static TextureComponent* loadTextureFromFile(const char* file, bool alpha);
+
 };
 }
