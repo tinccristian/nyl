@@ -73,7 +73,7 @@ public:
     std::shared_ptr<T> getComponent() const {
         auto iter = components.find(std::type_index(typeid(T)));
         if (iter == components.end()) {
-            NYL_CORE_ERROR("Component of type {0} does not exist", typeid(T).name());
+            NYL_CORE_TRACE("Component of type {0} does not exist", typeid(T).name());
             return nullptr;
         }
         return std::static_pointer_cast<T>(iter->second);
