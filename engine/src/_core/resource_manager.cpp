@@ -142,28 +142,5 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     }
     return texture;
 }
-AnimationComponent* ResourceManager::createAnimation(TextureComponent* texture, unsigned int frameCount, float frameTime)
-{
-    if (!texture) {
-        NYL_CORE_ERROR("Cannot create animation for null texture");
-        return nullptr;
-    }
-
-    AnimationComponent* animComponent = new AnimationComponent(texture);
-
-    // Set up animation properties
-    animComponent->animation.frameWidth = texture->width / frameCount;
-    animComponent->animation.frameHeight = texture->height;
-    animComponent->animation.frameCount = frameCount;
-    animComponent->animation.isPlaying = (frameCount > 1);
-    animComponent->animation.frameTime = frameTime;  // Set the frame time
-
-    NYL_CORE_INFO("Animation setup: frameWidth = {0}, frameHeight = {1}, frameCount = {2}, isPlaying = {3}, frameTime = {4}",
-        animComponent->animation.frameWidth, animComponent->animation.frameHeight,
-        animComponent->animation.frameCount, animComponent->animation.isPlaying,
-        animComponent->animation.frameTime);
-
-    return animComponent;
-}
 
 }

@@ -140,8 +140,8 @@ void platformer::Render(float deltaTime)
                 NYL_ERROR("Failed to load texture: {}", textureName);
             }
         }
-        //std::string characterTex = resourcePath + "characters/chikboy_idle_10.png";
-        //ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_idle_10",10);
+        std::string characterText = resourcePath + "characters/chikboy_idle_10.png";
+        ResourceManager::LoadTexture(characterText.c_str(), true, "chikboy_idle_10");
         std::string characterTex = resourcePath + "characters/chikboy_run_10.png";
         ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_run_10");
     }
@@ -164,23 +164,22 @@ void platformer::Render(float deltaTime)
         Player->addComponent<BoxCollider>(transform->min, transform->max), "player";
         // texture
         //auto playerTexture = ResourceManager::GetTexture("chikboy_idle_10");
-        auto playerTexture = ResourceManager::GetTexture("chikboy_run_10");
-        auto playerAnimComponent = ResourceManager::createAnimation(playerTexture, 10);
+        auto animatedComponent = std::make_shared<AnimatedComponent>();
 
-        if (playerTexture && playerAnimComponent) {
-            Player->addComponent<TextureComponent>(*playerTexture);
-            Player->addComponent<AnimationComponent>(*playerAnimComponent);
+        // Add idle animation
+        TextureComponent* idleTexture = ResourceManager::GetTexture("chikboy_idle_10");
+        Animation idleAnimation("idle", idleTexture, idleTexture->width / 10, idleTexture->height, 10, 0.1f);
+        animatedComponent->AddAnimation(idleAnimation);
 
-            // Adjust animation properties if needed
-            Player->getComponent<AnimationComponent>()->animation.frameTime = 0.100f;  // 100ms in seconds
+        // Add run animation
+        TextureComponent* runTexture = ResourceManager::GetTexture("chikboy_run_10");
+        Animation runAnimation("run", runTexture, runTexture->width / 10, runTexture->height, 10, 0.1f);
+        animatedComponent->AddAnimation(runAnimation);
 
-            // Ensure the transform size matches the frame size
-            transform->size = glm::vec2(playerAnimComponent->animation.frameWidth,
-                playerAnimComponent->animation.frameHeight);
-        }
-        else {
-            NYL_CORE_ERROR("Failed to load player texture or create animation!");
-        }
+        // Set initial animation
+        animatedComponent->SetCurrentAnimation("idle");
+
+        Player->addComponent<AnimatedComponent>(*animatedComponent);
 
     }
     void platformer::CreateColliders()
@@ -273,15 +272,19 @@ void platformer::Render(float deltaTime)
         auto moveX = joystick->axesState(0);
         auto jumpButton = joystick->buttonState(GLFW_JOYSTICK_BTN_DOWN) || joystick->buttonState(GLFW_JOYSTICK_BTN_LEFT);
 
-        if (std::abs(moveX) > 0.1) 
+        auto animatedComponent = Player->getComponent<AnimatedComponent>();
+
+        if (std::abs(moveX) > 0.3)
         {
-			Player->getComponent<PhysicsComponent>()->velocity.x = (moveX > 0) ? speed : (moveX < 0) ? -speed : 0;
+            Player->getComponent<PhysicsComponent>()->velocity.x = (moveX > 0) ? speed : (moveX < 0) ? -speed : 0;
             Player->getComponent<PhysicsComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
             Player->getComponent<TransformComponent>()->direction = moveX >= 0 ? 1.0f : -1.0f;
+            animatedComponent->SetCurrentAnimation("run");
         }
-        else 
+        else
         {
             Player->getComponent<PhysicsComponent>()->velocity.x = 0.0f;
+            animatedComponent->SetCurrentAnimation("idle");
         }
 
         float groundLevel = this->m_height - Player->getComponent<TransformComponent>()->size.y;

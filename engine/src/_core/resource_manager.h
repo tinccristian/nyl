@@ -35,7 +35,6 @@ class NYL_API ResourceManager
         static ShaderComponent* GetShader(std::string name);
         static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name);
         static TextureComponent* GetTexture(std::string name);
-        static AnimationComponent* createAnimation(TextureComponent* texture, unsigned int frameCount=1, float frameTime=0.1f);
         static void Clear();
     private:
         ResourceManager() { }

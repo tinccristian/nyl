@@ -106,10 +106,27 @@ void RenderSystem::DrawSprite(const TextureComponent& texture, glm::vec2 positio
 void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
 {
     if (!CheckRenderComponents(entity)) { return; }
+
     auto transform = entity.getComponent<TransformComponent>();
-    auto texture = entity.getComponent<TextureComponent>();
     auto camera = entity.getComponent<Camera>();
-    auto animation = entity.getComponent<AnimationComponent>();
+
+    std::shared_ptr<TextureComponent> texture = nullptr;
+    Animation* currentAnimation = nullptr;
+
+    if (entity.hasComponent<AnimatedComponent>()) {
+        auto animatedComponent = entity.getComponent<AnimatedComponent>();
+        animatedComponent->Update(deltaTime);
+        currentAnimation = animatedComponent->GetCurrentAnimation();
+        texture = animatedComponent->GetCurrentTexture();
+    }
+    else if (entity.hasComponent<TextureComponent>()) {
+        texture = entity.getComponent<TextureComponent>();
+    }
+
+    if (!texture) {
+        NYL_CORE_ERROR("Error: Entity has no valid texture");
+        return;
+    }
 
     // use the shader program first
     this->shader.use();
@@ -141,11 +158,10 @@ void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
     this->shader.set_mat4("model", model);
 
     // set animation properties for the shader
-    if (animation)
+    if (currentAnimation)
     {
-        animation->Update(deltaTime);
-        float frameWidth = static_cast<float>(animation->animation.frameWidth) / texture->width;
-        float frameOffsetX = frameWidth * animation->animation.currentFrame;
+        float frameWidth = static_cast<float>(currentAnimation->frameWidth) / texture->width;
+        float frameOffsetX = frameWidth * currentAnimation->currentFrame;
         this->shader.set_vec2f("texOffset", glm::vec2(frameOffsetX, 0.0f));
         this->shader.set_vec2f("texScale", glm::vec2(frameWidth, 1.0f));
     }
@@ -179,13 +195,13 @@ bool nyl::RenderSystem::CheckRenderComponents(const Entity& entity)
 		NYL_CORE_ERROR("Error: Entity does not have a TransformComponent");
 		return false;
 	}
-
 	// get the entity's texture component
 	auto texture = entity.getComponent<TextureComponent>();
-	if (!texture) {
-		NYL_CORE_ERROR("Error: Entity does not have a TextureComponent");
-		return false;
-	}
+    if (!entity.hasComponent<TextureComponent>() && !entity.hasComponent<AnimatedComponent>()) {
+        NYL_CORE_ERROR("Error: Entity does not have a TextureComponent or AnimatedComponent");
+        return false;
+    }
+    // get the entity's camera component
 	auto camera = entity.getComponent<Camera>();
 	if (!camera) {
 		NYL_CORE_ERROR("Error: Entity does not have a Camera");
