@@ -209,6 +209,26 @@ bool nyl::RenderSystem::CheckRenderComponents(const Entity& entity)
 	}
     return true;
 }
+void RenderSystem::DrawTilemap(const TilemapComponent& tilemap, glm::vec2 position) {
+    for (int y = 0; y < tilemap.mapHeight; ++y) {
+        for (int x = 0; x < tilemap.mapWidth; ++x) {
+            int tileId = tilemap.getTile(x, y);
+            if (tileId != -1) {  // -1 could represent an empty tile
+                float srcX = (tileId % 2) * tilemap.tileWidth;
+                float srcY = (tileId / 2) * tilemap.tileHeight;
+
+                glm::vec2 tilePos = position + glm::vec2(x * tilemap.tileWidth, y * tilemap.tileHeight);
+                glm::vec2 tileSize(tilemap.tileWidth, tilemap.tileHeight);
+
+                this->shader.use();
+                this->shader.set_vec2f("texOffset", glm::vec2(srcX / tilemap.tilesetTexture->width, srcY / tilemap.tilesetTexture->height));
+                this->shader.set_vec2f("texScale", glm::vec2(tilemap.tileWidth / tilemap.tilesetTexture->width, tilemap.tileHeight / tilemap.tilesetTexture->height));
+
+                DrawSprite(*tilemap.tilesetTexture, tilePos, tileSize, 0.0f, glm::vec3(1.0f));
+            }
+        }
+    }
+}
 void RenderSystem::DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
     this->shader.use();

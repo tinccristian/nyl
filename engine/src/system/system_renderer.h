@@ -11,6 +11,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "animation.h"
+#include "tilemap.h"
 
 namespace nyl
 {
@@ -55,10 +56,10 @@ class NYL_API RenderSystem : public System {
         void initRenderData();
         // draw a defined quad textured with given sprite
         void DrawSprite(const TextureComponent& texture, glm::vec2 position = glm::vec2(0.0f,0.0f), glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
-        //void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
 
         // draw functions
         void DrawEntity(const Entity& entity, float deltaTime);
+        void DrawTilemap(const TilemapComponent& tilemap, glm::vec2 position);
         void DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
         
         // helper functions

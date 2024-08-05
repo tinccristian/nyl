@@ -14,6 +14,7 @@ set(NYL_SOURCES
     "src/component/animation.cpp"
     "src/component/shader.cpp"
     "src/component/texture.cpp"
+    "src/component/tilemap.cpp"
     #system
     "src/system/system_collider.cpp"
     "src/system/system_physics.cpp"
@@ -56,6 +57,7 @@ set(NYL_HEADERS
     "src/component/texture.h"
     "src/component/transform.h"
     "src/component/camera.h"
+    "src/component/tilemap.h"
     #system
     "src/system/system.h"
     "src/system/system_collider.h"
