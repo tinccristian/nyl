@@ -12,7 +12,7 @@
 
 namespace nyl
 {
-    float deltaTime = 0.0f;
+    float Game::deltaTime = 0.0f;
     float lastFrame = 0.0f;
     const int targetFPS = 1000;
 
@@ -77,17 +77,16 @@ namespace nyl
             frameCount = 0; totalTime = 0.0f;
         }
     }
-
     void Game::run()
     {
         init();
         const float targetFrameTime = 1.0f / targetFPS;
         int frameCount = 0;
-        float totalTime, frameTime, sleepTime = 0.0f;
+        float totalTime, frameTime, sleepTime, frameStart = 0.0f;
         
         while (!window.shouldClose())
         {
-            float frameStart = glfwGetTime();
+            frameStart = glfwGetTime();
 
             // get delta time
             deltaTime = frameStart - lastFrame;
@@ -98,7 +97,7 @@ namespace nyl
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            Render();
+            Render(deltaTime);
 
             glfwPollEvents();
             ImGui_ImplOpenGL3_NewFrame();

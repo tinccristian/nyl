@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "shader.h"
 #include "system_shader.h"
+#include "animation.h"
 
 #include "core.h"
 
@@ -39,5 +40,6 @@ class NYL_API ResourceManager
         ResourceManager() { }
         static ShaderComponent* loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
         static TextureComponent* loadTextureFromFile(const char* file, bool alpha);
-    };
+
+};
 }

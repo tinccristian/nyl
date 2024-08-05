@@ -21,6 +21,7 @@ namespace nyl
         TextureComponent();
 
         void Generate(unsigned int width, unsigned int height, unsigned char* data);
+        void Update(float deltaTime);
         void Bind() const;
 
     };

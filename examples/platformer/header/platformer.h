@@ -19,7 +19,7 @@ namespace platformer
 
 		virtual void Init() override;
 		virtual void Update(float deltaTime) override;
-		virtual void Render() override;
+		virtual void Render(float deltaTime) override;
 		virtual void Quit() override;
 		virtual void ProcessInput(float deltaTime) override;
 		void LoadResources();

@@ -23,20 +23,20 @@ void ShaderComponent::compile() {
     sVertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(sVertex, 1, &vertexSource, NULL);
     glCompileShader(sVertex);
-    check_compile_errors(sVertex, "VERTEX"); // You need to implement this function
+    check_compile_errors(sVertex, "VERTEX");
 
     // fragment Shader
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(sFragment, 1, &fragmentSource, NULL);
     glCompileShader(sFragment);
-    check_compile_errors(sFragment, "FRAGMENT"); // You need to implement this function
+    check_compile_errors(sFragment, "FRAGMENT");
 
     // shader program
     this->ID = glCreateProgram();
     glAttachShader(this->ID, sVertex);
     glAttachShader(this->ID, sFragment);
     glLinkProgram(this->ID);
-    check_compile_errors(this->ID, "PROGRAM"); // You need to implement this function
+    check_compile_errors(this->ID, "PROGRAM");
 
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(sVertex);
@@ -83,11 +83,15 @@ void ShaderComponent::set_vec2f(const char* name, const glm::vec2& value, bool u
         glUseProgram(ID);
     glUniform2f(glGetUniformLocation(ID, name), value.x, value.y);
 }
+void ShaderComponent::set_bool(const std::string& name, bool value)
+{
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+}
 void ShaderComponent::check_compile_errors(unsigned int shader, std::string type)
 {
     int success;
     char infoLog[1024];
-        if (type != "PROGRAM")
+    if (type != "PROGRAM")
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)

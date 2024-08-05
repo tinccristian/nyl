@@ -25,6 +25,7 @@ public:
     void    set_vec4f(const char* name, float x, float y, float z, float w, bool useShader = false);
     void    set_vec4f(const char* name, const glm::vec4& value, bool useShader = false);
     void    set_mat4(const char* name, const glm::mat4& matrix, bool useShader = false);
+    void    set_bool(const std::string& name, bool value);
 private:
     // utility function for checking shader compilation/linking errors.
     static void check_compile_errors(unsigned int shader, std::string type);

@@ -11,6 +11,7 @@ set(NYL_SOURCES
     "src/entity/entity.cpp"
     "src/entity/player_entity.cpp"
     #component
+    "src/component/animation.cpp"
     "src/component/shader.cpp"
     "src/component/texture.cpp"
     #system
@@ -47,6 +48,7 @@ set(NYL_HEADERS
     "src/entity/entity_manager.h"
     "src/entity/player_entity.h"
     #component
+    "src/component/animation.h"
     "src/component/component.h"
     "src/component/collider.h"
     "src/component/physics.h"

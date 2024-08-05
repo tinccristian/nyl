@@ -131,9 +131,7 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     if (data)
     {
         NYL_CORE_INFO("Image width:{0}, height {1} loaded.", width, height);
-        // now generate texture
         texture->Generate(width, height, data);
-        // and finally free image data
         stbi_image_free(data);
     }
     else
@@ -144,4 +142,5 @@ TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool al
     }
     return texture;
 }
+
 }
