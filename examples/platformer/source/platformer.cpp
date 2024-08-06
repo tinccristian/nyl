@@ -10,9 +10,9 @@ namespace platformer
 
     std::shared_ptr<Entity> Player; 
     std::shared_ptr<Camera> camera;
+    std::shared_ptr<Entity> tilemapEntity;
     //std::shared_ptr<PlayerEntity> Player; 
     std::vector<std::shared_ptr<BoxCollider>> colliders;
-    std::unique_ptr<CameraSystem> cameraManager;
     std::unique_ptr<RenderSystem> Renderer;
     std::unique_ptr<RenderSystem> debugRenderer;
     std::unique_ptr<PhysicsSystem> physics;
@@ -56,8 +56,6 @@ namespace platformer
         //NYL_INFO("Player->getComponent<TransformComponent>()->position.x,y : {0}, {1} ", Player->getComponent<TransformComponent>()->position.x, Player->getComponent<TransformComponent>()->position.y);
 		physics->updatePhysics(deltaTime);
 
-		// Update camera
-		cameraManager->update(*Player);
 		// Process input
 		ProcessInput(deltaTime);
 
@@ -108,15 +106,20 @@ void platformer::Render(float deltaTime)
         break;
     }
 
-    Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
+    auto tilemapComponent = tilemapEntity->getComponent<TilemapComponent>();
+    auto tilemapTransform = tilemapEntity->getComponent<TransformComponent>();
+    if (tilemapComponent && tilemapTransform) {
+        Renderer->DrawTilemap(*tilemapComponent, tilemapTransform->position);
+    }
+    //Renderer->DrawSprite(*background, glm::vec2(0.0f,0.0f),glm::vec2(this->m_width, this->m_height));
 
-    // Draw clouds
-    TextureComponent* cloud = ResourceManager::GetTexture("cloud");
-    Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
-    Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
-    Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
-    Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
-    Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
+    //// Draw clouds
+    //TextureComponent* cloud = ResourceManager::GetTexture("cloud");
+    //Renderer->DrawSprite(*cloud, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
+    //Renderer->DrawSprite(*cloud, glm::vec2(250.0f, 15.0f), glm::vec2(100.0f, 100.0f));
+    //Renderer->DrawSprite(*cloud, glm::vec2(454.0f,32.0f), glm::vec2(100.0f, 100.0f));
+    //Renderer->DrawSprite(*cloud, glm::vec2(790.0f,80.0f), glm::vec2(100.0f, 100.0f));
+    //Renderer->DrawSprite(*cloud, glm::vec2(1100.0f, 150.0f), glm::vec2(100.0f, 100.0f));
 
     //Draw player
     Renderer->DrawEntity(*Player, deltaTime);
@@ -131,6 +134,7 @@ void platformer::Render(float deltaTime)
             resourcePath + "backgrounds/lv2.png",
             resourcePath + "characters/chikboy_trim.png",// should be moved engine side as default texture (game.h)
             resourcePath + "backgrounds/cloud.png"
+            //resourcePath + "backgrounds/tilemap.png"
         };
 
         for (const std::string& path : texturePaths) {
@@ -144,13 +148,56 @@ void platformer::Render(float deltaTime)
         ResourceManager::LoadTexture(characterText.c_str(), true, "chikboy_idle_10");
         std::string characterTex = resourcePath + "characters/chikboy_run_10.png";
         ResourceManager::LoadTexture(characterTex.c_str(), true, "chikboy_run_10");
+        std::string tmTex = resourcePath + "backgrounds/tilemap.png";
+        ResourceManager::LoadTexture(tmTex.c_str(), true, "tilemap");
+        ////////////////////////////////////
+        tilemapEntity = std::make_shared<Entity>();
+        auto tilemapTexture = ResourceManager::GetTexture("tilemap");
+        //auto tilemapComponent = std::make_shared<TilemapComponent>(10, 10, 32, 32, tilemapTexture);
+
+        auto tilemapComponent = ResourceManager::loadTilemapFromFile(resourcePath + "levels/level1.txt", 32, 32, tilemapTexture);
+
+        if (tilemapComponent) {
+            tilemapEntity->addComponent<TilemapComponent>(*tilemapComponent);
+            tilemapEntity->addComponent<TransformComponent>(
+                0.0f, 0.0f, 0, 1.0f, 1.0f,
+                tilemapComponent->mapWidth * tilemapComponent->tileWidth,
+                tilemapComponent->mapHeight * tilemapComponent->tileHeight
+            );
+        }
+        //// Set up the tilemap with a checkered pattern alternating between 3 colors
+        //for (int y = 0; y < tilemapComponent->mapHeight; ++y) {
+        //    for (int x = 0; x < tilemapComponent->mapWidth; ++x) {
+        //        // Calculate the tile ID based on the position
+        //        int colorIndex = (x / 32 + y / 32) % 3;
+        //        switch (colorIndex) {
+        //        case 0:
+        //            tilemapComponent->setTile(x, y, 0);  // blue
+        //            break;
+        //        case 1:
+        //            tilemapComponent->setTile(x, y, 1);  // orange
+        //            break;
+        //        case 2:
+        //            tilemapComponent->setTile(x, y, 2);  // white
+        //            break;
+        //        }
+        //    }
+        //}
+
+        //// Add components to entity
+        //tilemapEntity->addComponent<TilemapComponent>(*tilemapComponent);
+        //tilemapEntity->addComponent<TransformComponent>(
+        //    0.0f, 0.0f, 0, 1.0f, 1.0f,
+        //    tilemapComponent->mapWidth * tilemapComponent->tileWidth,
+        //    tilemapComponent->mapHeight * tilemapComponent->tileHeight
+        //);
     }
     void platformer::ConfigurePlayer()
     {
-        camera = std::make_shared<Camera>(0, 0, 800, 600, 0.5f);
+        camera = std::make_shared<Camera>(0, 0, 1200, 800, 0.5f);
         // Configure the player
-        float sizeY = 32.0f;
-        float sizeX = 32.0f;
+        float sizeY = 64.0f;
+        float sizeX = 64.0f;
 
         // Create the Player entity
         Player = std::make_shared<Entity>();
@@ -209,7 +256,6 @@ void platformer::Render(float deltaTime)
             ShaderComponent* debugShader = ResourceManager::GetShader("debug");
             debugRenderer = std::make_unique<RenderSystem>(*debugShader,this->m_width,this->m_height);
 
-            cameraManager = std::make_unique<CameraSystem>(Player->getComponent<Camera>());
             physics = std::make_unique<PhysicsSystem>();
             // add player entity to physics system
             physics->addEntity(*Player);
@@ -265,15 +311,46 @@ void platformer::Render(float deltaTime)
 
         if (!joystick->isPresent()) 
         {
-            NYL_TRACE("Joystick not present");
+            //NYL_TRACE("Joystick not present");
             return;
         }
 
         auto moveX = joystick->axesState(0);
+        auto RSmoveY = joystick->axesState(3);
+        auto RSmoveX = joystick->axesState(2);
         auto jumpButton = joystick->buttonState(GLFW_JOYSTICK_BTN_DOWN) || joystick->buttonState(GLFW_JOYSTICK_BTN_LEFT);
+        bool lockButton = joystick->buttonState(GLFW_JOYSTICK_BTN_RIGHT) || joystick->buttonState(GLFW_JOYSTICK_BTN_UP);
+        auto zoomOut = joystick->axesState(4);//LT
+        auto zoomIn = joystick->axesState(5);//RT
 
+        auto m_camera = Player->getComponent<Camera>();
         auto animatedComponent = Player->getComponent<AnimatedComponent>();
+        if (lockButton) {
+            //lock camera
+            m_camera->locked = !m_camera->locked;
+            NYL_INFO("locked");
 
+        }
+        if (zoomIn > 0.0f && m_camera->zoom>0.03f) {
+            m_camera->zoom -= zoomIn/100.0f;
+            NYL_INFO("zoom in : {0}", m_camera->zoom);
+        }
+        if (zoomOut > 0.0f && m_camera->zoom < 0.97f) {
+            m_camera->zoom += zoomOut/100.0f;
+            NYL_INFO("zoom out : {0}",m_camera->zoom);
+        }
+        if (std::abs(RSmoveY) > 0.3)
+        {
+            //move 
+            m_camera->position += glm::vec2(0, RSmoveY *5.0f);
+            NYL_INFO("x:{0},y:{1}",m_camera->position.x, m_camera->position.y);
+        }
+        if (std::abs(RSmoveX) > 0.3)
+        {
+            //move 
+            m_camera->position += glm::vec2(RSmoveX * 5.0f,0);
+            NYL_INFO("x:{0},y:{1}",m_camera->position.x, m_camera->position.y);
+        }
         if (std::abs(moveX) > 0.3)
         {
             Player->getComponent<PhysicsComponent>()->velocity.x = (moveX > 0) ? speed : (moveX < 0) ? -speed : 0;

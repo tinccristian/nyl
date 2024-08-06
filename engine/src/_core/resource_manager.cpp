@@ -115,7 +115,48 @@ ShaderComponent* ResourceManager::loadShaderFromFile(const char* vShaderFile, co
 
     return shader;
 }
+std::shared_ptr<TilemapComponent> ResourceManager::loadTilemapFromFile(const std::string& filename, int tileWidth, int tileHeight, TextureComponent* tilesetTexture) {
+    std::ifstream file(filename);
+    std::string line;
+    std::vector<std::vector<int>> tilemapData;
 
+    if (file.is_open()) {
+        while (std::getline(file, line)) {
+            std::vector<int> row;
+            std::stringstream ss(line);
+            std::string value;
+
+            while (std::getline(ss, value, ',')) {
+                row.push_back(std::stoi(value));
+            }
+
+            tilemapData.push_back(row);
+        }
+        file.close();
+    }
+    else {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return nullptr;
+    }
+
+    if (tilemapData.empty()) {
+        std::cerr << "Tilemap data is empty" << std::endl;
+        return nullptr;
+    }
+
+    int mapHeight = tilemapData.size();
+    int mapWidth = tilemapData[0].size();
+    NYL_CORE_INFO("Loaded tilemap {0} by {1} ",mapWidth,mapHeight);
+    auto tilemapComponent = std::make_shared<TilemapComponent>(mapWidth, mapHeight, tileWidth, tileHeight, tilesetTexture);
+
+    for (int y = 0; y < mapHeight; ++y) {
+        for (int x = 0; x < mapWidth; ++x) {
+            tilemapComponent->setTile(x, y, tilemapData[y][x]);
+        }
+    }
+
+    return tilemapComponent;
+}
 TextureComponent* ResourceManager::loadTextureFromFile(const char* file, bool alpha)
 {
     // create texture object

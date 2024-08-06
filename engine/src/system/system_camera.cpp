@@ -21,8 +21,8 @@ namespace nyl
             return;
         }
         
-        camera->position.x = transform->position.x;
-        camera->position.y = transform->position.y;
+        //camera->position.x = transform->position.x;
+        //camera->position.y = transform->position.y;
 
         this->CheckGLError();
     }

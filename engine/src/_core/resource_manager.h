@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "system_shader.h"
 #include "animation.h"
+#include "tilemap.h"
 
 #include "core.h"
 
@@ -35,6 +36,7 @@ class NYL_API ResourceManager
         static ShaderComponent* GetShader(std::string name);
         static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name);
         static TextureComponent* GetTexture(std::string name);
+        static std::shared_ptr<TilemapComponent> loadTilemapFromFile(const std::string& filename, int tileWidth, int tileHeight, TextureComponent* tilesetTexture);
         static void Clear();
     private:
         ResourceManager() { }

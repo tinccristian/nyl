@@ -1,12 +1,14 @@
-// In a new file, e.g., tilemap_component.h
 #pragma once
+
 #include <vector>
 #include <glm/glm.hpp>
+
 #include "texture.h"
+#include "component.h"
 
 namespace nyl
 {
-class TilemapComponent {
+class TilemapComponent: public Component {
 public:
     std::vector<std::vector<int>> tiles;
     int tileWidth;

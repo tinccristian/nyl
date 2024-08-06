@@ -109,7 +109,7 @@ void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
 
     auto transform = entity.getComponent<TransformComponent>();
     auto camera = entity.getComponent<Camera>();
-
+    camera->update(transform->position);
     std::shared_ptr<TextureComponent> texture = nullptr;
     Animation* currentAnimation = nullptr;
 
@@ -133,8 +133,8 @@ void RenderSystem::DrawEntity(const Entity& entity, float deltaTime)
     CheckGLError("After shader use");
 
     // calculate and set view matrix
-    camera->position.x = transform->position.x;
-    camera->position.y = transform->position.y;
+    //camera->position.x = transform->position.x;
+    //camera->position.y = transform->position.y;
     glm::mat4 view = glm::lookAt(
         glm::vec3(camera->position.x, camera->position.y, camera->zoom),
         glm::vec3(camera->position.x, camera->position.y, 0.0f),
@@ -210,25 +210,51 @@ bool nyl::RenderSystem::CheckRenderComponents(const Entity& entity)
     return true;
 }
 void RenderSystem::DrawTilemap(const TilemapComponent& tilemap, glm::vec2 position) {
+    auto texture = tilemap.tilesetTexture;
+    this->shader.use();
+
+    // Determine the number of tiles in the texture atlas
+    int tilesPerRow = texture->width / tilemap.tileWidth; // Assuming texture width is evenly divisible by tileWidth
+    int tilesPerColumn = texture->height / tilemap.tileHeight; // Assuming texture height is evenly divisible by tileHeight
+
     for (int y = 0; y < tilemap.mapHeight; ++y) {
         for (int x = 0; x < tilemap.mapWidth; ++x) {
             int tileId = tilemap.getTile(x, y);
-            if (tileId != -1) {  // -1 could represent an empty tile
-                float srcX = (tileId % 2) * tilemap.tileWidth;
-                float srcY = (tileId / 2) * tilemap.tileHeight;
 
-                glm::vec2 tilePos = position + glm::vec2(x * tilemap.tileWidth, y * tilemap.tileHeight);
-                glm::vec2 tileSize(tilemap.tileWidth, tilemap.tileHeight);
+            // Calculate the position of this tile in world space
+            glm::vec2 tilePos = position + glm::vec2(x * tilemap.tileWidth, y * tilemap.tileHeight);
 
-                this->shader.use();
-                this->shader.set_vec2f("texOffset", glm::vec2(srcX / tilemap.tilesetTexture->width, srcY / tilemap.tilesetTexture->height));
-                this->shader.set_vec2f("texScale", glm::vec2(tilemap.tileWidth / tilemap.tilesetTexture->width, tilemap.tileHeight / tilemap.tilesetTexture->height));
+            // Calculate the row and column of the tile in the texture atlas
+            int tileRow = tileId / tilesPerRow;
+            int tileCol = tileId % tilesPerRow;
 
-                DrawSprite(*tilemap.tilesetTexture, tilePos, tileSize, 0.0f, glm::vec3(1.0f));
-            }
+            // Calculate texture coordinates based on tile position in the atlas
+            float srcXStart = (float)tileCol / tilesPerRow;
+            float srcXEnd = (float)(tileCol + 1) / tilesPerRow;
+            float srcYStart = (float)tileRow / tilesPerColumn;
+            float srcYEnd = (float)(tileRow + 1) / tilesPerColumn;
+
+            // Set up the model matrix for this tile
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(tilePos, 0.0f));
+            model = glm::scale(model, glm::vec3(tilemap.tileWidth, tilemap.tileHeight, 1.0f));
+
+            this->shader.use();
+            this->shader.set_mat4("model", model);
+            this->shader.set_vec2f("texOffset", glm::vec2(srcXStart, srcYStart));
+            this->shader.set_vec2f("texScale", glm::vec2(srcXEnd - srcXStart, srcYEnd - srcYStart));
+
+            glActiveTexture(GL_TEXTURE0);
+            texture->Bind();
+
+            // Draw this tile
+            glBindVertexArray(this->quadVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glBindVertexArray(0);
         }
     }
 }
+
 void RenderSystem::DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
     this->shader.use();
