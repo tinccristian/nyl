@@ -25,5 +25,12 @@
 #include "collider.h"
 #include "system_collider.h"
 
+// events
+#include "input.h"
+#include "event_system/Event.h"
+#include "event_system/KeyEvent.h"
+#include "event_system/MouseEvent.h"
+//#include "event_system/ApplicationEvent.h"
+
 // entry point
 #include "main.h"

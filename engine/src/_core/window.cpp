@@ -5,7 +5,9 @@
 #include <memory>
 
 #include "log.h"
+
 #include "KeyEvent.h"
+#include "MouseEvent.h"
 #include "input.h"
 Window::Window(int width, int height, const std::string& title)
     : window(nullptr), width(width), height(height), title(title) {
@@ -66,18 +68,9 @@ void Window::initializeGLFWwindow()
             return;
         }
 
-        // set the callback functions, should come from the APP, but for now engine specific 
+        // set the event callback functions
+        SetEventFunctionCallbacks();
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-            {
-                if (action == GLFW_PRESS)
-                {
-                    std::unique_ptr<nyl::KeyPressedEvent> event = std::make_unique<nyl::KeyPressedEvent>((KeyCode)key);
-                    nyl::EventDispatcher::AddEvent(std::move(event));
-                }
-            });
-        glfwSetCursorPosCallback(window, cursor_position_callback);
-        glfwSetMouseButtonCallback(window, mouse_button_callback);
 
         // set the window user pointer to the Window instance
         glfwSetWindowUserPointer(window, this);
@@ -89,21 +82,42 @@ void Window::initializeGLFWwindow()
         glfwGetVersion(&major, &minor, &revision);
         NYL_CORE_TRACE("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
 }
-void Window::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Window::SetEventFunctionCallbacks()
 {
-    if(action == GLFW_PRESS)
-    {
-        try
+    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
-            auto event = std::make_unique<nyl::KeyPressedEvent>(static_cast<KeyCode>(key));
+            if (action == GLFW_PRESS)
+            {
+                std::unique_ptr<nyl::KeyPressedEvent> event = std::make_unique<nyl::KeyPressedEvent>((KeyCode)key);
+                nyl::EventDispatcher::AddEvent(std::move(event));
+            }
+        });
+    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods)
+        {
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            if (action == GLFW_PRESS)
+            {
+                std::unique_ptr<nyl::MouseButtonPressedEvent> event = std::make_unique<nyl::MouseButtonPressedEvent>(button, (float)xpos, (float)ypos);
+                nyl::EventDispatcher::AddEvent(std::move(event));
+            }
+            else if (action == GLFW_RELEASE)
+            {
+                std::unique_ptr<nyl::MouseButtonReleasedEvent> event = std::make_unique<nyl::MouseButtonReleasedEvent>(button, (float)xpos, (float)ypos);
+                nyl::EventDispatcher::AddEvent(std::move(event));
+            }
+        });
+
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
+        {
+            std::unique_ptr<nyl::MouseMovedEvent> event = std::make_unique<nyl::MouseMovedEvent>((float)xpos, (float)ypos);
             nyl::EventDispatcher::AddEvent(std::move(event));
-        }
-        catch(const std::exception& e)
+        });
+    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset)
         {
-            // Log the error or handle it appropriately
-            NYL_CORE_ERROR("Error creating or dispatching key event: {0} ", e.what());
-        }
-    }
+            std::unique_ptr<nyl::MouseScrolledEvent> event = std::make_unique<nyl::MouseScrolledEvent>((float)xoffset, (float)yoffset);
+            nyl::EventDispatcher::AddEvent(std::move(event));
+        });
 }
  void Window::toggle_polygon_mode()
 {
@@ -122,56 +136,12 @@ void Window::KeyCallback(GLFWwindow* window, int key, int scancode, int action, 
         }
 }
 
-void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        toggle_polygon_mode();
-    if (key == GLFW_KEY_W && action == GLFW_PRESS)
-        NYL_CORE_WARN("going up");
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
-        NYL_CORE_WARN("going left");
-    if (key == GLFW_KEY_S && action == GLFW_PRESS)
-        NYL_CORE_WARN("going down");
-    if (key == GLFW_KEY_D && action == GLFW_PRESS)
-        NYL_CORE_WARN("going right");
-}
 
-void Window::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    // // Convert from GLFW coordinates to world coordinates
-    // Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
 
-    // double worldX = xpos - game->width / 2.0;
-    // double worldY = game->height - ypos - game->height / 2.0;
-
-    // NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    // //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
-}
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
 void Window::error_callback(int error, const char* description) {
     NYL_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-}
-
-void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        
-        NYL_CORE_INFO("Glfw coordinates - x: {0}, y: {1}", xpos, ypos);
-        // Get the Window instance from the GLFWwindow
-        Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
-
-        // Convert from GLFW coordinates to world coordinates
-        double worldX = xpos - win->width / 2.0;
-        double worldY = win->height - ypos - win->height / 2.0;
-
-        //NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    }
 }

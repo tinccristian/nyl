@@ -22,6 +22,8 @@ namespace platformer
 		virtual void Render(float deltaTime) override;
 		virtual void Quit() override;
 		virtual void ProcessInput(float deltaTime) override;
+		void HandleCameraInput();
+		void ProcessDbgInput();
 		void LoadResources();
 		void ConfigurePlayer();
 		void CreateColliders();

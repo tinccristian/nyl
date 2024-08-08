@@ -14,6 +14,8 @@ namespace nyl {
 
 		float GetX() const { return m_MouseX; }
 		float GetY() const { return m_MouseY; }
+		static EventType GetStaticEventType() { return EventType::MouseMoved; }
+
 
 	private:
 		float m_MouseX, m_MouseY;
@@ -27,27 +29,38 @@ namespace nyl {
 
 		float GetXOffset() const { return m_XOffset; }
 		float GetYOffset() const { return m_YOffset; }
+		static EventType GetStaticEventType() { return EventType::MouseScrolled; }
 
 	private:
 		float m_XOffset, m_YOffset;
 	};
 
-    class MouseButtonPressedEvent : public Event
-    {
-    public:
-		MouseButtonPressedEvent(const MouseCode button) : Event(EventType::MouseButtonPressed), m_Button(button) {}
-        MouseCode GetMouseButton() const { return m_Button; }
-    private:
-        MouseCode m_Button;
-    };
+	class MouseButtonPressedEvent : public Event
+	{
+	public:
+		MouseButtonPressedEvent(const MouseCode button, const float x, const float y)
+			: Event(EventType::MouseButtonPressed), m_Button(button), m_X(x), m_Y(y) {}
+		MouseCode GetMouseButton() const { return m_Button; }
+		float GetX() const { return m_X; }
+		float GetY() const { return m_Y; }
+		static EventType GetStaticEventType() { return EventType::MouseButtonPressed; }
+	private:
+		MouseCode m_Button;
+		float m_X, m_Y;
+	};
 
-    class MouseButtonReleasedEvent : public Event
-    {
-    public:
-        MouseButtonReleasedEvent(const MouseCode button) : Event(EventType::MouseButtonReleased), m_Button(button) {}
-        MouseCode GetMouseButton() const { return m_Button; }
-    private:
-        MouseCode m_Button;
-    };
+	class MouseButtonReleasedEvent : public Event
+	{
+	public:
+		MouseButtonReleasedEvent(const MouseCode button, const float x, const float y)
+			: Event(EventType::MouseButtonReleased), m_Button(button), m_X(x), m_Y(y) {}
+		MouseCode GetMouseButton() const { return m_Button; }
+		float GetX() const { return m_X; }
+		float GetY() const { return m_Y; }
+		static EventType GetStaticEventType() { return EventType::MouseButtonReleased; }
+	private:
+		MouseCode m_Button;
+		float m_X, m_Y;
+	};
 
 }

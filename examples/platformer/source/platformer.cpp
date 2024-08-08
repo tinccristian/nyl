@@ -57,6 +57,8 @@ namespace platformer
 		physics->updatePhysics(deltaTime);
 
 		// Process input
+        ProcessDbgInput();
+        HandleCameraInput();
 		ProcessInput(deltaTime);
 
 		// Update collider
@@ -299,7 +301,81 @@ void platformer::Render(float deltaTime)
 			break;
 		}
 	}
+    void platformer::ProcessDbgInput()
+    {
+        EventDispatcher::DispatchEvent<KeyPressedEvent>([](Event* event) -> bool {
+            KeyPressedEvent* keyEvent = (KeyPressedEvent*)event;
+            if (keyEvent->GetKeyCode() == KeyCode::W)
+                NYL_CORE_WARN("going upa");
+            if (keyEvent->GetKeyCode() == KeyCode::A)
+                NYL_CORE_WARN("going lefta");
+            if (keyEvent->GetKeyCode() == KeyCode::S)
+                NYL_CORE_WARN("going downa");
+            if (keyEvent->GetKeyCode() == KeyCode::D)
+                NYL_CORE_WARN("going righta");
+            return true;
+            });
+    }
+    void platformer::HandleCameraInput()
+    {
+        static bool isDragging = false;
+        static float lastX = 0.0f, lastY = 0.0f;
+        auto m_camera = Player->getComponent<Camera>();
 
+        EventDispatcher::DispatchEvent<MouseButtonPressedEvent>([&](Event* event) -> bool {
+            MouseButtonPressedEvent* mouseEvent = static_cast<MouseButtonPressedEvent*>(event);
+            if (mouseEvent->GetMouseButton() == MouseCode::ButtonLeft)
+            {
+                isDragging = true;
+                lastX = mouseEvent->GetX();
+                lastY = mouseEvent->GetY();
+            }
+            return true;
+            });
+
+        EventDispatcher::DispatchEvent<MouseButtonReleasedEvent>([&](Event* event) -> bool {
+            MouseButtonReleasedEvent* mouseEvent = static_cast<MouseButtonReleasedEvent*>(event);
+            if (mouseEvent->GetMouseButton() == MouseCode::ButtonLeft)
+            {
+                isDragging = false;
+            }
+            return true;
+            });
+
+        EventDispatcher::DispatchEvent<MouseMovedEvent>([&](Event* event) -> bool {
+            MouseMovedEvent* mouseEvent = static_cast<MouseMovedEvent*>(event);
+            float currentX = mouseEvent->GetX();
+            float currentY = mouseEvent->GetY();
+
+            if (isDragging && !m_camera->locked)
+            {
+                float deltaX = currentX - lastX;
+                float deltaY = currentY - lastY;
+
+                // Adjust these values to control the camera movement speed
+                float cameraSpeed = 0.1f;
+                m_camera->position.x -= deltaX * cameraSpeed / m_camera->zoom;
+                m_camera->position.y += deltaY * cameraSpeed / m_camera->zoom;
+
+                lastX = currentX;
+                lastY = currentY;
+            }
+            return true;
+            });
+
+        EventDispatcher::DispatchEvent<MouseScrolledEvent>([&](Event* event) -> bool {
+            MouseScrolledEvent* mouseEvent = static_cast<MouseScrolledEvent*>(event);
+            float zoomSpeed = 0.1f;
+            m_camera->zoom += mouseEvent->GetYOffset() * zoomSpeed;
+
+            // Ensure zoom doesn't go below a minimum value
+            if (m_camera->zoom < 0.1f) m_camera->zoom = 0.1f;
+
+            return true;
+            });
+
+        m_camera->CheckGLError();
+    }
     void platformer::ProcessInput(float deltaTime)
     {
         float speed = 200.0f;

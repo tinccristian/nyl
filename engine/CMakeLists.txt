@@ -51,7 +51,7 @@ set(NYL_HEADERS
     "src/entity/entity_manager.h"
     "src/entity/player_entity.h"
     #event system
-    "src/event_system/ApplicationEvent.h"
+    #"src/event_system/ApplicationEvent.h"
     "src/event_system/Event.h"
     "src/event_system/KeyEvent.h"
     "src/event_system/MouseEvent.h"
@@ -96,12 +96,11 @@ target_include_directories(nyl PRIVATE
     thirdparty/imgui/
     thirdparty/imgui/backends/
     src/
-    src/component
     src/_core/
     src/entity/
     src/component/
     src/system/
-    src/event_system
+    src/event_system/
 )
 include_directories(${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)

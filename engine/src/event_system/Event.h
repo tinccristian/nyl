@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 #include "utils.h"
-
+#include "core.h"
 
 namespace nyl
 {
@@ -20,7 +20,7 @@ namespace nyl
  
 
 
-    class Event
+    class NYL_API Event
     {
     public:
 		Event(EventType eventType) : staticType(eventType) {};
@@ -33,7 +33,7 @@ namespace nyl
     };
 
 
-    class EventDispatcher
+    class NYL_API EventDispatcher
 	{
 	public:
 		static void AddEvent(std::unique_ptr<Event> event) { listEvent.push_back(std::move(event)); }

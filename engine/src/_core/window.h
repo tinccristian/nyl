@@ -25,11 +25,8 @@ private:
     // static function for toggling polygon mode
     static void toggle_polygon_mode();
     // static callback functions
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+    void SetEventFunctionCallbacks();
+
     static void framebuffer_size_callback(GLFWwindow*, int width, int height);
     static void error_callback(int error, const char* description);
-    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-    //utils
-    void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
