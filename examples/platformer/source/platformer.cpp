@@ -153,9 +153,9 @@ void platformer::Render(float deltaTime)
         ////////////////////////////////////
         tilemapEntity = std::make_shared<Entity>();
         auto tilemapTexture = ResourceManager::GetTexture("tilemap");
-        //auto tilemapComponent = std::make_shared<TilemapComponent>(10, 10, 32, 32, tilemapTexture);
-
-        auto tilemapComponent = ResourceManager::loadTilemapFromFile(resourcePath + "levels/level1.txt", 32, 32, tilemapTexture);
+        auto tilemapComponent = std::make_shared<TilemapComponent>(10, 10, 32, 32, tilemapTexture);
+        tilemapComponent->setTile(0, 0, 0);
+        //auto tilemapComponent = ResourceManager::loadTilemapFromFile(resourcePath + "levels/level1.txt", 32, 32, tilemapTexture);
 
         if (tilemapComponent) {
             tilemapEntity->addComponent<TilemapComponent>(*tilemapComponent);
