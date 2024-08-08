@@ -1,10 +1,12 @@
 #include "window.h"
 
-#include "log.h"
-
-
 #include <glm/glm.hpp>
 
+#include <memory>
+
+#include "log.h"
+#include "KeyEvent.h"
+#include "input.h"
 Window::Window(int width, int height, const std::string& title)
     : window(nullptr), width(width), height(height), title(title) {
     initializeGLFWwindow();
@@ -66,7 +68,14 @@ void Window::initializeGLFWwindow()
 
         // set the callback functions, should come from the APP, but for now engine specific 
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        glfwSetKeyCallback(window, key_callback);
+        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+            {
+                if (action == GLFW_PRESS)
+                {
+                    std::unique_ptr<nyl::KeyPressedEvent> event = std::make_unique<nyl::KeyPressedEvent>((KeyCode)key);
+                    nyl::EventDispatcher::AddEvent(std::move(event));
+                }
+            });
         glfwSetCursorPosCallback(window, cursor_position_callback);
         glfwSetMouseButtonCallback(window, mouse_button_callback);
 
@@ -80,7 +89,22 @@ void Window::initializeGLFWwindow()
         glfwGetVersion(&major, &minor, &revision);
         NYL_CORE_TRACE("GLFW Runtime ver: {0} {1} {2}", major, minor, revision);
 }
-
+void Window::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if(action == GLFW_PRESS)
+    {
+        try
+        {
+            auto event = std::make_unique<nyl::KeyPressedEvent>(static_cast<KeyCode>(key));
+            nyl::EventDispatcher::AddEvent(std::move(event));
+        }
+        catch(const std::exception& e)
+        {
+            // Log the error or handle it appropriately
+            NYL_CORE_ERROR("Error creating or dispatching key event: {0} ", e.what());
+        }
+    }
+}
  void Window::toggle_polygon_mode()
 {
         GLint polygonMode[2];

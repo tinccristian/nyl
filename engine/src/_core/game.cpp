@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "resource_manager.h"
 #include "system_renderer.h"
+#include "KeyEvent.h"
 
 namespace nyl
 {
@@ -99,7 +100,20 @@ namespace nyl
 
             Render(deltaTime);
 
+            // events
             glfwPollEvents();
+            EventDispatcher::DispatchEvent<KeyPressedEvent>([](Event* event) -> bool {
+                KeyPressedEvent *keyEvent = (KeyPressedEvent*)event;
+                if (keyEvent->GetKeyCode() == GLFW_KEY_W)
+                    NYL_CORE_WARN("going up");
+                if (keyEvent->GetKeyCode() == GLFW_KEY_A)
+                    NYL_CORE_WARN("going left");
+                if (keyEvent->GetKeyCode() == GLFW_KEY_S)
+                    NYL_CORE_WARN("going down");
+                if (keyEvent->GetKeyCode() == GLFW_KEY_D)
+                    NYL_CORE_WARN("going right");
+                return true;
+            });
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
