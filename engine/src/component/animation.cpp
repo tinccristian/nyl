@@ -57,10 +57,10 @@ namespace nyl
         return nullptr;
     }
 
-    std::shared_ptr<TextureComponent> AnimatedComponent::GetCurrentTexture()
+    TextureComponent* AnimatedComponent::GetCurrentTexture()
     {
         Animation* currentAnimation = GetCurrentAnimation();
-        return currentAnimation ? std::shared_ptr<TextureComponent>(currentAnimation->texture) : nullptr;
+        return currentAnimation ? currentAnimation->texture : nullptr;
     }
 
 }

@@ -9,6 +9,9 @@
 #include "utils.h"
 #include "resource_manager.h"
 #include "system_renderer.h"
+#include "component_registry.h"
+#include "input.h"
+#include "audio.h"
 
 namespace nyl
 {
@@ -21,6 +24,7 @@ namespace nyl
 
     Game::~Game()
     {
+        AudioEngine::Shutdown();
         ResourceManager::Clear();
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -50,11 +54,20 @@ namespace nyl
     void Game::init()
     {
         NYL_CORE_INFO("init");
+        // register engine component types so the registry / serialization /
+        // editor can introspect them
+        ComponentRegistry::RegisterBuiltins();
+        // wire up keyboard/mouse input polling
+        Input::Init(window.getGLFWwindow());
+        // audio (tolerant of headless / no-device environments)
+        AudioEngine::Init();
         setupImGui();
         configureOpenGL();
         // load default shaders
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/sprite.vert").c_str(), getFullPath("../../resources/shaders/sprite.frag").c_str(), nullptr, "sprite");
         ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
+        // batched sprite renderer shader
+        ResourceManager::LoadShader(getFullPath("../../resources/shaders/batch.vert").c_str(), getFullPath("../../resources/shaders/batch.frag").c_str(), nullptr, "batch");
         
         // configure shaders
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);
@@ -81,16 +94,40 @@ namespace nyl
     {
         init();
         const float targetFrameTime = 1.0f / targetFPS;
+        // largest delta time we will ever report to a frame; prevents the
+        // first-frame spike (lastFrame == 0) and post-stall explosions from
+        // launching the simulation.
+        const float maxDeltaTime = 0.05f; // 20 FPS floor
+        // fixed timestep for physics/collision (framerate-independent)
+        const float fixedDeltaTime = 1.0f / 120.0f;
+        float physicsAccumulator = 0.0f;
         int frameCount = 0;
-        float totalTime, frameTime, sleepTime, frameStart = 0.0f;
-        
+        float totalTime = 0.0f, frameTime = 0.0f, sleepTime = 0.0f, frameStart = 0.0f;
+
         while (!window.shouldClose())
         {
             frameStart = glfwGetTime();
 
-            // get delta time
+            // get delta time (clamped so a long pause can't blow up physics)
             deltaTime = frameStart - lastFrame;
             lastFrame = frameStart;
+            if (deltaTime > maxDeltaTime) { deltaTime = maxDeltaTime; }
+            if (deltaTime < 0.0f) { deltaTime = 0.0f; }
+
+            // input first: snapshot previous state, then pump events
+            Input::Update();
+            glfwPollEvents();
+
+            // engine now drives the full per-frame contract
+            ProcessInput(deltaTime);
+
+            // fixed-timestep simulation (physics/collision)
+            physicsAccumulator += deltaTime;
+            while (physicsAccumulator >= fixedDeltaTime)
+            {
+                FixedUpdate(fixedDeltaTime);
+                physicsAccumulator -= fixedDeltaTime;
+            }
 
             Update(deltaTime);
 
@@ -99,11 +136,11 @@ namespace nyl
 
             Render(deltaTime);
 
-            glfwPollEvents();
+            // ImGui frame — content is owned by the app/editor via OnImGui()
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
-            ImGui::ShowMetricsWindow();
+            OnImGui(deltaTime);
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             glfwSwapBuffers(window.getGLFWwindow());

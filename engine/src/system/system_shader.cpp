@@ -1,19 +1,9 @@
 #include "system_shader.h"
 
-#include <glad/glad.h>
-#include <glm/ext/matrix_float4x4.hpp>
-#include <glm/gtc/type_ptr.hpp>
+// ShaderSystem is currently a thin placeholder: shader binding happens through
+// ShaderComponent::use() at draw time. Kept as a registered system anchor for
+// future shader-management work.
 
-ShaderSystem::ShaderSystem() {}
-
-
-
-void ShaderSystem::update() {
-    for (Entity& entity : entities) {
-        if (entity.hasComponent<ShaderComponent>()) {
-            auto shaderComponent = entity.getComponent<ShaderComponent>();
-            // Use the shader
-            glUseProgram(shaderComponent->ID);
-        }
-    }
+namespace nyl
+{
 }

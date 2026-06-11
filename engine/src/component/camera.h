@@ -12,10 +12,16 @@ namespace nyl
      */
     class NYL_API Camera : public Component {
     public:
-        float x, y;
-        float width, height;
-        float zoom; 
-        glm::vec2 position;
+        float x = 0.0f, y = 0.0f;
+        float width = 0.0f, height = 0.0f;
+        float zoom = 1.0f;
+        glm::vec2 position{ 0.0f };
+
+        /**
+         * @brief Default constructor (needed for component-pool / editor storage).
+         */
+        Camera() = default;
+
         /**
          * @brief Constructs a new Camera object.
          * 

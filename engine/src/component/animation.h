@@ -16,7 +16,7 @@ namespace nyl
         void Update(float deltaTime);
 
         std::string name;
-        std::shared_ptr<TextureComponent> texture;
+        TextureComponent* texture; ///< Non-owning; the texture is owned by ResourceManager.
         unsigned int frameWidth;
         unsigned int frameHeight;
         unsigned int frameCount;
@@ -33,7 +33,7 @@ namespace nyl
         void SetCurrentAnimation(const std::string& name);
         void Update(float deltaTime);
         Animation* GetCurrentAnimation();
-        std::shared_ptr<TextureComponent> GetCurrentTexture();
+        TextureComponent* GetCurrentTexture(); ///< Non-owning.
 
     private:
         std::unordered_map<std::string, Animation> animations;

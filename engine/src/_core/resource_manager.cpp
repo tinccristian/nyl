@@ -16,6 +16,26 @@ namespace nyl {
 std::map<std::string, ShaderComponent*> ResourceManager::Shaders;
 std::map<std::string, TextureComponent*> ResourceManager::Textures;
 ShaderSystem* ResourceManager::shaderSystem = nullptr;
+std::string ResourceManager::s_ResourceRoot;
+
+void ResourceManager::SetResourceRoot(const std::string& path)
+{
+    s_ResourceRoot = path;
+}
+
+const std::string& ResourceManager::GetResourceRoot()
+{
+    return s_ResourceRoot;
+}
+
+std::string ResourceManager::ResolvePath(const std::string& relative)
+{
+    if (s_ResourceRoot.empty()) return relative;
+    // treat already-absolute paths as-is (drive letter or leading slash)
+    if (relative.size() > 1 && (relative[1] == ':' || relative[0] == '/' || relative[0] == '\\'))
+        return relative;
+    return s_ResourceRoot + "/" + relative;
+}
 
 
 ShaderComponent* ResourceManager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name)
@@ -27,11 +47,13 @@ ShaderComponent* ResourceManager::LoadShader(const char* vShaderFile, const char
 
 ShaderComponent* ResourceManager::GetShader(std::string name)
 {
-    if (Shaders.find(name) == Shaders.end())
+    auto iter = Shaders.find(name);
+    if (iter == Shaders.end())
     {
         NYL_CORE_ERROR("Shader {0} not found.", name);
+        return nullptr;
     }
-    return Shaders[name];
+    return iter->second;
 }
 
 TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std::string name)
@@ -42,11 +64,27 @@ TextureComponent* ResourceManager::LoadTexture(const char* file, bool alpha, std
 
 TextureComponent* ResourceManager::GetTexture(std::string name)
 {
-    if (Textures.find(name) == Textures.end())
+    auto iter = Textures.find(name);
+    if (iter == Textures.end())
     {
         NYL_CORE_ERROR("Texture {0} not found.", name);
+        return nullptr;
     }
-    return Textures[name];
+    return iter->second;
+}
+
+TextureComponent* ResourceManager::GetWhiteTexture()
+{
+    auto iter = Textures.find("__white");
+    if (iter != Textures.end()) return iter->second;
+
+    unsigned char px[4] = { 255, 255, 255, 255 };
+    TextureComponent* tex = new TextureComponent();
+    tex->object_format = GL_RGBA;
+    tex->image_format = GL_RGBA;
+    tex->Generate(1, 1, px);
+    Textures["__white"] = tex;
+    return tex;
 }
 
 void ResourceManager::Clear()

@@ -21,6 +21,7 @@ target_include_directories(platformer PRIVATE
     ${PROJECT_SOURCE_DIR}/engine/thirdparty/spdlog/include/
     ${PROJECT_SOURCE_DIR}/engine/thirdparty/imgui/
     ${PROJECT_SOURCE_DIR}/engine/thirdparty/imgui/backends/
+    ${PROJECT_SOURCE_DIR}/engine/thirdparty/json/
 )
 
 # Compile definitions

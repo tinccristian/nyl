@@ -41,6 +41,11 @@ namespace nyl
         virtual void Render(float deltaTime) = 0;
         virtual void ProcessInput(float deltaTime) = 0;
         virtual void Quit() = 0;
+        // fixed-rate step for physics/collision; called 0..N times per frame via
+        // an accumulator so simulation is framerate-independent (default no-op)
+        virtual void FixedUpdate(float fixedDeltaTime) {}
+        // optional per-frame ImGui hook (app/editor owns its UI; default no-op)
+        virtual void OnImGui(float deltaTime) {}
 
         // utils
         static float getDeltaTime() { return deltaTime; }

@@ -2,7 +2,6 @@
 #pragma once
 
 #include "core.h"
-#include "entity.h"
 
 /**
  * @class Component

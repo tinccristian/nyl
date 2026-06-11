@@ -3,22 +3,13 @@
 #include "log.h"
 using namespace nyl;
 
-void ColliderSystem::update() {
-    for (Entity& entity : entities) {
-        auto boxCollider = entity.getComponent<BoxCollider>();
-        auto transform = entity.getComponent<TransformComponent>();
-        if (!boxCollider) {
-            NYL_ERROR("Entity is missing BoxCollider component");
-            continue;
-        }
-        if (!transform) {
-            NYL_ERROR("Entity is missing TransformComponent");
-            continue;
-        }
-        // Update the collider's min and max based on the entity's position and size...
-        boxCollider->min = transform->min;
-        boxCollider->max = transform->max;
-    }
+void ColliderSystem::update(Scene& scene) {
+    scene.forEach<BoxCollider, TransformComponent>(
+        [](EntityID, BoxCollider& collider, TransformComponent& transform) {
+            // keep the collider's AABB in sync with the entity's transform
+            collider.min = transform.min;
+            collider.max = transform.max;
+        });
 }
 
 std::optional<CollisionInfo> ColliderSystem::isColliding(const BoxCollider& a, const BoxCollider& b) const {

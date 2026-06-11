@@ -10,6 +10,7 @@ namespace nyl
     void Log::Init()
     {
         spdlog::set_pattern("%^[%T] %n: %v%$");    //https://github.com/gabime/spdlog/wiki/3.-Custom-formatting
+        spdlog::flush_on(spdlog::level::trace);    // flush every message (reliable logs on crash)
 
         if (!s_CoreLogger)
         {

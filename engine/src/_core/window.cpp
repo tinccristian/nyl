@@ -1,7 +1,7 @@
 #include "window.h"
 
 #include "log.h"
-
+#include "input.h"
 
 #include <glm/glm.hpp>
 
@@ -64,11 +64,12 @@ void Window::initializeGLFWwindow()
             return;
         }
 
-        // set the callback functions, should come from the APP, but for now engine specific 
+        // set the callback functions, should come from the APP, but for now engine specific
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetKeyCallback(window, key_callback);
         glfwSetCursorPosCallback(window, cursor_position_callback);
         glfwSetMouseButtonCallback(window, mouse_button_callback);
+        glfwSetScrollCallback(window, scroll_callback);
 
         // set the window user pointer to the Window instance
         glfwSetWindowUserPointer(window, this);
@@ -100,30 +101,19 @@ void Window::initializeGLFWwindow()
 
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) //press key events
 {
+    // engine-level shortcuts only; gameplay keys are queried via nyl::Input
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        toggle_polygon_mode();
-    if (key == GLFW_KEY_W && action == GLFW_PRESS)
-        NYL_CORE_WARN("going up");
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
-        NYL_CORE_WARN("going left");
-    if (key == GLFW_KEY_S && action == GLFW_PRESS)
-        NYL_CORE_WARN("going down");
-    if (key == GLFW_KEY_D && action == GLFW_PRESS)
-        NYL_CORE_WARN("going right");
+    if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+        toggle_polygon_mode(); // debug wireframe toggle
+
+    // feed the input system
+    nyl::Input::OnKey(key, scancode, action, mods);
 }
 
 void Window::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    // // Convert from GLFW coordinates to world coordinates
-    // Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-
-    // double worldX = xpos - game->width / 2.0;
-    // double worldY = game->height - ypos - game->height / 2.0;
-
-    // NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    // //NYL_CORE_INFO("x: {0}, y: {1}", xpos, ypos);
+    nyl::Input::OnCursorPos(xpos, ypos);
 }
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -135,19 +125,10 @@ void Window::error_callback(int error, const char* description) {
 
 void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        
-        NYL_CORE_INFO("Glfw coordinates - x: {0}, y: {1}", xpos, ypos);
-        // Get the Window instance from the GLFWwindow
-        Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    nyl::Input::OnMouseButton(button, action, mods);
+}
 
-        // Convert from GLFW coordinates to world coordinates
-        double worldX = xpos - win->width / 2.0;
-        double worldY = win->height - ypos - win->height / 2.0;
-
-        //NYL_CORE_INFO("World coordinates - x: {0}, y: {1}", worldX, worldY);
-    }
+void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    nyl::Input::OnScroll(xoffset, yoffset);
 }

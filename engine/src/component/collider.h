@@ -20,30 +20,45 @@ namespace nyl
         bool isColliding=false;
 
         /**
-         * @brief Construct a new BoxCollider object from two points.
-         * 
-         * @param min The bottom-left corner of the box.
-         * @param max The top-right corner of the box.
-         * @param flag The flag of the collider.
+         * @brief Default constructor (needed for component-pool storage).
          */
-        BoxCollider(const glm::vec2& bottomLeft, const glm::vec2& topRight, std::string flag = "default")
-        : min(bottomLeft.x, topRight.y), max(topRight.x, bottomLeft.y), flag(flag) {}
+        BoxCollider() : min(0.0f), max(0.0f), flag("default") {}
 
         /**
-         * @brief Get the position of the collider.
-         * 
-         * @return The position of the collider, which is the same as the minimum vector.
+         * @brief Construct a new BoxCollider object from two corner points.
+         *
+         * The corners may be given in any order: the collider always stores a
+         * true axis-aligned bounding box, where `min` is the component-wise
+         * minimum and `max` is the component-wise maximum of the two corners.
+         *
+         * @param cornerA One corner of the box.
+         * @param cornerB The opposite corner of the box.
+         * @param flag The flag of the collider.
          */
-        glm::vec2 getPosition() {
+        BoxCollider(const glm::vec2& cornerA, const glm::vec2& cornerB, std::string flag = "default")
+        : min(glm::min(cornerA, cornerB)), max(glm::max(cornerA, cornerB)), flag(flag) {}
+
+        /**
+         * @brief Get the minimum (bottom-left) corner of the collider.
+         */
+        glm::vec2 getMin() const { return min; }
+
+        /**
+         * @brief Get the maximum (top-right) corner of the collider.
+         */
+        glm::vec2 getMax() const { return max; }
+
+        /**
+         * @brief Get the position of the collider (its minimum corner).
+         */
+        glm::vec2 getPosition() const {
             return min;
         }
 
         /**
-         * @brief Get the size of the collider.
-         * 
-         * @return The size of the collider, which is the difference between the maximum and minimum vectors.
+         * @brief Get the size of the collider (max - min).
          */
-        glm::vec2 getSize() {
+        glm::vec2 getSize() const {
             return max - min;
         }
     };

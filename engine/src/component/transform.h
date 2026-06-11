@@ -31,7 +31,11 @@ public:
 
     /**
      * @brief Construct a new TransformComponent object using floats.
-     * 
+     *
+     * No default arguments: the vec2 constructor above is the single
+     * default-constructible overload, which removes the ambiguity that made
+     * a no-argument `TransformComponent{}` fail to compile.
+     *
      * @param posX Initial x position of the entity.
      * @param posY Initial y position of the entity.
      * @param rotation Initial rotation of the entity (in degrees).
@@ -40,13 +44,13 @@ public:
      * @param sizeX Initial x size of the entity.
      * @param sizeY Initial y size of the entity.
      */
-    TransformComponent(float posX = 0.0f,
-        float posY = 0.0f,
-        float rotation = 0.0f,
-        float scaleX = 1.0f,
-        float scaleY = 1.0f,
-        float sizeX = 1.0f,
-        float sizeY = 1.0f)
+    TransformComponent(float posX,
+        float posY,
+        float rotation,
+        float scaleX,
+        float scaleY,
+        float sizeX,
+        float sizeY)
         : position(glm::vec2(posX, posY)), rotation(rotation), scale(glm::vec2(scaleX, scaleY)), size(glm::vec2(sizeX, sizeY)) {
             updateMinMax();
         }

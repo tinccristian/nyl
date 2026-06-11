@@ -17,3 +17,4 @@ docs/
 *.gbl
 *.t0000
 *.user
+/.cache

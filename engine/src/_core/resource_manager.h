@@ -35,9 +35,22 @@ class NYL_API ResourceManager
         static ShaderComponent* GetShader(std::string name);
         static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name);
         static TextureComponent* GetTexture(std::string name);
+        /// 1x1 white texture (lazily created) for solid-colour quads: particles,
+        /// text backgrounds, debug shapes. Requires an active GL context.
+        static TextureComponent* GetWhiteTexture();
         static void Clear();
+
+        // ---- resource root (project/asset directory) ----
+        // Lets the game/editor load assets by a path relative to a project root,
+        // instead of relying on compile-time source paths. Used by scene
+        // serialization (Phase 6) and the editor (Phase 8).
+        static void SetResourceRoot(const std::string& path);
+        static const std::string& GetResourceRoot();
+        static std::string ResolvePath(const std::string& relative);
+
     private:
         ResourceManager() { }
+        static std::string s_ResourceRoot;
         static ShaderComponent* loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
         static TextureComponent* loadTextureFromFile(const char* file, bool alpha);
 

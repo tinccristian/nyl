@@ -1,41 +1,34 @@
 #include "system_physics.h"
-#include "physics.h"
-#include "transform.h"
 
-const float PhysicsSystem::GRAVITY = 9.8f*60.0f;
+namespace nyl
+{
+    const float PhysicsSystem::GRAVITY = 9.8f * 60.0f;
 
-void PhysicsSystem::updatePhysics(float deltaTime) {
-    for (Entity& entity : entities) {
-        auto transform = entity.getComponent<TransformComponent>();
-        auto physics = entity.getComponent<PhysicsComponent>();
-        if (transform && physics) {
-            transform->position += physics->velocity * deltaTime;
-            transform->updateMinMax();
-            applyGravity(entity, deltaTime);
-        }
+    void PhysicsSystem::update(Scene& scene, float deltaTime)
+    {
+        scene.forEach<TransformComponent, PhysicsComponent>(
+            [&](EntityID, TransformComponent& transform, PhysicsComponent& physics)
+            {
+                transform.position += physics.velocity * deltaTime;
+                transform.updateMinMax();
+                physics.velocity.y += GRAVITY * deltaTime;
+            });
     }
-}
 
-void PhysicsSystem::applyGravity(Entity& entity, float deltaTime) {
-    auto physics = entity.getComponent<PhysicsComponent>();
-    if (physics) {
-        physics->velocity.y += GRAVITY * deltaTime;
+    void PhysicsSystem::applyGravity(PhysicsComponent& physics, float deltaTime)
+    {
+        physics.velocity.y += GRAVITY * deltaTime;
     }
-}
 
-void PhysicsSystem::jump(Entity& entity, float jumpSpeed, float deltaTime) {
-    auto physics = entity.getComponent<PhysicsComponent>();
-    if (physics) {
-        physics->velocity.y = -jumpSpeed;// +GRAVITY * deltaTime;
+    void PhysicsSystem::jump(PhysicsComponent& physics, float jumpSpeed)
+    {
+        physics.velocity.y = -jumpSpeed;
     }
-}
 
-bool PhysicsSystem::checkCollision(const nyl::BoxCollider& one, const nyl::BoxCollider& two) {
-    if (one.max.x < two.min.x || one.min.x > two.max.x) {
-        return false;
+    bool PhysicsSystem::checkCollision(const BoxCollider& one, const BoxCollider& two)
+    {
+        if (one.max.x < two.min.x || one.min.x > two.max.x) return false;
+        if (one.max.y < two.min.y || one.min.y > two.max.y) return false;
+        return true;
     }
-    if (one.max.y < two.min.y || one.min.y > two.max.y) {
-        return false;
-    }
-    return true;
 }

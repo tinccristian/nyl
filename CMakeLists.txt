@@ -10,6 +10,7 @@ set(ENV{NINJA_STATUS} "[\\033[1;34m%u/%t\\033[0m (\\033[1;32m%f\\033[0m)] ")
 
 add_subdirectory(engine)
 add_subdirectory(examples/platformer)
+add_subdirectory(editor)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

@@ -14,6 +14,18 @@
 
 #pragma once
 
+//---- NYL: Dear ImGui lives inside the engine DLL (__nylengine). Export its API
+// when building the DLL and import it in consumers (the game and the editor), so
+// every module shares the single ImGui instance/context that the engine owns.
+// This mirrors the NYL_API macro in core.h (keyed off NYL_BUILD_DLL).
+#ifdef _WIN32
+  #ifdef NYL_BUILD_DLL
+    #define IMGUI_API __declspec(dllexport)
+  #else
+    #define IMGUI_API __declspec(dllimport)
+  #endif
+#endif
+
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
 //#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)

@@ -2,15 +2,13 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 #include "system.h"
 #include "entity.h"
-#include "transform.h"
-#include "camera.h"
 #include "shader.h"
 #include "texture.h"
-#include "animation.h"
+#include "camera.h"
 
 namespace nyl
 {
@@ -33,46 +31,65 @@ namespace Colors
     static const Color Purple{ glm::vec3(0.5f, 0.0f, 0.5f) };
     static const Color Pink{ glm::vec3(1.0f, 0.75f, 0.8f) };
     static const Color Gray{ glm::vec3(0.5f, 0.5f, 0.5f) };
-    static const Color LightBlue{ glm::vec3(0.5f, 0.5f, 1.0f) };
-    static const Color LightGreen{ glm::vec3(0.5f, 1.0f, 0.5f) };
-    static const Color LightRed{ glm::vec3(1.0f, 0.5f, 0.5f) };
-    static const Color DarkBlue{ glm::vec3(0.0f, 0.0f, 0.5f) };
-    static const Color DarkGreen{ glm::vec3(0.0f, 0.5f, 0.0f) };
-    static const Color DarkRed{ glm::vec3(0.5f, 0.0f, 0.0f) };
-    static const Color LightYellow{ glm::vec3(1.0f, 1.0f, 0.5f) };
-    static const Color DarkYellow{ glm::vec3(0.5f, 0.5f, 0.0f) };
 }
 
+/**
+ * @brief Batched 2D sprite renderer with a single unified world-space camera.
+ *
+ * Submit sprites/entities between beginFrame() and endFrame(); quads are
+ * collected, sorted by (layer, texture) and flushed as a minimal number of
+ * draw calls (one per contiguous texture run). All draws — backgrounds,
+ * sprites, tiles, entities — go through the same view/projection, so there is
+ * a single coordinate space (world units, top-left origin, y-down).
+ */
 class NYL_API RenderSystem : public System {
-    public:
-        // constructor (inits shaders/shapes)
-        RenderSystem(ShaderComponent &shader, float screenWidth, float screenHeight);
-        // destructor
-        ~RenderSystem();
-        // update all Entities in this system.
-        void update() override;
-        // initializes and configures the quad's buffer and vertex attributes
-        void initRenderData();
-        // draw a defined quad textured with given sprite
-        void DrawSprite(const TextureComponent& texture, glm::vec2 position = glm::vec2(0.0f,0.0f), glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
-        //void DrawObject(const TextureComponent& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float direction = 0.0f);
+public:
+    RenderSystem(float screenWidth, float screenHeight);
+    ~RenderSystem() override;
 
-        // draw functions
-        void DrawEntity(const Entity& entity, float deltaTime);
-        void DrawRectangleOutline(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
-        
-        // helper functions
-        bool CheckRenderComponents(const Entity& entity);
-        glm::vec2 getGlfwCoordinates(glm::vec2 worldPos, glm::vec2 windowSize);
-        glm::vec2 GetWorldPosition(const Entity& entity);
+    // ---- frame API ----
+    void beginFrame(glm::vec2 cameraPos = glm::vec2(0.0f), float zoom = 1.0f);
+    void beginFrame(const Camera& camera);
+    void endFrame();
 
+    // ---- submission ----
+    void drawSprite(const TextureComponent& texture,
+                    glm::vec2 position,
+                    glm::vec2 size,
+                    float rotation = 0.0f,
+                    glm::vec3 color = glm::vec3(1.0f),
+                    int layer = 0,
+                    glm::vec2 uvOffset = glm::vec2(0.0f),
+                    glm::vec2 uvScale = glm::vec2(1.0f));
 
-    private:
-        // render state
-        ShaderComponent shader;
-        glm::vec2 windowSize;
-        unsigned int quadVAO;
-        unsigned int outlineVAO;
-        void CheckGLError(const char* operation);
-    };
+    // alpha-capable variant (particles, fades)
+    void drawSprite(const TextureComponent& texture,
+                    glm::vec2 position,
+                    glm::vec2 size,
+                    float rotation,
+                    glm::vec4 color,
+                    int layer = 0,
+                    glm::vec2 uvOffset = glm::vec2(0.0f),
+                    glm::vec2 uvScale = glm::vec2(1.0f));
+
+    void drawEntity(const Entity& entity, float deltaTime, int layer = 0);
+
+    glm::vec2 windowSize;
+
+private:
+    struct QuadVertex { glm::vec2 pos; glm::vec2 uv; glm::vec4 color; };
+    struct Quad { int layer; unsigned int texture; QuadVertex v[6]; };
+
+    void submitQuad(unsigned int texture, glm::vec2 pos, glm::vec2 size, float rotation,
+                    glm::vec4 color, int layer, glm::vec2 uvOffset, glm::vec2 uvScale, bool flipX);
+    void flush();
+    void checkGLError(const char* operation);
+
+    ShaderComponent* shader = nullptr; // owned by ResourceManager
+    glm::mat4 projection{ 1.0f };
+    glm::mat4 view{ 1.0f };
+    unsigned int vao = 0;
+    unsigned int vbo = 0;
+    std::vector<Quad> quads;
+};
 }

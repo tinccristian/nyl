@@ -7,9 +7,12 @@ set(NYL_SOURCES
     "src/_core/application.cpp"
     "src/_core/utils.cpp"
     "src/_core/window.cpp"
+    "src/_core/audio.cpp"
     #entity
     "src/entity/entity.cpp"
-    "src/entity/player_entity.cpp"
+    "src/entity/scene.cpp"
+    "src/entity/component_registry.cpp"
+    "src/entity/scene_serializer.cpp"
     #component
     "src/component/animation.cpp"
     "src/component/shader.cpp"
@@ -20,6 +23,10 @@ set(NYL_SOURCES
     "src/system/system_renderer.cpp"
     "src/system/system_shader.cpp"
     "src/system/system_camera.cpp"
+    "src/system/system_particle.cpp"
+    "src/system/system_tilemap.cpp"
+    "src/system/font_renderer.cpp"
+    "src/system/framebuffer.cpp"
     #thirdparty
     "thirdparty/stb/stb.cpp"
     "thirdparty/imgui/imgui.cpp"
@@ -42,11 +49,13 @@ set(NYL_HEADERS
     "src/_core/resource_manager.h"
     "src/_core/utils.h"
     "src/_core/window.h"
+    "src/_core/audio.h"
     "src/nyl.h"
     #entity
     "src/entity/entity.h"
-    "src/entity/entity_manager.h"
-    "src/entity/player_entity.h"
+    "src/entity/scene.h"
+    "src/entity/component_registry.h"
+    "src/entity/scene_serializer.h"
     #component
     "src/component/animation.h"
     "src/component/component.h"
@@ -56,12 +65,20 @@ set(NYL_HEADERS
     "src/component/texture.h"
     "src/component/transform.h"
     "src/component/camera.h"
+    "src/component/particle.h"
+    "src/component/tilemap.h"
+    "src/component/audio_source.h"
     #system
     "src/system/system.h"
     "src/system/system_collider.h"
     "src/system/system_physics.h"
     "src/system/system_renderer.h"
     "src/system/system_camera.h"
+    "src/system/broadphase.h"
+    "src/system/system_particle.h"
+    "src/system/system_tilemap.h"
+    "src/system/font_renderer.h"
+    "src/system/framebuffer.h"
     #thirdparty
     "thirdparty/imgui/imgui.h"
     "thirdparty/imgui/imgui_internal.h"
@@ -86,6 +103,9 @@ target_include_directories(nyl PRIVATE
     thirdparty/stb/
     thirdparty/imgui/
     thirdparty/imgui/backends/
+    thirdparty/json/
+    thirdparty/miniaudio/
+    thirdparty/font8x8/
     src/
     src/component
     src/_core/

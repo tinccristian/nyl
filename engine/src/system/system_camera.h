@@ -1,20 +1,19 @@
 #pragma once
 #include "system.h"
+#include "entity.h"
 #include "camera.h"
 #include "transform.h"
-//#include <GL/glew.h>
 
 namespace nyl {
 	class NYL_API CameraSystem : public System {
 	public:
-		CameraSystem(std::shared_ptr<Camera> camera); // Change parameter type to shared_ptr
-		~CameraSystem() = default;
+		CameraSystem() = default;
+		~CameraSystem() override = default;
 
+		/// Make the entity's Camera follow the entity's Transform.
 		void update(Entity& entity);
-		void initCameraData();
-		void CheckGLError();
 
 	private:
-		std::shared_ptr<Camera> camera; // Change member type to shared_ptr
+		void CheckGLError();
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "scene.h"
 #include "collider.h"
 #include "transform.h"
 #include <optional>
@@ -40,11 +41,11 @@ namespace nyl {
     class NYL_API ColliderSystem : public System {
     public:
         /**
-         * @brief Updates all entities in the system.
+         * @brief Sync every collider's AABB from its entity's transform.
          *
-         * This method should be called once per frame. It updates the position of all colliders based on the position of their entities.
+         * Call once per frame before collision queries.
          */
-        void update() override;
+        void update(Scene& scene);
 
         /**
          * @brief Checks if two colliders are colliding.

@@ -1,6 +1,8 @@
  #pragma once
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <array>
 
 #include "core.h"
 
@@ -31,6 +33,59 @@
 #define GLFW_JOYSTICK_AXES_LEFT_TRIGGER 3
 #define GLFW_JOYSTICK_AXES_RIGHT_TRIGGER 4
 #define GLFW_JOYSTICK_AXES_RIGHT_STICK_Y 5
+
+namespace nyl
+{
+    /**
+     * @brief Polling keyboard + mouse input with per-frame edge detection.
+     *
+     * The Window feeds GLFW callbacks into the On* handlers; the engine calls
+     * Update() once at the very start of each frame (before glfwPollEvents) to
+     * snapshot the previous state, which is what makes wasKeyPressed() /
+     * wasKeyReleased() one-shot edge queries possible.
+     *
+     * Use key codes from GLFW (e.g. GLFW_KEY_A, GLFW_KEY_SPACE) and mouse
+     * buttons (e.g. GLFW_MOUSE_BUTTON_LEFT).
+     */
+    class NYL_API Input
+    {
+    public:
+        static void Init(GLFWwindow* window);
+        static void Update(); // call once per frame, before glfwPollEvents()
+
+        // keyboard
+        static bool isKeyDown(int key);
+        static bool wasKeyPressed(int key);
+        static bool wasKeyReleased(int key);
+
+        // mouse
+        static glm::vec2 mousePosition();
+        static glm::vec2 mouseDelta();
+        static float     scrollDelta();
+        static bool      isMouseButtonDown(int button);
+        static bool      wasMouseButtonPressed(int button);
+
+        // fed by Window's GLFW callbacks
+        static void OnKey(int key, int scancode, int action, int mods);
+        static void OnMouseButton(int button, int action, int mods);
+        static void OnCursorPos(double x, double y);
+        static void OnScroll(double xoffset, double yoffset);
+
+    private:
+        static constexpr int kKeyCount = GLFW_KEY_LAST + 1;
+        static constexpr int kButtonCount = GLFW_MOUSE_BUTTON_LAST + 1;
+
+        static GLFWwindow* s_window;
+        static std::array<bool, kKeyCount>    s_keys;
+        static std::array<bool, kKeyCount>    s_keysPrev;
+        static std::array<bool, kButtonCount> s_buttons;
+        static std::array<bool, kButtonCount> s_buttonsPrev;
+        static glm::vec2 s_mousePos;
+        static glm::vec2 s_mousePrev;
+        static float     s_scrollAccum; // accumulated since last Update
+        static float     s_scrollDelta; // scroll during the last frame
+    };
+}
 
 /*
     joystick class to handle input from joystick controller
