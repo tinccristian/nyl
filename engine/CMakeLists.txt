@@ -8,6 +8,9 @@ set(NYL_SOURCES
     "src/_core/utils.cpp"
     "src/_core/window.cpp"
     "src/_core/audio.cpp"
+    "src/_core/project.cpp"
+    "src/_core/file_dialog.cpp"
+    "thirdparty/tinyfd/tinyfiledialogs.c"
     #entity
     "src/entity/entity.cpp"
     "src/entity/scene.cpp"
@@ -50,6 +53,8 @@ set(NYL_HEADERS
     "src/_core/utils.h"
     "src/_core/window.h"
     "src/_core/audio.h"
+    "src/_core/project.h"
+    "src/_core/file_dialog.h"
     "src/nyl.h"
     #entity
     "src/entity/entity.h"
@@ -68,6 +73,7 @@ set(NYL_HEADERS
     "src/component/particle.h"
     "src/component/tilemap.h"
     "src/component/audio_source.h"
+    "src/component/sprite.h"
     #system
     "src/system/system.h"
     "src/system/system_collider.h"
@@ -106,6 +112,7 @@ target_include_directories(nyl PRIVATE
     thirdparty/json/
     thirdparty/miniaudio/
     thirdparty/font8x8/
+    thirdparty/tinyfd/
     src/
     src/component
     src/_core/
@@ -133,7 +140,7 @@ add_subdirectory(thirdparty/glfw-3.3.9)
 #     find_library(GLFW_LIBRARY glfw3 PATHS thirdparty/glfw-3.3.9/build/Release/src)
 # endif()
 
-target_link_libraries(nyl glfw glad)
+target_link_libraries(nyl glfw glad comdlg32 ole32 shell32 user32)
 
 target_compile_definitions(nyl PRIVATE 
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING

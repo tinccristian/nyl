@@ -8,6 +8,8 @@
 #include "window.h"
 #include "audio.h"
 #include "audio_source.h"
+#include "project.h"
+#include "file_dialog.h"
 
 // entity / ECS core
 #include "scene.h"
@@ -17,6 +19,7 @@
 
 // render
 #include "texture.h"
+#include "sprite.h"
 #include "resource_manager.h"
 #include "system_renderer.h"
 #include "camera.h"

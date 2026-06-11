@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <glad/glad.h>
 
@@ -32,9 +33,14 @@ class NYL_API ResourceManager
         static ShaderSystem* shaderSystem;
 
         static ShaderComponent* LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name);
+        /// Compile a shader directly from source strings (no file dependency).
+        static ShaderComponent* LoadShaderSource(const std::string& vertexSrc, const std::string& fragmentSrc, std::string name);
         static ShaderComponent* GetShader(std::string name);
         static TextureComponent* LoadTexture(const char* file, bool alpha, std::string name);
         static TextureComponent* GetTexture(std::string name);
+        /// Names of all loaded textures (excludes internal "__" textures). For
+        /// the editor's texture pickers / asset browser.
+        static std::vector<std::string> TextureNames();
         /// 1x1 white texture (lazily created) for solid-colour quads: particles,
         /// text backgrounds, debug shapes. Requires an active GL context.
         static TextureComponent* GetWhiteTexture();

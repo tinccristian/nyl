@@ -45,6 +45,16 @@ ShaderComponent* ResourceManager::LoadShader(const char* vShaderFile, const char
     return shaderComponent;
 }
 
+ShaderComponent* ResourceManager::LoadShaderSource(const std::string& vertexSrc, const std::string& fragmentSrc, std::string name)
+{
+    ShaderComponent* shader = new ShaderComponent();
+    shader->vertexSource = vertexSrc;
+    shader->fragmentSource = fragmentSrc;
+    shader->compile();
+    Shaders[name] = shader;
+    return shader;
+}
+
 ShaderComponent* ResourceManager::GetShader(std::string name)
 {
     auto iter = Shaders.find(name);
@@ -71,6 +81,16 @@ TextureComponent* ResourceManager::GetTexture(std::string name)
         return nullptr;
     }
     return iter->second;
+}
+
+std::vector<std::string> ResourceManager::TextureNames()
+{
+    std::vector<std::string> names;
+    names.reserve(Textures.size());
+    for (auto& kv : Textures)
+        if (kv.first.rfind("__", 0) != 0) // skip internal textures (__white, __font8x8)
+            names.push_back(kv.first);
+    return names;
 }
 
 TextureComponent* ResourceManager::GetWhiteTexture()

@@ -10,8 +10,17 @@
 
 extern nyl::Application* nyl::CreateApplication();
 
+namespace nyl
+{
+	// command-line args, available to CreateApplication() (e.g. a project path)
+	inline int    g_argc = 0;
+	inline char** g_argv = nullptr;
+}
+
 int main(int argc, char** argv)
 {
+	nyl::g_argc = argc;
+	nyl::g_argv = argv;
 	// initialize and test our logger
 	nyl::Log::Init();
 	NYL_CORE_WARN("<><><><><><><><><><>  NYL  <><><><><><><><><><>");

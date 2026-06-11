@@ -13,6 +13,8 @@
 #include "particle.h"
 #include "tilemap.h"
 #include "audio_source.h"
+#include "sprite.h"
+#include "resource_manager.h"
 
 namespace nyl
 {
@@ -170,6 +172,36 @@ namespace nyl
         if (j.contains("tiles"))          m.tiles          = j["tiles"].get<std::vector<int>>();
     }
 
+    // ---- Sprite ----
+    static void serializeSprite(Scene& s, EntityID e, json& j)
+    {
+        auto* sp = s.getComponent<SpriteComponent>(e);
+        j["texture"] = sp->texture;
+        j["tint"]    = vec4ToJson(sp->tint);
+        j["layer"]   = sp->layer;
+    }
+    static void deserializeSprite(Scene& s, EntityID e, const json& j)
+    {
+        auto& sp = s.addComponent<SpriteComponent>(e);
+        if (j.contains("texture")) sp.texture = j["texture"].get<std::string>();
+        if (j.contains("tint"))    sp.tint    = jsonToVec4(j["tint"]);
+        if (j.contains("layer"))   sp.layer   = j["layer"].get<int>();
+    }
+    static void inspectSprite(void* ptr)
+    {
+        auto* sp = static_cast<SpriteComponent*>(ptr);
+        const char* preview = sp->texture.empty() ? "(none)" : sp->texture.c_str();
+        if (ImGui::BeginCombo("Texture", preview))
+        {
+            for (const std::string& name : ResourceManager::TextureNames())
+                if (ImGui::Selectable(name.c_str(), name == sp->texture))
+                    sp->texture = name;
+            ImGui::EndCombo();
+        }
+        ImGui::ColorEdit4("Tint", &sp->tint.x);
+        ImGui::DragInt("Layer", &sp->layer, 1.0f, -1000, 1000);
+    }
+
     // ---- AudioSource ----
     static void serializeAudio(Scene& s, EntityID e, json& j)
     {
@@ -189,6 +221,14 @@ namespace nyl
     }
 
     // ---- ImGui inspectors (editor) ----
+    static bool inputString(const char* label, std::string& value)
+    {
+        char buf[256];
+        std::snprintf(buf, sizeof(buf), "%s", value.c_str());
+        if (ImGui::InputText(label, buf, sizeof(buf))) { value = buf; return true; }
+        return false;
+    }
+
     static void inspectTransform(void* ptr)
     {
         auto* t = static_cast<TransformComponent*>(ptr);
@@ -210,9 +250,7 @@ namespace nyl
         auto* c = static_cast<BoxCollider*>(ptr);
         ImGui::DragFloat2("Min", &c->min.x, 1.0f);
         ImGui::DragFloat2("Max", &c->max.x, 1.0f);
-        char buf[64];
-        std::snprintf(buf, sizeof(buf), "%s", c->flag.c_str());
-        if (ImGui::InputText("Flag", buf, sizeof(buf))) c->flag = buf;
+        inputString("Flag", c->flag);
     }
     static void inspectCamera(void* ptr)
     {
@@ -247,9 +285,7 @@ namespace nyl
     static void inspectAudio(void* ptr)
     {
         auto* a = static_cast<AudioSourceComponent*>(ptr);
-        char buf[256];
-        std::snprintf(buf, sizeof(buf), "%s", a->clip.c_str());
-        if (ImGui::InputText("Clip", buf, sizeof(buf))) a->clip = buf;
+        inputString("Clip", a->clip);
         ImGui::Checkbox("Autoplay", &a->autoplay);
         ImGui::Checkbox("Loop", &a->loop);
         ImGui::DragFloat("Volume", &a->volume, 0.01f, 0.0f, 1.0f);
@@ -295,6 +331,20 @@ namespace nyl
         return out;
     }
 
+    void ComponentRegistry::CloneEntity(Scene& scene, EntityID from, EntityID to)
+    {
+        for (auto& kv : entries())
+        {
+            const ComponentInfo& info = kv.second;
+            if (info.serialize && info.deserialize && info.has(scene, from))
+            {
+                json j;
+                info.serialize(scene, from, j);
+                info.deserialize(scene, to, j);
+            }
+        }
+    }
+
     void ComponentRegistry::RegisterBuiltins()
     {
         static bool done = false;
@@ -302,6 +352,7 @@ namespace nyl
         done = true;
 
         Register<TransformComponent>("Transform",   &serializeTransform, &deserializeTransform, &inspectTransform);
+        Register<SpriteComponent>   ("Sprite",      &serializeSprite,    &deserializeSprite,    &inspectSprite);
         Register<PhysicsComponent>  ("Physics",     &serializePhysics,   &deserializePhysics,   &inspectPhysics);
         Register<BoxCollider>       ("BoxCollider", &serializeCollider,  &deserializeCollider,  &inspectCollider);
         Register<Camera>            ("Camera",       &serializeCamera,    &deserializeCamera,   &inspectCamera);

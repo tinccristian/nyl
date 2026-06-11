@@ -76,6 +76,10 @@ namespace nyl
         static const ComponentInfo* FindByName(const std::string& name);
         static std::vector<const ComponentInfo*> All();
 
+        /// Copy every serializable component from `from` onto `to` (used by the
+        /// editor's "Duplicate"). Components without serialization are skipped.
+        static void CloneEntity(Scene& scene, EntityID from, EntityID to);
+
         /// Register all engine-provided component types. Call once at startup.
         static void RegisterBuiltins();
 

@@ -23,10 +23,39 @@ entities and typed component pools; **systems** operate over the scene; a
 
 ## Targets
 
-- `examples/platformer` — the sample game (keyboard + gamepad, particles, text,
-  on-screen save-scene button).
-- `editor` — the **NYL Editor**: a scene hierarchy, a registry-driven inspector
-  (add/remove/edit any component), an FBO viewport, and scene save/load.
+- `examples/platformer` — the original sample game (kept as a code example).
+- `editor` — the **NYL Editor**: create/open/configure **projects**, author
+  scenes, and manage assets without an external IDE.
+- `runtime` — the **NYL Runtime**: a standalone, data-driven player. Run
+  `runtime.exe <path-to-.nylproj>` (or no args for the bundled sample) to play a
+  project: rendering, fixed-step physics, particles, and a built-in platformer
+  controller for the entity whose collider is flagged `"player"`. This is how a
+  project authored in the editor "ships" — no editor, no IDE. The editor's
+  **Run Project** (F5) saves and launches it.
+
+The engine has no runtime file dependency: its shader is embedded, and the
+editor/runtime resolve the bundled sample relative to the executable.
+
+## Projects
+
+A project is a folder with a `.nylproj` settings file (name, window size,
+asset/scene dirs, startup scene), an `assets/` folder, and a `scenes/` folder.
+`projects/sample-platformer/` is a ready-made example (chikboy + background +
+cloud sprites, a particle emitter) — the editor opens it on first run.
+
+The editor (`Project`/`Scene` menus) can:
+- **New / Open / Save Project** and edit settings in the **Project** panel.
+- **New / Open / Save / Save As** scenes; **Set as Startup Scene**.
+- **Import textures** (native file dialogs via tinyfiledialogs) and auto-load a
+  project's assets so the Sprite picker is populated.
+- **Hierarchy**: create entities/sprites, duplicate, delete.
+- **Inspector**: registry-driven — add/remove/edit any registered component
+  (Transform, Sprite, Physics, BoxCollider, Camera, ParticleEmitter, Tilemap,
+  AudioSource).
+- **Viewport** (rendered to an off-screen framebuffer): click to select, drag to
+  move, arrows to pan, wheel to zoom; Play/Pause to preview simulation.
+- **Undo/redo** (Ctrl+Z / Ctrl+Y), **Run Project** (F5), Save Scene (Ctrl+S).
+- Remembers the last project (`editor_config.txt`) and reopens it on launch.
 
 ## Controls (platformer)
 

@@ -19,6 +19,34 @@ namespace nyl
     float lastFrame = 0.0f;
     const int targetFPS = 1000;
 
+    // Embedded batch-renderer shader (no external file needed).
+    static const char* kBatchVertexShader = R"(#version 330 core
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aUV;
+layout (location = 2) in vec4 aColor;
+out vec2 vUV;
+out vec4 vColor;
+uniform mat4 projection;
+uniform mat4 view;
+void main()
+{
+    vUV = aUV;
+    vColor = aColor;
+    gl_Position = projection * view * vec4(aPos, 0.0, 1.0);
+}
+)";
+
+    static const char* kBatchFragmentShader = R"(#version 330 core
+in vec2 vUV;
+in vec4 vColor;
+out vec4 FragColor;
+uniform sampler2D uTex;
+void main()
+{
+    FragColor = texture(uTex, vUV) * vColor;
+}
+)";
+
     Game::Game(int width, int height, const std::string& title)
         : window(width, height, title){}
 
@@ -63,21 +91,17 @@ namespace nyl
         AudioEngine::Init();
         setupImGui();
         configureOpenGL();
-        // load default shaders
-        ResourceManager::LoadShader(getFullPath("../../resources/shaders/sprite.vert").c_str(), getFullPath("../../resources/shaders/sprite.frag").c_str(), nullptr, "sprite");
-        ResourceManager::LoadShader(getFullPath("../../resources/shaders/debug.vert").c_str(), getFullPath("../../resources/shaders/debug.frag").c_str(), nullptr, "debug");
-        // batched sprite renderer shader
-        ResourceManager::LoadShader(getFullPath("../../resources/shaders/batch.vert").c_str(), getFullPath("../../resources/shaders/batch.frag").c_str(), nullptr, "batch");
-        
-        // configure shaders
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.width), static_cast<float>(window.height), 0.0f, -1.0f, 1.0f);
-        ResourceManager::GetShader("sprite")->use().set_int("sprite", 0);
-        ResourceManager::GetShader("sprite")->set_mat4("projection", projection);
 
-        ResourceManager::GetShader("debug")->use().set_int("debug", 0);
-        ResourceManager::GetShader("debug")->set_mat4("projection", projection);
+        // batched sprite renderer shader, embedded so the engine has no runtime
+        // file dependency (the projection/view are set per-frame by RenderSystem)
+        ResourceManager::LoadShaderSource(kBatchVertexShader, kBatchFragmentShader, "batch");
 
         Init();
+    }
+
+    void Game::setWindowTitle(const std::string& title)
+    {
+        glfwSetWindowTitle(window.getGLFWwindow(), title.c_str());
     }
 
     void Game::updateFPS(int& frameCount, float& totalTime)

@@ -49,6 +49,7 @@ namespace nyl
 
         // utils
         static float getDeltaTime() { return deltaTime; }
+        void setWindowTitle(const std::string& title);
         // main loop
         void run();
         

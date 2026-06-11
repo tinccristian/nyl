@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "entities": [
+    {
+      "components": {
+        "Transform": { "position": [0, 0], "rotation": 0, "scale": [1, 1], "size": [1280, 720], "direction": 1 },
+        "Sprite": { "texture": "background", "tint": [1, 1, 1, 1], "layer": -100 }
+      }
+    },
+    {
+      "components": {
+        "Transform": { "position": [180, 110], "rotation": 0, "scale": [1, 1], "size": [130, 114], "direction": 1 },
+        "Sprite": { "texture": "cloud", "tint": [1, 1, 1, 1], "layer": -50 }
+      }
+    },
+    {
+      "components": {
+        "Transform": { "position": [560, 80], "rotation": 0, "scale": [1, 1], "size": [72, 128], "direction": 1 },
+        "Sprite": { "texture": "chikboy", "tint": [1, 1, 1, 1], "layer": 0 },
+        "Physics": { "velocity": [0, 0], "mass": 50, "canJump": false, "direction": 1 },
+        "BoxCollider": { "min": [560, 80], "max": [632, 208], "flag": "player" }
+      }
+    },
+    {
+      "components": {
+        "Transform": { "position": [0, 650], "rotation": 0, "scale": [1, 1], "size": [1280, 70], "direction": 1 },
+        "BoxCollider": { "min": [0, 650], "max": [1280, 720], "flag": "platform" }
+      }
+    },
+    {
+      "components": {
+        "Transform": { "position": [740, 470], "rotation": 0, "scale": [1, 1], "size": [280, 28], "direction": 1 },
+        "BoxCollider": { "min": [740, 470], "max": [1020, 498], "flag": "platform" }
+      }
+    },
+    {
+      "components": {
+        "Transform": { "position": [950, 180], "rotation": 0, "scale": [1, 1], "size": [16, 16], "direction": 1 },
+        "ParticleEmitter": {
+          "emitting": true, "emissionRate": 35, "particleLife": 1.0, "maxParticles": 250,
+          "gravity": [0, 30], "velocityMin": [-20, -50], "velocityMax": [20, -15],
+          "startSize": 8, "endSize": 0,
+          "startColor": [0.6, 0.9, 1.0, 0.9], "endColor": [0.6, 0.9, 1.0, 0.0]
+        }
+      }
+    }
+  ]
+}

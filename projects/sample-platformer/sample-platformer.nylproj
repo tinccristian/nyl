@@ -1,0 +1,8 @@
+{
+  "name": "Sample Platformer",
+  "windowWidth": 1280,
+  "windowHeight": 720,
+  "assetDir": "assets",
+  "sceneDir": "scenes",
+  "startupScene": "main.scene"
+}

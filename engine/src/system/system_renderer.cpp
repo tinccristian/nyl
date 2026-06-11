@@ -1,6 +1,7 @@
 #include "system_renderer.h"
 #include "resource_manager.h"
 #include "animation.h"
+#include "sprite.h"
 #include "transform.h"
 #include "log.h"
 
@@ -118,12 +119,21 @@ void RenderSystem::drawEntity(const Entity& entity, float deltaTime, int layer)
 
     const TextureComponent* texture = nullptr;
     Animation* currentAnimation = nullptr;
+    glm::vec4 tint(1.0f);
+    int drawLayer = layer;
 
+    // resolution order: Animation > Sprite > raw Texture
     if (auto animated = entity.getComponent<AnimatedComponent>())
     {
         animated->Update(deltaTime);
         currentAnimation = animated->GetCurrentAnimation();
         texture = animated->GetCurrentTexture();
+    }
+    else if (auto sprite = entity.getComponent<SpriteComponent>())
+    {
+        texture = ResourceManager::GetTexture(sprite->texture);
+        tint = sprite->tint;
+        drawLayer = sprite->layer;
     }
     else if (auto tex = entity.getComponent<TextureComponent>())
     {
@@ -131,10 +141,7 @@ void RenderSystem::drawEntity(const Entity& entity, float deltaTime, int layer)
     }
 
     if (!texture)
-    {
-        NYL_CORE_ERROR("RenderSystem::drawEntity: entity has no valid texture");
-        return;
-    }
+        return; // nothing to draw (e.g. a Sprite with no texture assigned yet)
 
     glm::vec2 uvOffset(0.0f);
     glm::vec2 uvScale(1.0f);
@@ -147,7 +154,7 @@ void RenderSystem::drawEntity(const Entity& entity, float deltaTime, int layer)
 
     const bool flipX = transform->direction < 0.0f;
     submitQuad(texture->ID, transform->position, transform->size, transform->rotation,
-               glm::vec4(1.0f), layer, uvOffset, uvScale, flipX);
+               tint, drawLayer, uvOffset, uvScale, flipX);
 }
 
 void RenderSystem::flush()
